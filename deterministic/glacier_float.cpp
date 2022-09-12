@@ -147,12 +147,14 @@ GFloat GFloat::ASin(const GFloat value)
 		GFixed30 x2 = x1 * x1;
 		GFixed30 x3 = x2 * x1;
 		GFixed30 x5 = x3 * x2;
+		GFixed30 x7 = x5 * x2;
 
-		static const GFixed30 inv_6 = GFixed30(0,1,6);
-		static const GFixed30 SC_3_40 = GFixed30(0,3,40);
+		constexpr GFixed30 inv_6 = GFixed30(0,1,6);
+		constexpr GFixed30 SC_3_40 = GFixed30(0,3,40);
+		constexpr GFixed30 SC_5_112 = GFixed30(0, 5, 112);
 
 
-        return (x1 + x3 * inv_6 + x5 * SC_3_40 ).ToGFloat();
+        return (x1 + x3 * inv_6 + x5 * SC_3_40 + x7 * SC_5_112).ToGFloat();
     }
 }
 GFloat GFloat::ACos(const GFloat value)

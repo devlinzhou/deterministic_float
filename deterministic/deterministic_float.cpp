@@ -219,14 +219,14 @@ public:
 		}
 
 		//float avgerror = abs(f2 - f1) * 100.f / abs(f1);
-		float avgerror = totalabs * 100.f / nCount;
+		float avgerror = totalabs  / nCount;
 
 
 		std::stringstream Tstring;
 
 		std::cout.precision(3);
 
-		Tstring << "|" << Name << "|" << setiosflags(std::ios::fixed) << std::setprecision(6) << avgerror << " %|" << Maxabs * 100.f << " %|";
+		Tstring << "|" << Name << "|" << setiosflags(std::ios::fixed) << std::setprecision(6) << avgerror * 100.f << " %|" << Maxabs * 100.f << " %|";
 		Tstring << std::setprecision(2) << time1 << " - " << time2 << "  (ms) |" << time1 / time2 << "|" << std::endl;
 		std::cout << Tstring.str();
 
