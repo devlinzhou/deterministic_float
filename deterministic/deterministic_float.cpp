@@ -142,7 +142,7 @@ public:
 		Gb.resize(N);
 		Gc.resize(N);
 
-		m_string =  std::ofstream ( "TestAndBenchMark.md" );
+		m_string =  std::ofstream ( "../TestAndBenchMark.md" );
 		m_string << "Call Function: " << N << "Times " << std::endl;
 
 		m_string << "|Function| avg error|max error| float vs GFloat ms | float : GFloat |"<< std::endl;
