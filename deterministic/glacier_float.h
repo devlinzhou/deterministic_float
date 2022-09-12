@@ -42,9 +42,9 @@ public:
     static inline GFloat Pi_Two() { return Pi() * GFloat(2); };
     static inline GFloat Pi_Half() { return Pi() / GFloat(2); };
     static inline GFloat Zero() { return GFloat(0); };
-    static inline GFloat One() { return FromFloat(1.f); };
-    static inline GFloat Half() { return FromFloat(0.5f); };
-    static inline GFloat Two() { return FromFloat(2.f); };
+    static inline GFloat One() { return GFloat(1); };
+    static inline GFloat Half() { return GFloat(0,1,2); };
+    static inline GFloat Two() { return GFloat(2); };
 
     static inline uint8_t GBitScanReverse64( uint32_t* Index, uint64_t TValue )
     {

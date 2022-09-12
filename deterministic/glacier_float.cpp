@@ -44,14 +44,22 @@ GFloat GFloat::Sin(const GFloat value)
     GFloat T5 = T3.getexponent() < 67 ? Zero() : T2 * T3;
     GFloat T7 = T5.getexponent() < 40 ? Zero() : T5 * T2;
 
-    GFloat OutValue = T - T3 * inv_T6 + T5 * inv_T120 + T7 * inv_T5040;
+    GFloat OutValue = T - T3 * inv_T6 + T5 * inv_T120 - T7 * inv_T5040;
 
     if( TWhole % 2 == 1 || TWhole % 2 == -1)
     {
-        OutValue = -OutValue;
+        OutValue = OutValue;
     }
 
-    return OutValue;
+	float f1 = value.toFloat();
+	float f3 = sinf(f1);
+
+
+	float f2 = OutValue.toFloat();
+
+	return OutValue;
+
+	return GFloat::FromFloat(f3);// OutValue;
 }
 GFloat GFloat::Cos(const GFloat value)
 { 
