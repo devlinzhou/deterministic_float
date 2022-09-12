@@ -40,7 +40,7 @@ class GFloat final {
 public:
     static inline GFloat Pi() { return GFloat(3,14159, 100000); };
     static inline GFloat Pi_Two() { return Pi() * GFloat(2); };
-    static inline GFloat Pi_Half() { return Pi() / GFloat(2); };
+    static inline GFloat Pi_Half() { return Pi() * GFloat(0,1,2); };
     static inline GFloat Zero() { return GFloat(0); };
     static inline GFloat One() { return GFloat(1); };
     static inline GFloat Half() { return GFloat(0,1,2); };
@@ -283,6 +283,7 @@ public:
 		if (exp >= 0)
 		{
 			TWhole = fra << exp;
+			OutFraction = Zero();
 		}
 		else if (exp > -23)// 22 or 23
 		{
@@ -291,6 +292,7 @@ public:
 			if( (TRaw << -exp ) == rawint32 )
 			{
 				TWhole = TRaw;
+				OutFraction = Zero();
 			}
 			else
 			{
@@ -302,14 +304,16 @@ public:
 				{
 					TWhole = TRaw + 1;
 				}
+
+				OutFraction = *this - GFloat(TWhole);
 			}
 		}
 		else
 		{
 			TWhole =  0;
+			OutFraction = *this;
 		}
-
-		OutFraction = *this - GFloat(TWhole);
+		
 		return TWhole;
     }
 

@@ -13,15 +13,74 @@
 
 #include "glacier_float.h"
 
+template<int32_t FractionNumType>
+class GFixedType32
+{
+public:
+
+	explicit inline constexpr GFixedType32( int32_t raw ) 
+		: rawInt32(raw)
+	{
+
+	}
+
+	explicit inline constexpr GFixedType32( uint32_t a, uint32_t b, uint32_t c ) :
+		rawInt32( (a <<FractionNumType ) | ((((uint64_t)b) << FractionNumType) / c))
+	{
+	
+	}
+
+	static inline constexpr int32_t GetTypeNumber()
+	{
+		return FractionNumType;
+	}
+		
+
+	inline const GFixedType32 operator +(GFixedType32 b) const
+	{
+		return GFixedType32(rawInt32 + b.rawInt32);
+	}
+
+	inline const GFixedType32 operator -(GFixedType32 b) const
+	{
+		return GFixedType32(rawInt32 - b.rawInt32);
+	}
+
+	inline const GFixedType32 operator *(GFixedType32 b) const
+	{
+		return GFixedType32( ((int64_t)rawInt32 * (int64_t)b.rawInt32) >>FractionNumType ) ;
+	}
+
+	static inline GFixedType32 FromGFloat( GFloat Value)
+	{
+		int32_t exp = Value.getexponent() - 127 +  GFixedType32<FractionNumType>::GetTypeNumber();
+
+		if(exp >= 0)
+		{
+			return GFixedType32(Value.getfraction() << exp );
+		}
+		else
+		{
+			return GFixedType32(Value.getfraction() >> exp );
+		}
+	}
+
+	inline GFloat ToGFloat() const
+	{
+		return GFloat::Nomalize((int64_t)rawInt32, uint8_t( 127 - GFixedType32<FractionNumType>::GetTypeNumber()) );
+	}
+
+	int32_t rawInt32;
+};
+
+typedef GFixedType32<30> GFixed30;
+
 GFloat GFloat::Sin(const GFloat value) 
 {
     static const GFloat TPi = Pi();
     static const GFloat TOne = One();
     static const GFloat Thalf = Half();
-    static const GFloat inv_Pi = TOne / Pi();
-    static const GFloat inv_T6 = TOne / GFloat(6);
-    static const GFloat inv_T120 = TOne / GFloat(120);
-    static const GFloat inv_T5040 = TOne / GFloat(5040);
+	static const GFloat inv_Pi = TOne / Pi();
 
     GFloat TMod = value * inv_Pi;
 
@@ -38,28 +97,33 @@ GFloat GFloat::Sin(const GFloat value)
         Fraction = -TOne - Fraction;
     }
 
-    GFloat T = Fraction * TPi;
-    GFloat T2 = T * T;
-    GFloat T3 = T2 * T;
-    GFloat T5 = T3.getexponent() < 67 ? Zero() : T2 * T3;
-    GFloat T7 = T5.getexponent() < 40 ? Zero() : T5 * T2;
+	GFloat T = Fraction * TPi;
 
-    GFloat OutValue = T - T3 * inv_T6 + T5 * inv_T120 - T7 * inv_T5040;
+	GFixed30 C0_785(0, 785, 1000);
+	GFixed30 CX_0785 = GFixed30::FromGFloat(T) - C0_785;
+	constexpr GFixed30 C0_706825(0, 706825, 1000000);
+	constexpr GFixed30 C0_707388(0, 707388, 1000000);	
+	constexpr GFixed30 C0_353413(0, 353413, 1000000);
+	constexpr GFixed30 C0_117898(0, 117898, 1000000);
+	constexpr GFixed30 C0_029451(0, 29451,  1000000);
+	constexpr GFixed30 C0_005895(0, 5895,	  1000000);
+
+	GFixed30 x1 = CX_0785;
+	GFixed30 x2 = x1 * CX_0785;
+	GFixed30 x3 = x2 * x1;
+	//GFixed30 x4 = x3 * x1;
+	//GFixed30 x5 = x4 * x1;
+
+	GFixed30 SinValue = C0_706825 + C0_707388 * x1 - C0_353413 * x2;// -C0_117898 * x3 + C0_029451 * x4 + C0_005895 * x5;
+
+	GFloat OutValue = SinValue.ToGFloat();
 
     if( TWhole % 2 == 1 || TWhole % 2 == -1)
     {
         OutValue = OutValue;
     }
 
-	float f1 = value.toFloat();
-	float f3 = sinf(f1);
-
-
-	float f2 = OutValue.toFloat();
-
 	return OutValue;
-
-	return GFloat::FromFloat(f3);// OutValue;
 }
 GFloat GFloat::Cos(const GFloat value)
 { 
@@ -73,17 +137,22 @@ void GFloat::SinCos(const GFloat value, GFloat& OutSin, GFloat& OutCos)
 }
 GFloat GFloat::ASin(const GFloat value)
 {
-    static const GFloat SC_Three = GFloat(3);
-    static const GFloat inv_6 = One() / GFloat(6);
-    static const GFloat SC_3_40 = SC_Three / GFloat(40);
-
     if( (value > One()) || (value <-One()) )
     {
         return Zero();
     }
     else
     {
-        return value + (value * value * value) * inv_6 + (value * value * value * value * value) * SC_3_40;
+		GFixed30 x1 =  GFixed30::FromGFloat(value);
+		GFixed30 x2 = x1 * x1;
+		GFixed30 x3 = x2 * x1;
+		GFixed30 x5 = x3 * x2;
+
+		static const GFixed30 inv_6 = GFixed30(0,1,6);
+		static const GFixed30 SC_3_40 = GFixed30(0,3,40);
+
+
+        return (x1 + x3 * inv_6 + x5 * SC_3_40 ).ToGFloat();
     }
 }
 GFloat GFloat::ACos(const GFloat value)
