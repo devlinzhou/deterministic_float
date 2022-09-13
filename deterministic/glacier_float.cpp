@@ -98,7 +98,7 @@ GFloat GFloat::Sin(const GFloat value)
         Fraction = Pi() - Fraction;
     }
 
-	constexpr GFixed30 C_1(1, 0, 1);
+	constexpr GFixed30 C_1(1, 0, 10000);
 	constexpr GFixed30 C_1_2(0, 1, 2);	
 	constexpr GFixed30 C_1_6(0, 1, 6);
 	constexpr GFixed30 C_1_24(0, 1, 24);
