@@ -35,23 +35,27 @@ public:
 		return FractionNumType;
 	}
 		
-
-	inline const GFixedType32 operator +(GFixedType32 b) const
+	inline constexpr GFixedType32 operator +(GFixedType32 b) const
 	{
 		return GFixedType32(rawInt32 + b.rawInt32);
 	}
 
-	inline const GFixedType32 operator -(GFixedType32 b) const
+	inline constexpr GFixedType32 operator -() const
+	{
+		return GFixedType32(-rawInt32 );
+	}
+
+	inline constexpr GFixedType32 operator -(GFixedType32 b) const
 	{
 		return GFixedType32(rawInt32 - b.rawInt32);
 	}
 
-	inline const GFixedType32 operator *(GFixedType32 b) const
+	inline constexpr GFixedType32 operator *(GFixedType32 b) const
 	{
 		return GFixedType32( ((int64_t)rawInt32 * (int64_t)b.rawInt32) >>FractionNumType ) ;
 	}
 
-	static inline GFixedType32 FromGFloat( GFloat Value)
+	static inline constexpr GFixedType32 FromGFloat( GFloat Value)
 	{
 		int32_t exp = Value.getexponent() - 127 +  GFixedType32<FractionNumType>::GetTypeNumber();
 
@@ -65,7 +69,7 @@ public:
 		}
 	}
 
-	inline GFloat ToGFloat() const
+	inline constexpr GFloat ToGFloat() const
 	{
 		return GFloat::Nomalize((int64_t)rawInt32, uint8_t( 127 - GFixedType32<FractionNumType>::GetTypeNumber()) );
 	}
@@ -77,53 +81,51 @@ typedef GFixedType32<30> GFixed30;
 
 GFloat GFloat::Sin(const GFloat value) 
 {
-    static const GFloat TPi = Pi();
-    static const GFloat TOne = One();
-    static const GFloat Thalf = Half();
-	static const GFloat inv_Pi = TOne / Pi();
+	/*if(value < Zero() )
+ 	{
+ 		return -Sin(-value);
+ 	}
 
-    GFloat TMod = value * inv_Pi;
+    GFloat TMod = value * Pi_Inv();
 
-    GFloat Fraction;
+    GFloat Fraction = TMod - GFloat::Floor( TMod);
 
-    int32_t TWhole = TMod.GetWhole(Fraction);
+    int32_t TWhole = TMod.GetWhole();*/
 
-    if( Fraction > Thalf)
+	GFloat Fraction = value;
+    if(value > Pi_Half())
     {
-        Fraction = TOne - Fraction;
-    }
-    else if(Fraction < -Thalf)
-    {
-        Fraction = -TOne - Fraction;
+        Fraction = Pi() - Fraction;
     }
 
-	GFloat T = Fraction * TPi;
+	constexpr GFixed30 C_1(1, 0, 1);
+	constexpr GFixed30 C_1_2(0, 1, 2);	
+	constexpr GFixed30 C_1_6(0, 1, 6);
+	constexpr GFixed30 C_1_24(0, 1, 24);
+	constexpr GFixed30 C_1_120(0, 1, 120);
 
-	GFixed30 C0_785(0, 785, 1000);
-	GFixed30 CX_0785 = GFixed30::FromGFloat(T) - C0_785;
-	constexpr GFixed30 C0_706825(0, 706825, 1000000);
-	constexpr GFixed30 C0_707388(0, 707388, 1000000);	
-	constexpr GFixed30 C0_353413(0, 353413, 1000000);
-	constexpr GFixed30 C0_117898(0, 117898, 1000000);
-	constexpr GFixed30 C0_029451(0, 29451,  1000000);
-	constexpr GFixed30 C0_005895(0, 5895,	  1000000);
+	constexpr GFixed30 C_sqrt2(0, 707107, 1000000);
+	constexpr GFixed30 C_quaterPi(0, 785398164, 1000000000);
 
-	GFixed30 x1 = CX_0785;
-	GFixed30 x2 = x1 * CX_0785;
+	GFixed30 x1 = GFixed30::FromGFloat(Fraction) - C_quaterPi;
+	GFixed30 x2 = x1 * x1;
 	GFixed30 x3 = x2 * x1;
-	//GFixed30 x4 = x3 * x1;
-	//GFixed30 x5 = x4 * x1;
+	GFixed30 x4 = x3 * x1;
+	GFixed30 x5 = x4 * x1;
 
-	GFixed30 SinValue = C0_706825 + C0_707388 * x1 - C0_353413 * x2;// -C0_117898 * x3 + C0_029451 * x4 + C0_005895 * x5;
+	//GFixed30 SinValue = C_sqrt2 * (C_1 + x1 - C_1_2 * x2 - C_1_6 * x3 + C_1_24 * x4 + C_1_120 * x5 );
 
-	GFloat OutValue = SinValue.ToGFloat();
+	GFixed30 SinValue = C_sqrt2 * (C_1 +  x1 *(C_1 - C_1_2 * x1 - C_1_6 * x2 + C_1_24 * x3 + C_1_120 * x4) );
 
-    if( TWhole % 2 == 1 || TWhole % 2 == -1)
+	//GFixed30 SinValue = C_sqrt2 * (C_1 + x1 * (C_1 - x1 * ( C_1_2 * x1 - C_1_6 * x2 + C_1_24 * x3 + C_1_120 * x4));
+
+
+  //  if( TWhole % 2 == 1 || TWhole % 2 == -1)
     {
-        OutValue = OutValue;
+       // OutValue = -OutValue;
     }
 
-	return OutValue;
+	return SinValue.ToGFloat();
 }
 GFloat GFloat::Cos(const GFloat value)
 { 
@@ -147,14 +149,9 @@ GFloat GFloat::ASin(const GFloat value)
 		GFixed30 x2 = x1 * x1;
 		GFixed30 x3 = x2 * x1;
 		GFixed30 x5 = x3 * x2;
-	//	GFixed30 x7 = x5 * x2;
+		GFixed30 x7 = x5 * x2;
 
-		constexpr GFixed30 inv_6 = GFixed30(0,1,6);
-		constexpr GFixed30 SC_3_40 = GFixed30(0,3,40);
-		constexpr GFixed30 SC_5_112 = GFixed30(0, 5, 112);
-
-
-        return (x1 + x3 * inv_6 + x5 * SC_3_40 /*+ x7 * SC_5_112*/).ToGFloat();
+        return (x1 + x3 * GFixed30(0, 1, 6) + x5 * GFixed30(0, 3, 40) + x7 * GFixed30(0, 5, 112)).ToGFloat();
     }
 }
 GFloat GFloat::ACos(const GFloat value)
@@ -272,19 +269,17 @@ GFloat GFloat::Pow(const GFloat x, const GFloat y)
 GFloat GFloat::InvSqrt(const GFloat value)
 {
     if (value.rawint32 <= 0)
-        return GFloat(0);
+        return Zero();
 
-    static const GFloat fone = One();
-    static const GFloat fhalf = Half();
     static const GFloat threehalfs(1, 1, 2);
 
     int32_t txep = value.getexponent() - 127 + 22;
 
     GFloat y = (txep & 0x1) == 0 ? GFloat::FromFractionAndExp(0x679851, 127 - txep / 2 + -23) : GFloat::FromFractionAndExp(0x265064, 127 - txep / 2 + -22);
 
-    GFloat x2 = value * fhalf;
-    y = y * (threehalfs - ((x2 * y) * y));
-    y = y * (threehalfs - ((x2 * y) * y));
+   // GFloat x2 = value * Half();
+   // y = y * (threehalfs - ((x2 * y) * y));
+   // y = y * (threehalfs - ((x2 * y) * y));
 
     return y;
 }

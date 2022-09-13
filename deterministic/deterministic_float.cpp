@@ -145,12 +145,12 @@ public:
 		Gc.resize(N);
 
 		m_string =  std::ofstream ( "../TestAndBenchMark.md" );
-		m_string << "Call Function: " << N << "Times " << std::endl;
+		m_string << "### Call Function: cmath vs GFloat math" << N << "Times " << std::endl;
 		m_string << "|Function| avg error|max error| Performance float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
 		m_string << "|--|--|--|--|--|--|--|" << std::endl;
 	}
 
-	void FunTest( std::string name, float RMin, float RMax, std::function<float(int i)> fun_f,std::function<GFloat(int i)> fun_G  )
+	inline void FunTest( std::string name, float RMin, float RMax, std::function<float(int i)> fun_f,std::function<GFloat(int i)> fun_G  )
 	{
 		std::minstd_rand gen;
 		std::uniform_real_distribution<> dis(RMin, RMax);
@@ -239,32 +239,62 @@ public:
 
 int main()
 {
-	GFloatTest FT(400000);
+	GFloatTest FT(1000000);
 	
-	FT.FunTest("Add", -10000.f, 10000.f,	[&](int i)->float{return FT.fa[i] + FT.fb[i]; },[&](int i)->GFloat{return FT.Ga[i] + FT.Gb[i]; });
-	FT.FunTest("Sub", -10000.f, 10000.f,	[&](int i)->float{return FT.fa[i] - FT.fb[i]; },[&](int i)->GFloat{return FT.Ga[i] - FT.Gb[i]; });
-	FT.FunTest("Mul", -10000.f, 10000.f,	[&](int i)->float{return FT.fa[i] * FT.fb[i]; },[&](int i)->GFloat{return FT.Ga[i] * FT.Gb[i]; });
-	FT.FunTest("Div", -10000.f, 10000.f,	[&](int i)->float{return FT.fa[i] / FT.fb[i]; },[&](int i)->GFloat{return FT.Ga[i] / FT.Gb[i]; });
-	FT.FunTest("Ceil", -100000.f, 100000.f, [&](int i)->float {return ceilf(FT.fa[i]); },	[&](int i)->GFloat {return GFloat::Ceil(FT.Ga[i]); });
-	FT.FunTest("Floor",-100000.f, 100000.f, [&](int i)->float {return floorf(FT.fa[i]); },	[&](int i)->GFloat {return GFloat::Floor(FT.Ga[i]); });
-	FT.FunTest("Whole", -100000.f, 100000.f, [&](int i)->float {return (float)(FT.fa[i]); }, [&](int i)->GFloat { GFloat f; return GFloat(FT.Ga[i].GetWhole(f)) + f; });
-	FT.FunTest("Sin", -10000.f, 10000.f,	[&](int i)->float{return sin(FT.fa[i]); },		[&](int i)->GFloat{return GFloat::Sin(FT.Ga[i]); });
-	FT.FunTest("Cos", -10000.f, 10000.f,	[&](int i)->float{return cosf(FT.fa[i]); },		[&](int i)->GFloat{return GFloat::Cos(FT.Ga[i]); });
-	FT.FunTest("Tan", -10000.f, 10000.f,	[&](int i)->float{return tanf(FT.fa[i]); },		[&](int i)->GFloat{return GFloat::Tan(FT.Ga[i]); });
-	FT.FunTest("ASin", -1.f,	1.f,		[&](int i)->float{return asinf(FT.fa[i]); },	[&](int i)->GFloat{return GFloat::ASin(FT.Ga[i]); });
-	FT.FunTest("ACos", -1.f,	1.f,		[&](int i)->float{return acosf(FT.fa[i]); },	[&](int i)->GFloat{return GFloat::ACos(FT.Ga[i]); });
-	FT.FunTest("ATan", -10000.f, 10000.f,	[&](int i)->float{return atanf(FT.fa[i]); },	[&](int i)->GFloat{return GFloat::ATan(FT.Ga[i]); });
-	FT.FunTest("ATan(10,x)",-10000.f, 10000.f,[&](int i)->float {return atan2f(10.f, FT.fa[i]);}, [&](int i)->GFloat {return GFloat::ATan2(GFloat(10), FT.Ga[i]); });
-	FT.FunTest("ATan(x,10)",-10000.f, 10000.f,[&](int i)->float {return atan2f(FT.fa[i], 10.f);}, [&](int i)->GFloat {return GFloat::ATan2(FT.Ga[i], GFloat(10)); });
-	FT.FunTest("Sqrt",	0,		10000.f,	[&](int i)->float{return sqrtf(FT.fa[i]); },	[&](int i)->GFloat{return GFloat::Sqrt(FT.Ga[i]); });
-	FT.FunTest("Exp",  -20.f,	20.f,		[&](int i)->float{return expf(FT.fa[i]); },		[&](int i)->GFloat{return GFloat::Exp(FT.Ga[i]); });
-	FT.FunTest("Log",	0.f,	100000.f,	[&](int i)->float{return logf(FT.fa[i]); },		[&](int i)->GFloat{return GFloat::Log(FT.Ga[i]); });
-	FT.FunTest("Pow(2,x)",	-20.f,	20.f,	[&](int i)->float{return powf(2.f, FT.fa[i]); },[&](int i)->GFloat{return GFloat::Pow(GFloat::Two(), FT.Ga[i]); });
-	FT.FunTest("Pow(x,2)",	0.55f,	20.f,	[&](int i)->float{return powf(FT.fa[i], 2.f); },[&](int i)->GFloat{return GFloat::Pow(FT.Ga[i],GFloat::Two()); });
-   
-	
-	
-	std::cout << "\n";
+	bool bBase = true;
+	bool bTrigonometric = true;
+	bool bTranscendental = false;
+
+	if( bBase )
+	{
+		FT.FunTest("Add", -10000.f, 10000.f, [&](int i)->float {return FT.fa[i] + FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] + FT.Gb[i]; });
+		FT.FunTest("Sub", -10000.f, 10000.f, [&](int i)->float {return FT.fa[i] - FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] - FT.Gb[i]; });
+		FT.FunTest("Mul", -10000.f, 10000.f, [&](int i)->float {return FT.fa[i] * FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] * FT.Gb[i]; });
+		FT.FunTest("Div", -10000.f, 10000.f, [&](int i)->float {return FT.fa[i] / FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] / FT.Gb[i]; });
+		FT.FunTest("Ceil", -100000.f, 100000.f, [&](int i)->float {return ceilf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Ceil(FT.Ga[i]); });
+		FT.FunTest("Floor", -100000.f, 100000.f, [&](int i)->float {return floorf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Floor(FT.Ga[i]); });
+		FT.FunTest("Whole", -100000.f, 100000.f, [&](int i)->float {return (float)(FT.fa[i]); }, [&](int i)->GFloat { GFloat f; return GFloat(FT.Ga[i].GetWhole(f)) + f; });
+	}
+
+	if(bTrigonometric)
+	{
+		FT.FunTest("Sin", 0, 3.14f, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
+		FT.FunTest("Cos", -10000.f, 10000.f, [&](int i)->float {return cosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Cos(FT.Ga[i]); });
+		FT.FunTest("Tan", -10000.f, 10000.f, [&](int i)->float {return tanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Tan(FT.Ga[i]); });
+		FT.FunTest("ASin", -1.f, 1.f, [&](int i)->float {return asinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });
+		FT.FunTest("ACos", -1.f, 1.f, [&](int i)->float {return acosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ACos(FT.Ga[i]); });
+		FT.FunTest("ATan", -10000.f, 10000.f, [&](int i)->float {return atanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ATan(FT.Ga[i]); });
+		FT.FunTest("ATan(10,x)", -10000.f, 10000.f, [&](int i)->float {return atan2f(10.f, FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ATan2(GFloat(10), FT.Ga[i]); });
+		FT.FunTest("ATan(x,10)", -10000.f, 10000.f, [&](int i)->float {return atan2f(FT.fa[i], 10.f); }, [&](int i)->GFloat {return GFloat::ATan2(FT.Ga[i], GFloat(10)); });
+	}
+
+	if( bTranscendental )
+	{
+		FT.FunTest("Sqrt", 0, 10000.f, [&](int i)->float {return sqrtf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sqrt(FT.Ga[i]); });	
+		FT.FunTest("invSqrt", 0, 10000.f, [&](int i)->float {return 1.f / sqrtf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::InvSqrt(FT.Ga[i]); });
+		FT.FunTest("Exp", -20.f, 20.f, [&](int i)->float {return expf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Exp(FT.Ga[i]); });
+		FT.FunTest("Log", 0.f, 100000.f, [&](int i)->float {return logf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Log(FT.Ga[i]); });
+		FT.FunTest("Pow(2,x)", -20.f, 20.f, [&](int i)->float {return powf(2.f, FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Pow(GFloat::Two(), FT.Ga[i]); });
+		FT.FunTest("Pow(x,2)", 0.55f, 20.f, [&](int i)->float {return powf(FT.fa[i], 2.f); }, [&](int i)->GFloat {return GFloat::Pow(FT.Ga[i], GFloat::Two()); });
+	}
+
+
+	std::cout << "Pi()      " << GFloat::Pi().toDouble() << "\n";
+	std::cout << "Pi_Half() " << GFloat::Pi_Half().toDouble() << "\n";
+	std::cout << "Pi_Two()  " << GFloat::Pi_Two().toDouble() << "\n";
+	std::cout << "Pi_Inv()  " << GFloat::Pi_Inv().toDouble() << "\n";
+
+
+	/*std::cout << "Pi()      " << std::hex << GFloat::Pi().rawint32		<<"  "<< GFloat::Pi().toFloat() <<"\n";
+	std::cout << "Pi_Half() " << std::hex << GFloat::Pi_Half().rawint32 <<"  "<< GFloat::Pi_Half().toFloat() << "\n";
+	std::cout << "Pi_Two()  " << std::hex << GFloat::Pi_Two().rawint32	<<"  "<< GFloat::Pi_Two().toFloat() << "\n";
+	std::cout << "Pi_Inv()  " << std::hex << GFloat::Pi_Inv().rawint32 << "  " << GFloat::Pi_Inv().toFloat() << "\n";
+
+	std::cout << "Zero()    " << std::hex << GFloat::Zero().rawint32 << "\n";
+	std::cout << "One()     " << std::hex << GFloat::One().rawint32 << "\n";
+	std::cout << "Half()    " << std::hex << GFloat::Half().rawint32 << "\n";
+	std::cout << "Two()     " << std::hex << GFloat::Two().rawint32 << "\n";*/
+
 }
 
 
