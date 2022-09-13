@@ -146,8 +146,8 @@ public:
 
 		m_string =  std::ofstream ( "../TestAndBenchMark.md" );
 		m_string << "Call Function: " << N << "Times " << std::endl;
-		m_string << "|Function| avg error|max error| time float vs GFloat | float / GFloat |"<< std::endl;
-		m_string << "|--|--|--|--|--|" << std::endl;
+		m_string << "|Function| avg error|max error| Performance float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
+		m_string << "|--|--|--|--|--|--|--|" << std::endl;
 	}
 
 	void FunTest( std::string name, float RMin, float RMax, std::function<float(int i)> fun_f,std::function<GFloat(int i)> fun_G  )
@@ -227,7 +227,8 @@ public:
 		std::cout.precision(3);
 
 		Tstring << "|" << Name << "|" << setiosflags(std::ios::fixed) << std::setprecision(6) << avgerror * 100.f << " %|" << Maxabs * 100.f << " %|";
-		Tstring << std::setprecision(2) << time1 << " - " << time2 << "  (ms) |" << time1 / time2 << "|" << std::endl;
+		Tstring << std::setprecision(2) << time1 << " - " << time2 << "  (ms) |" << time1 / time2 << "|";
+		Tstring << (time1 < time2 ? "$\\checkmark$" : "") << "|" <<( time1 > time2 ? "$\\checkmark$" : "" ) << "|" << std::endl;
 		std::cout << Tstring.str();
 
 		m_string << Tstring.str();
