@@ -243,7 +243,7 @@ int main()
 	
 	bool bBase = true;
 	bool bTrigonometric = true;
-	bool bTranscendental = false;
+	bool bTranscendental = true;
 
 	if( bBase )
 	{
