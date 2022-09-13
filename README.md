@@ -2,6 +2,21 @@
 fast soft float for deterministic computing
 your can make deterministic physics engine、pathfind、AI by use my GFloat
 
+
+  <table  >
+    <tr>
+        <th align="center" >符号位 S（1位）</th>
+        <th align="center" colspan = "5" width="400">阶码部分（8位） E</th>
+        <th align="center" colspan = "5" width="400">尾数部分（23位） M</th>
+    </tr>
+    <tr>
+        <td >31</td>
+        <td >30</td><td>29</td><td>...</td><td>24</td><td>23</td>
+        <td >22</td><td>21</td><td>...</td><td>1</td><td>0</td>
+    </tr>
+    </table>
+
+
 Call Function Test And BenchMark: 400000Times 
 |Function| avg error|max error| time float vs GFloat | float / GFloat |
 |--|--|--|--|--|
