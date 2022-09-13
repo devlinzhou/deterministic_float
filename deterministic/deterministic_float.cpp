@@ -241,9 +241,9 @@ int main()
 {
 	GFloatTest FT(1000000);
 	
-	bool bBase = true;
+	bool bBase = false;
 	bool bTrigonometric = true;
-	bool bTranscendental = true;
+	bool bTranscendental = false;
 
 	if( bBase )
 	{
@@ -259,13 +259,14 @@ int main()
 	if(bTrigonometric)
 	{
 		FT.FunTest("Sin", 0, 3.14f, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
-		FT.FunTest("Cos", -10000.f, 10000.f, [&](int i)->float {return cosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Cos(FT.Ga[i]); });
+		/*FT.FunTest("Cos", -10000.f, 10000.f, [&](int i)->float {return cosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Cos(FT.Ga[i]); });
 		FT.FunTest("Tan", -10000.f, 10000.f, [&](int i)->float {return tanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Tan(FT.Ga[i]); });
 		FT.FunTest("ASin", -1.f, 1.f, [&](int i)->float {return asinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });
 		FT.FunTest("ACos", -1.f, 1.f, [&](int i)->float {return acosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ACos(FT.Ga[i]); });
 		FT.FunTest("ATan", -10000.f, 10000.f, [&](int i)->float {return atanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ATan(FT.Ga[i]); });
 		FT.FunTest("ATan(10,x)", -10000.f, 10000.f, [&](int i)->float {return atan2f(10.f, FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ATan2(GFloat(10), FT.Ga[i]); });
 		FT.FunTest("ATan(x,10)", -10000.f, 10000.f, [&](int i)->float {return atan2f(FT.fa[i], 10.f); }, [&](int i)->GFloat {return GFloat::ATan2(FT.Ga[i], GFloat(10)); });
+	*/
 	}
 
 	if( bTranscendental )
