@@ -1,8 +1,9 @@
-# deterministic_float
-fast soft float for deterministic computing, that
+## deterministic_float
+ * fast soft float for deterministic computing, that
 you can make deterministic physics engine、pathfind、AI engine by use my GFloat.
 
-the IEEE-745 float
+## IEEE-745 & My GFloat
+* the IEEE-745 float
   <table  >
     <tr>
         <th align="center" >sign（1bit）</th>
@@ -17,7 +18,7 @@ the IEEE-745 float
     </table>
 
 
-    my GFloat
+* my GFloat
   <table  >
     <tr>
         <th align="center" >sign（1bit）</th>
@@ -30,6 +31,10 @@ the IEEE-745 float
         <td >7</td><td>6</td><td>...</td><td>1</td><td>0</td>
     </tr>
     </table>
+
+## start
+ * Win visual studio 22 ： open deterministic/deterministic_float.sln
+ * OSX Xcode : open deterministic/deterministic_float.xcodeproj
 
 
 
