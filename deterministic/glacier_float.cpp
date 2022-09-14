@@ -76,7 +76,7 @@ public:
 
 	int32_t rawInt32;
 };
-
+typedef GFixedType32<29> GFixed29;
 typedef GFixedType32<30> GFixed30;
 
 GFloat GFloat::Sin(const GFloat value) 
@@ -170,8 +170,8 @@ GFloat GFloat::ASin(const GFloat value)
     }
     else
     {
-		GFixed30 x1 =  GFixed30::FromGFloat(value);
-		GFixed30 x2 = x1 * x1;
+		GFixed29 x1 =  GFixed29::FromGFloat(value);
+		GFixed29 x2 = x1 * x1;
 // 		GFixed30 x3 = x2 * x1;
 // 
 // 		GFixed30 x4 = x3 * x1;
@@ -181,7 +181,7 @@ GFloat GFloat::ASin(const GFloat value)
 // 		GFixed30 x7 = x5 * x2;
 
        // return (x1 + x3 * GFixed30(0, 1, 6) + x5 * GFixed30(0, 3, 40) + x7 * GFixed30(0, 5, 112)).ToGFloat();
-		return (x1*(GFixed30(1, 0, 2) +x2 *(  GFixed30(0, 1, 6) + x2 * ( GFixed30(0, 3, 40) + x2 * GFixed30(0, 5, 112))))).ToGFloat();
+		return (x1*(GFixed29(1, 0, 2) +x2 *(  GFixed29(0, 1, 6) + x2 * ( GFixed29(0, 3, 40) + x2 * GFixed29(0, 5, 112))))).ToGFloat();
 
     }
 }
@@ -199,12 +199,10 @@ GFloat GFloat::ATan(const GFloat value)
 {
 	if( -One() <= value && value <= One() )
 	{
-		GFloat x1 = value;
-		GFloat x2 = x1 * x1;
-		GFloat x3 = x2 * x1;
-		GFloat x5 = x2 * x3;
+		GFixed29 x1 =  GFixed29::FromGFloat(value);
+		GFixed29 x2 = x1 * x1;
 
-		return x1 - x3 / GFloat(3) + x5 / GFloat(5);
+		return( x1 *(GFixed29(1,0,2) - x2 *( GFixed29(0,1,3) - x2 * GFixed29(0,1,5) ) )).ToGFloat();
 	}
 	else if(value > One() )
 	{
@@ -240,7 +238,7 @@ GFloat GFloat::ATan2(const GFloat y, const GFloat x)
 	} 
 }  
 
-typedef GFixedType32<29> GFixed29;
+
 GFloat GFloat::Exp(const GFloat value)
 { 
 	if(value >= Zero())

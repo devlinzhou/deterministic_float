@@ -54,10 +54,6 @@ public:
 	static inline constexpr GFloat e()			{ return GFloat(0x56fc2a, 0x6a); };
 	static inline constexpr GFloat e_Inv()		{ return GFloat(0x5e2d58, 0x67); };
 
-
-
-
-
     static inline uint32_t GBitScanReverse64( uint64_t num)
     {
 #ifdef _MSC_VER
