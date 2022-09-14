@@ -51,6 +51,12 @@ public:
 	static inline constexpr GFloat Pi_Quarter() { return GFloat(0x6487ef, 0x68); };
 	static inline constexpr GFloat Pi_Two()		{ return GFloat(0x6487ef, 0x6b); };
 	static inline constexpr GFloat Pi_Inv()		{ return GFloat(0x517cc1, 0x67); };
+	static inline constexpr GFloat e()			{ return GFloat(0x56fc2a, 0x6a); };
+	static inline constexpr GFloat e_Inv()		{ return GFloat(0x5e2d58, 0x67); };
+
+
+
+
 
     static inline uint32_t GBitScanReverse64( uint64_t num)
     {

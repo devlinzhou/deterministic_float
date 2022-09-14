@@ -104,30 +104,40 @@ GFloat GFloat::Sin(const GFloat value)
 	//GFixed30 TFrac(frac);
 //	float ff= value.toFloat();
 
+	constexpr GFixed30 C_1_Pi(0, 31831, 100000);	
+
 	GFixed30 RealFrac(0);
 
-	if( exp < -1)
+	if( exp <= -1)
 	{
 		RealFrac = GFixed30(frac >> (-exp));
-	}
-	else if( exp == -1 )
-	{
-		RealFrac = GFixed30(frac >> 1);
 	}
 	else if( exp <= 23 )
 	{
 		RealFrac = GFixed30((frac << exp) & 0x7FFFFFFF);
 	}
+	else
+	{
+		//RealFrac = GFixed30((frac << exp) & 0x7FFFFFFF);
+	}
+	constexpr GFixed30 C_1_2(0, 1, 2);	
+	constexpr GFixed30 C_1(1, 0, 10000);
+	constexpr GFixed30 C_quaterPi(0, 785398164, 1000000000);
+
+	if( RealFrac.rawInt32 > C_1_2.rawInt32 )
+	{
+		//RealFrac = C_1 - RealFrac;
+	}
 
 
 	constexpr GFixed30 C_sqrt2(0, 70710678, 100000000);
-	constexpr GFixed30 C_1(1, 0, 10000);
-	constexpr GFixed30 C_1_2(0, 1, 2);	
+
+
 	constexpr GFixed30 C_1_6(0, 1, 6);
 	constexpr GFixed30 C_1_24(0, 1, 24);
 	constexpr GFixed30 C_1_120(0, 1, 120);
 
-	constexpr GFixed30 C_quaterPi(0, 785398164, 1000000000);
+	//constexpr GFixed30 C_quaterPi(0, 785398164, 1000000000);
 
 	GFixed30 x1 = RealFrac/*GFixed30::FromGFloat(value)*/ - C_quaterPi;
 
@@ -162,11 +172,17 @@ GFloat GFloat::ASin(const GFloat value)
     {
 		GFixed30 x1 =  GFixed30::FromGFloat(value);
 		GFixed30 x2 = x1 * x1;
-		GFixed30 x3 = x2 * x1;
-		GFixed30 x5 = x3 * x2;
-		GFixed30 x7 = x5 * x2;
+// 		GFixed30 x3 = x2 * x1;
+// 
+// 		GFixed30 x4 = x3 * x1;
+// 		GFixed30 x5 = x3 * x2;
+// 		GFixed30 x6 = x5 * x1;
+// 
+// 		GFixed30 x7 = x5 * x2;
 
-        return (x1 + x3 * GFixed30(0, 1, 6) + x5 * GFixed30(0, 3, 40) + x7 * GFixed30(0, 5, 112)).ToGFloat();
+       // return (x1 + x3 * GFixed30(0, 1, 6) + x5 * GFixed30(0, 3, 40) + x7 * GFixed30(0, 5, 112)).ToGFloat();
+		return (x1*(GFixed30(1, 0, 2) +x2 *(  GFixed30(0, 1, 6) + x2 * ( GFixed30(0, 3, 40) + x2 * GFixed30(0, 5, 112))))).ToGFloat();
+
     }
 }
 GFloat GFloat::ACos(const GFloat value)
@@ -223,29 +239,24 @@ GFloat GFloat::ATan2(const GFloat y, const GFloat x)
 		return Zero();
 	} 
 }  
+
+typedef GFixedType32<29> GFixed29;
 GFloat GFloat::Exp(const GFloat value)
 { 
 	if(value >= Zero())
 	{
-		static const GFloat e = GFloat(2, 71828, 100000);
-
-		GFloat t = value ;
 		GFloat fraction;
-		int32_t nWhole = t.GetWhole(fraction);
+		int32_t nWhole = value.GetWhole(fraction);
 
 		GFloat Result = One();
 		for( int i = 0; i < (nWhole); ++i )
 		{
-			Result = Result * e;
+			Result = Result * e();
 		}
 
-		GFloat x1 = fraction;
-		GFloat x2 = x1 * x1;
-		GFloat x3 = x2 * x1;
-		GFloat x4 = x3 * x1;
-		GFloat x5 = x2 * x3;
+		GFixed29 x1 = GFixed29::FromGFloat(fraction) ;
 
-		return Result * ( One() + x1 + x2 / GFloat(2) + x3 / GFloat(6) + x4 / GFloat(24) + x5 / GFloat(120) );
+		return Result * ( GFixed29(1,0,2) + x1 *( GFixed29(1,0,2) +  x1 *( GFixed29(0,1,2) + x1 * ( GFixed29(0,1,6) + x1 * ( GFixed29(0,1,24) + x1 * GFixed29(0,1,120)) ) ))).ToGFloat();
 	}
 	else
 	{
@@ -258,19 +269,15 @@ GFloat GFloat::Log(const GFloat value)
 	{
 		return Zero();
 	}
-	else if (value < GFloat(2))
+	else if (value < Two())
 	{
-		GFloat x1 = value - One();
-		GFloat x2 = x1 * x1;
-		GFloat x3 = x2 * x1;
-		GFloat x4 = x3 * x1;
-		GFloat x5 = x2 * x3;
+		GFixed29 x1 = GFixed29::FromGFloat(value - One());
 
-		return x1 - x2 / GFloat(2) + x3 / GFloat(3) - x4 / GFloat(4) + x5 / GFloat(5);
+		return ( x1 * ( GFixed29(1,0, 2) + x1 * ( -GFixed29(0,1, 2) + x1 *( GFixed29(0,1, 3) - x1 *( GFixed29(0,1, 4) - x1 * GFixed29(0,1, 5)))))).ToGFloat();
 	}
 	else
 	{
-		return One() + Log(value / GFloat(2, 71828, 100000));
+		return One() + Log(value * e_Inv());
 	}
 }
 GFloat GFloat::Pow(const GFloat x, const GFloat y)
@@ -294,9 +301,9 @@ GFloat GFloat::InvSqrt(const GFloat value)
 		GFloat::FromFractionAndExp(0x679851, uint8_t( 127 - txep / 2 + -23) ): 
 		GFloat::FromFractionAndExp(0x265064, uint8_t( 127 - txep / 2 + -22));
 
-   // GFloat x2 = value * Half();
-   // y = y * (threehalfs - ((x2 * y) * y));
-   // y = y * (threehalfs - ((x2 * y) * y));
+    GFloat x2 = value * Half();
+    y = y * (threehalfs - ((x2 * y) * y));
+    y = y * (threehalfs - ((x2 * y) * y));
 
     return y;
 }

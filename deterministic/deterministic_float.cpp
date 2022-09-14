@@ -258,9 +258,9 @@ int main()
 
 	GFloatTest FT(1000000);
 	
-	bool bBase = false;
+	bool bBase = true;
 	bool bTrigonometric = true;
-	bool bTranscendental = false;
+	bool bTranscendental = true;
 
 	if( bBase )
 	{
@@ -276,7 +276,6 @@ int main()
 	if(bTrigonometric)
 	{
 		FT.FunTest("Sin", 0, 1.57f, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
-		return 0;
 		FT.FunTest("Cos", -10000.f, 10000.f, [&](int i)->float {return cosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Cos(FT.Ga[i]); });
 		FT.FunTest("Tan", -10000.f, 10000.f, [&](int i)->float {return tanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Tan(FT.Ga[i]); });
 		FT.FunTest("ASin", -1.f, 1.f, [&](int i)->float {return asinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });
@@ -292,7 +291,7 @@ int main()
 		FT.FunTest("Sqrt", 0, 10000.f, [&](int i)->float {return sqrtf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sqrt(FT.Ga[i]); });	
 		FT.FunTest("invSqrt", 0, 10000.f, [&](int i)->float {return 1.f / sqrtf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::InvSqrt(FT.Ga[i]); });
 		FT.FunTest("Exp", -20.f, 20.f, [&](int i)->float {return expf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Exp(FT.Ga[i]); });
-		FT.FunTest("Log", 0.f, 100000.f, [&](int i)->float {return logf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Log(FT.Ga[i]); });
+		FT.FunTest("Log", 0.f, 10000.f, [&](int i)->float {return logf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Log(FT.Ga[i]); });
 		FT.FunTest("Pow(2,x)", -20.f, 20.f, [&](int i)->float {return powf(2.f, FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Pow(GFloat::Two(), FT.Ga[i]); });
 		FT.FunTest("Pow(x,2)", 0.55f, 20.f, [&](int i)->float {return powf(FT.fa[i], 2.f); }, [&](int i)->GFloat {return GFloat::Pow(FT.Ga[i], GFloat::Two()); });
 	}
@@ -303,7 +302,11 @@ int main()
 	std::cout << "Pi_Two()  " << GFloat::Pi_Two().toDouble() << "\n";
 	std::cout << "Pi_Inv()  " << GFloat::Pi_Inv().toDouble() << "\n";
 
+	std::cout << "e()		"	<< std::hex << GFloat(2, 71828183, 100000000).rawint32 << "  "<< GFloat(2, 71828183, 100000000).toDouble() << "\n";
+	std::cout << "e_Inv()   "	<< std::hex << GFloat(0, 36787944, 100000000).rawint32 << "  "<<GFloat(0, 36787944, 100000000).toDouble()<<"\n";
 
+
+		GFloat(2, 36787944, 100000000);
 	/*std::cout << "Pi()      " << std::hex << GFloat::Pi().rawint32		<<"  "<< GFloat::Pi().toFloat() <<"\n";
 	std::cout << "Pi_Half() " << std::hex << GFloat::Pi_Half().rawint32 <<"  "<< GFloat::Pi_Half().toFloat() << "\n";
 	std::cout << "Pi_Two()  " << std::hex << GFloat::Pi_Two().rawint32	<<"  "<< GFloat::Pi_Two().toFloat() << "\n";
