@@ -26,8 +26,8 @@ the IEEE-745 float
     </tr>
     <tr>
         <td >31</td>
-        <td >30</td><td>29</td><td>...</td><td>24</td><td>23</td>
-        <td >22</td><td>21</td><td>...</td><td>1</td><td>0</td>
+        <td >30</td><td>29</td><td>...</td><td>9</td><td>8</td>
+        <td >7</td><td>6</td><td>...</td><td>1</td><td>0</td>
     </tr>
     </table>
 
