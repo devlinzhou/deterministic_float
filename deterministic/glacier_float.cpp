@@ -104,6 +104,8 @@ GFloat GFloat::Sin(const GFloat value)
 	GFixed30 TFrac(frac);
 	float ff= value.toFloat();
 
+
+
 	constexpr GFixed30 C_sqrt2(0, 70710678, 100000000);
 	constexpr GFixed30 C_1(1, 0, 10000);
 	constexpr GFixed30 C_1_2(0, 1, 2);	
@@ -274,7 +276,9 @@ GFloat GFloat::InvSqrt(const GFloat value)
 
     int32_t txep = value.getexponent() - 127 + 22;
 
-    GFloat y = (txep & 0x1) == 0 ? GFloat::FromFractionAndExp(0x679851, 127 - txep / 2 + -23) : GFloat::FromFractionAndExp(0x265064, 127 - txep / 2 + -22);
+    GFloat y = (txep & 0x1) == 0 ? 
+		GFloat::FromFractionAndExp(0x679851, uint8_t( 127 - txep / 2 + -23) ): 
+		GFloat::FromFractionAndExp(0x265064, uint8_t( 127 - txep / 2 + -22));
 
    // GFloat x2 = value * Half();
    // y = y * (threehalfs - ((x2 * y) * y));

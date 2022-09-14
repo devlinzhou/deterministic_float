@@ -14,7 +14,6 @@
 #include "glacier_float.h"
 #include <iostream>
 #include <chrono>
-#include <intrin.h>
 #include <vector>
 #include <initializer_list>
 #include <random>
@@ -22,8 +21,11 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
-#define UseProfiler_RDTSCP 1
 
+#ifdef _MSC_VER
+#include <intrin.h>
+#define UseProfiler_RDTSCP 1
+#endif
 class  MYTimer
 {
 public:
@@ -62,9 +64,9 @@ public:
 	float GetDeltaTimeMS_NoEnd()
 	{
 #if UseProfiler_RDTSCP
-		return(float)( double(end_ - start_) * InvCPUGHZ);
+		return float( double(end_ - start_) * InvCPUGHZ);
 #else
-		return std::chrono::duration_cast<res>(t2 - t1).count() * 1e-6;
+		return float(std::chrono::duration_cast<res>(t2 - t1).count() * 1e-6);
 #endif
 	}
 
@@ -239,11 +241,16 @@ public:
 
 int main()
 {
+	std::cout << std::hex << 0xFFFFFFFFFFFFFFFF << " : "<< std::dec << GFloat::GBitScanReverse64(0xFFFFFFFFFFFFFFFF) << "\n";
+	std::cout << std::hex << 0x1 << " : " << std::dec << GFloat::GBitScanReverse64(0x1) << "\n";\
+	std::cout << std::hex << 0x0 << " : " << std::dec << GFloat::GBitScanReverse64(0x0) << "\n";
+
+
 	GFloatTest FT(1000000);
 	
-	bool bBase = false;
+	bool bBase = true;
 	bool bTrigonometric = true;
-	bool bTranscendental = false;
+	bool bTranscendental = true;
 
 	if( bBase )
 	{
