@@ -30,7 +30,7 @@ public:
     union
     {
         int32_t rawint32;
-        struct MyFloat32
+        struct //MyFloat32
         {
             uint32_t    fraction: 23;
             uint32_t    exponent: 8;
@@ -52,9 +52,6 @@ public:
 	static inline constexpr GFloat Pi_Two()		{ return GFloat(0x6487ef, 0x6b); };
 	static inline constexpr GFloat Pi_Inv()		{ return GFloat(0x517cc1, 0x67); };
 
-
-
-
     static inline uint32_t GBitScanReverse64( uint64_t num)
     {
 #ifdef _MSC_VER
@@ -62,8 +59,8 @@ public:
 		_BitScanReverse64(&Index, num);
 		return Index;
 #elif __GNUC__
-		return 63 - __builtin_clzll(num);
-
+		auto nCount = __builtin_clzll(num);
+		return  nCount == 64 ? 0 : 63 - __builtin_clzll(num);
 #else
 
 #endif
