@@ -81,7 +81,7 @@ typedef GFixedType32<30> GFixed30;
 
 GFloat GFloat::Sin(const GFloat value) 
 {
-	/*if(value < Zero() )
+	if(value < Zero() )
  	{
  		return -Sin(-value);
  	}
@@ -90,64 +90,31 @@ GFloat GFloat::Sin(const GFloat value)
 
     GFloat Fraction = TMod - GFloat::Floor( TMod);
 
-    int32_t TWhole = TMod.GetWhole();
-
-	GFloat Fraction = value;
-    if(value > Pi_Half())
+    if(Fraction > Half())
     {
-        Fraction = Pi() - Fraction;
-    }*/
+        Fraction = One() - Fraction;
+    }
 
-	int32_t frac = value.getfraction() << 8;
-	int32_t exp = value.getexponent()+22 -127;
-
-	//GFixed30 TFrac(frac);
-//	float ff= value.toFloat();
-
-	constexpr GFixed30 C_1_Pi(0, 31831, 100000);	
-
-	GFixed30 RealFrac(0);
-
-	if( exp <= -1)
-	{
-		RealFrac = GFixed30(frac >> (-exp));
-	}
-	else if( exp <= 23 )
-	{
-		RealFrac = GFixed30((frac << exp) & 0x7FFFFFFF);
-	}
-	else
-	{
-		//RealFrac = GFixed30((frac << exp) & 0x7FFFFFFF);
-	}
-	constexpr GFixed30 C_1_2(0, 1, 2);	
-	constexpr GFixed30 C_1(1, 0, 10000);
-	constexpr GFixed30 C_quaterPi(0, 785398164, 1000000000);
-
-	if( RealFrac.rawInt32 > C_1_2.rawInt32 )
-	{
-		//RealFrac = C_1 - RealFrac;
-	}
-
-
-	constexpr GFixed30 C_sqrt2(0, 70710678, 100000000);
-
-
-	constexpr GFixed30 C_1_6(0, 1, 6);
-	constexpr GFixed30 C_1_24(0, 1, 24);
-	constexpr GFixed30 C_1_120(0, 1, 120);
+	constexpr GFixed29 C_1_2(0, 1, 2);	
+	constexpr GFixed29 C_1(1, 0, 10000);
+	constexpr GFixed29 C_quaterPi(0, 785398164, 1000000000);
+	constexpr GFixed29 C_sqrt2(0, 70710678, 100000000);
+	constexpr GFixed29 C_1_6(0, 1, 6);
+	constexpr GFixed29 C_1_24(0, 1, 24);
+	constexpr GFixed29 C_1_120(0, 1, 120);
 
 	//constexpr GFixed30 C_quaterPi(0, 785398164, 1000000000);
 
-	GFixed30 x1 = RealFrac/*GFixed30::FromGFloat(value)*/ - C_quaterPi;
+	GFixed29 x1 = GFixed29::FromGFloat(Fraction*Pi()) - C_quaterPi;
 
 	//GFixed30 SinValue = C_sqrt2 * (C_1 + x1 - C_1_2 * x2 - C_1_6 * x3 + C_1_24 * x4 + C_1_120 * x5 );
 
-	GFixed30 SinValue = C_sqrt2 * (C_1 +  x1 *(C_1 + x1*( - C_1_2 + x1 * (- C_1_6  + x1 * (C_1_24 + C_1_120 * x1)))));
+	GFixed29 SinValue = C_sqrt2 * (C_1 +  x1 *(C_1 + x1*( - C_1_2 + x1 * (- C_1_6  + x1 * (C_1_24 + C_1_120 * x1)))));
 
-  //  if( TWhole % 2 == 1 || TWhole % 2 == -1)
+	int32_t TWhole = TMod.GetWhole();
+    if( TWhole % 2 == 1 || TWhole % 2 == -1)
     {
-       // OutValue = -OutValue;
+        SinValue = -SinValue;
     }
 
 	return SinValue.ToGFloat();
