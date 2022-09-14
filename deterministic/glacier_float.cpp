@@ -154,7 +154,18 @@ GFloat GFloat::ASin(const GFloat value)
 }
 GFloat GFloat::ACos(const GFloat value)
 {
-    return Pi_Half() - ASin(value);
+	if ((value > One()) || (value < -One()))
+	{
+		return Zero();
+	}
+	else
+	{
+		GFixed29 x1 = GFixed29::FromGFloat(value);
+		GFixed29 x2 = x1 * x1;
+
+		return (GFixed29(1,5707963, 10000000) - x1 * (GFixed29(1, 0, 2) + x2 * (GFixed29(0, 1, 6) + x2 * (GFixed29(0, 3, 40) + x2 * GFixed29(0, 5, 112))))).ToGFloat();
+
+	}
 }
 GFloat GFloat::Tan(const GFloat value) 
 {
