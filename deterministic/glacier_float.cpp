@@ -101,9 +101,23 @@ GFloat GFloat::Sin(const GFloat value)
 	int32_t frac = value.getfraction() << 8;
 	int32_t exp = value.getexponent()+22 -127;
 
-	GFixed30 TFrac(frac);
-	float ff= value.toFloat();
+	//GFixed30 TFrac(frac);
+//	float ff= value.toFloat();
 
+	GFixed30 RealFrac(0);
+
+	if( exp < -1)
+	{
+		RealFrac = GFixed30(frac >> (-exp));
+	}
+	else if( exp == -1 )
+	{
+		RealFrac = GFixed30(frac >> 1);
+	}
+	else if( exp <= 23 )
+	{
+		RealFrac = GFixed30((frac << exp) & 0x7FFFFFFF);
+	}
 
 
 	constexpr GFixed30 C_sqrt2(0, 70710678, 100000000);
@@ -115,7 +129,7 @@ GFloat GFloat::Sin(const GFloat value)
 
 	constexpr GFixed30 C_quaterPi(0, 785398164, 1000000000);
 
-	GFixed30 x1 = GFixed30::FromGFloat(value) - C_quaterPi;
+	GFixed30 x1 = RealFrac/*GFixed30::FromGFloat(value)*/ - C_quaterPi;
 
 	//GFixed30 SinValue = C_sqrt2 * (C_1 + x1 - C_1_2 * x2 - C_1_6 * x3 + C_1_24 * x4 + C_1_120 * x5 );
 

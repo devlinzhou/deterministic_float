@@ -60,7 +60,7 @@ public:
 		return Index;
 #elif __GNUC__
 		auto nCount = __builtin_clzll(num);
-		return  nCount == 64 ? 0 : 63 - __builtin_clzll(num);
+		return  nCount == 64 ? 0 : 63 - nCount;
 #else
 
 #endif
