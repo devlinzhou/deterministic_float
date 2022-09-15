@@ -137,13 +137,20 @@ public:
 			__cpuid(cpuInfo, 0x16);
 			return cpuInfo[0];
 		}
-#elif __GNUC__	
+#elif __GNUC__
+
+	#ifdef __x86_64__
+
 		__get_cpuid(0, cpuInfo + 0, cpuInfo + 1, cpuInfo + 2, cpuInfo + 3);
 
 		if (cpuInfo[0] >= 0x16) {
 			__get_cpuid(0x16, cpuInfo + 0, cpuInfo + 1, cpuInfo + 2, cpuInfo + 3);
 			return cpuInfo[0];
 		}
+	#elif __aarch64__
+
+	#endif
+
 #else
 		
 #endif
@@ -157,8 +164,8 @@ private:
 #if UseProfiler_RDTSCP
 
 	static double InvCPUGHZ;
-	volatile unsigned __int64 start_;
-	volatile unsigned __int64 end_;
+	volatile uint64_t start_;
+	volatile uint64_t end_;
 #else
 	Myclock::time_point t1;
 	Myclock::time_point t2;
@@ -193,6 +200,7 @@ double MYTimer::InvCPUGHZ = 0.000001f / CountCpuGhz();
 
 std::string GetCpuName()
 {
+#if defined(_MSC_VER)
 	std::array<int, 4> cpui;
 	std::vector<std::array<int, 4>> extdata_;
 	__cpuid(cpui.data(), 0x80000000);
@@ -219,6 +227,13 @@ std::string GetCpuName()
 	}
 
 	return brand_;
+#else
+
+	return "Unkown CPU";
+
+#endif
+
+	
 }
 
 
@@ -259,17 +274,23 @@ public:
 		FileName = "../Test_BenchMark_OSX.md";
 
 #endif	
-
 		m_string =  std::ofstream (FileName);
-		m_string << "# GFloat Test And BenchMark" << std::endl;
-		m_string << "### OS : " << getOsName() << std::endl;
-		m_string << "### CPU : " << GetCpuName() << std::endl;
-		m_string << "### CPU Base Frequency by Compute    : " << std::setprecision(3) << MYTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz"<< std::endl;
-		m_string << "### CPU Base Frequency by GetCPUInfo : " << std::setprecision(3) << MYTimer::GetCpuFrequency_CpuInfo() / 1000.f  << " GHz" << std::endl;
 
-		m_string << "### Math: float vs GFloat,  Call " << N << " times per function" << std::endl;
-		m_string << "|Function| avg error|max error| Performance float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
-		m_string << "|--|--|--|--|--|--|--|" << std::endl;
+		std::stringstream Tstring;
+		
+		Tstring << "# GFloat Test And BenchMark" << std::endl;
+		Tstring << "### OS  : " << getOsName() << std::endl;
+		Tstring << "### CPU : " << GetCpuName() << std::endl;
+		Tstring << "### CPU Base Frequency by Compute    : " << std::setprecision(3) << MYTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz"<< std::endl;
+		Tstring << "### CPU Base Frequency by GetCPUInfo : " << std::setprecision(3) << MYTimer::GetCpuFrequency_CpuInfo() / 1000.f  << " GHz" << std::endl;
+
+		Tstring << "### Math: float vs GFloat,  Call " << N << " times per function" << std::endl;
+		Tstring << "|Function| avg error|max error| Performance float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
+		Tstring << "|--|--|--|--|--|--|--|" << std::endl;
+
+		std::cout << Tstring.str();
+
+		m_string << Tstring.str();
 	}
 
 	inline void FunTest( std::string name, float RMin, float RMax, std::function<float(int i)> fun_f,std::function<GFloat(int i)> fun_G  )
@@ -369,11 +390,6 @@ public:
 
 int main()
 {
-	std::cout << std::hex << 0xFFFFFFFFFFFFFFFF << " : "<< std::dec << GFloat::GBitScanReverse64(0xFFFFFFFFFFFFFFFF) << "\n";
-	std::cout << std::hex << 0x1 << " : " << std::dec << GFloat::GBitScanReverse64(0x1) << "\n";\
-	std::cout << std::hex << 0x0 << " : " << std::dec << GFloat::GBitScanReverse64(0x0) << "\n";
-
-
 	GFloatTest FT(1000000);
 	
 	bool bBase = true;
@@ -420,27 +436,6 @@ int main()
 		FT.FunTest("Pow(2,x)", -20.f, 20.f, [&](int i)->float {return powf(2.f, FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Pow(GFloat::Two(), FT.Ga[i]); });
 		FT.FunTest("Pow(x,2)", 0.55f, 20.f, [&](int i)->float {return powf(FT.fa[i], 2.f); }, [&](int i)->GFloat {return GFloat::Pow(FT.Ga[i], GFloat::Two()); });
 	}
-
-
-	std::cout << "Pi()      " << GFloat::Pi().toDouble() << "\n";
-	std::cout << "Pi_Half() " << GFloat::Pi_Half().toDouble() << "\n";
-	std::cout << "Pi_Two()  " << GFloat::Pi_Two().toDouble() << "\n";
-	std::cout << "Pi_Inv()  " << GFloat::Pi_Inv().toDouble() << "\n";
-
-	std::cout << "e()		"	<< std::hex << GFloat(2, 71828183, 100000000).rawint32 << "  "<< GFloat(2, 71828183, 100000000).toDouble() << "\n";
-	std::cout << "e_Inv()   "	<< std::hex << GFloat(0, 36787944, 100000000).rawint32 << "  "<<GFloat(0, 36787944, 100000000).toDouble()<<"\n";
-
-
-		GFloat(2, 36787944, 100000000);
-	/*std::cout << "Pi()      " << std::hex << GFloat::Pi().rawint32		<<"  "<< GFloat::Pi().toFloat() <<"\n";
-	std::cout << "Pi_Half() " << std::hex << GFloat::Pi_Half().rawint32 <<"  "<< GFloat::Pi_Half().toFloat() << "\n";
-	std::cout << "Pi_Two()  " << std::hex << GFloat::Pi_Two().rawint32	<<"  "<< GFloat::Pi_Two().toFloat() << "\n";
-	std::cout << "Pi_Inv()  " << std::hex << GFloat::Pi_Inv().rawint32 << "  " << GFloat::Pi_Inv().toFloat() << "\n";
-
-	std::cout << "Zero()    " << std::hex << GFloat::Zero().rawint32 << "\n";
-	std::cout << "One()     " << std::hex << GFloat::One().rawint32 << "\n";
-	std::cout << "Half()    " << std::hex << GFloat::Half().rawint32 << "\n";
-	std::cout << "Two()     " << std::hex << GFloat::Two().rawint32 << "\n";*/
 
 }
 
