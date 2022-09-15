@@ -27,4 +27,7 @@
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="deterministic_float.natvis" />
+  </ItemGroup>
 </Project>

@@ -76,6 +76,7 @@ public:
 
 	int32_t rawInt32;
 };
+typedef GFixedType32<29> GFixed28;
 typedef GFixedType32<29> GFixed29;
 typedef GFixedType32<30> GFixed30;
 
@@ -95,7 +96,7 @@ GFloat GFloat::Sin(const GFloat value)
         Fraction = One() - Fraction;
     }
 
-	constexpr GFixed29 C_1_2(0, 1, 2);	
+	constexpr GFixed29 C_1_2(0, 1, 2);
 	constexpr GFixed29 C_1(1, 0, 10000);
 	constexpr GFixed29 C_quaterPi(0, 785398164, 1000000000);
 	constexpr GFixed29 C_sqrt2(0, 70710678, 100000000);
