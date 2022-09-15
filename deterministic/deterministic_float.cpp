@@ -23,13 +23,13 @@
 #include <iomanip>
 #include <array>
 #include <thread>
-
+#include <cstdlib>
 
 #ifdef _MSC_VER
 #include <intrin.h>
 #endif
 
-#if defined(_MSC_VER) || defined(__GNUC__)
+#if defined(_MSC_VER) || (defined(__GNUC__) && defined(__x86_64__) && !defined(__aarch64__))
 #define UseProfiler_RDTSCP 1
 #endif
 
@@ -78,16 +78,13 @@ public:
 		return __rdtsc();
 #elif __GNUC__	
 
-#ifdef __x86_64__
-
+	#ifdef __x86_64__
 		unsigned int lo, hi;
 		__asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
 		return ((uint64_t)hi << 32) | lo;
-	}
-#elif __aarch64__
+	#else
 
-#endif
-
+	#endif
 
 #else
 		
@@ -150,7 +147,7 @@ public:
 		}
 #elif __GNUC__
 
-	#ifdef __x86_64__
+	#ifdef defined(__x86_64__) && !defined(__aarch64__)
 
 		__get_cpuid(0, cpuInfo + 0, cpuInfo + 1, cpuInfo + 2, cpuInfo + 3);
 
@@ -158,7 +155,7 @@ public:
 			__get_cpuid(0x16, cpuInfo + 0, cpuInfo + 1, cpuInfo + 2, cpuInfo + 3);
 			return cpuInfo[0];
 		}
-	#elif __aarch64__
+	#else
 
 	#endif
 
@@ -247,6 +244,16 @@ std::string GetCpuName()
 	
 }
 
+std::string GetCompileName()
+{
+#if defined(_MSC_VER)
+	return std::to_string(_MSC_VER);
+#elif __GNUC__
+	return __VERSION__;
+#else
+	return "Unkown Compile";
+#endif
+}
 
 
 
@@ -294,7 +301,7 @@ public:
 		Tstring << "### CPU : " << GetCpuName() << std::endl;
 		Tstring << "### CPU Base Frequency by Compute    : " << std::setprecision(3) << MYTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz"<< std::endl;
 		Tstring << "### CPU Base Frequency by GetCPUInfo : " << std::setprecision(3) << MYTimer::GetCpuFrequency_CpuInfo() / 1000.f  << " GHz" << std::endl;
-
+		Tstring << "### The C++ compiler version is: "<<GetCompileName()<<std::endl;
 		Tstring << "### Math: float vs GFloat,  Call " << N << " times per function" << std::endl;
 		Tstring << "|Function| avg error|max error| Performance float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
 		Tstring << "|--|--|--|--|--|--|--|" << std::endl;
