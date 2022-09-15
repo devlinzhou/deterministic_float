@@ -3,10 +3,10 @@
 you can make deterministic physics engine、pathfind、AI engine by use my GFloat.
 
 ## IEEE-745 & My GFloat
-* the IEEE-745 float
+* IEEE-745 float
   <table  >
     <tr>
-        <th align="center" >sign（1bit）</th>
+        <th align="center" >sign</th>
         <th align="center" colspan = "5" width="400">exponent（8 bits）</th>
         <th align="center" colspan = "5" width="400">fraction（23 bits）</th>
     </tr>
@@ -18,10 +18,10 @@ you can make deterministic physics engine、pathfind、AI engine by use my GFloa
     </table>
 
 
-* my GFloat
+* GFloat
   <table  >
     <tr>
-        <th align="center" >sign（1bit）</th>
+        <th align="center" >sign</th>
         <th align="center" colspan = "5" width="400">fraction（23 bits）</th>
         <th align="center" colspan = "5" width="400">exponent（8 bits）</th>
     </tr>
@@ -32,7 +32,7 @@ you can make deterministic physics engine、pathfind、AI engine by use my GFloa
     </tr>
     </table>
 
-## start
+## How to start
  * Win visual studio 22 ： open deterministic/deterministic_float.sln
  * OSX Xcode : open deterministic/deterministic_float.xcodeproj
 
