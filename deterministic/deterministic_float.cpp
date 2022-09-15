@@ -77,12 +77,23 @@ public:
 #ifdef _MSC_VER
 		return __rdtsc();
 #elif __GNUC__	
+
+#ifdef __x86_64__
+
 		unsigned int lo, hi;
 		__asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
 		return ((uint64_t)hi << 32) | lo;
-#else
-		return 0;
+	}
+#elif __aarch64__
+
 #endif
+
+
+#else
+		
+#endif
+
+		return 0;
 	}
 
 	void Start()
