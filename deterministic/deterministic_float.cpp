@@ -22,12 +22,16 @@
 #include <fstream>
 #include <iomanip>
 #include <array>
+#include <thread>
+
 
 #ifdef _MSC_VER
 #include <intrin.h>
-#define UseProfiler_RDTSCP 1
 #endif
 
+#if defined(_MSC_VER) || defined(__GNUC__)
+#define UseProfiler_RDTSCP 1
+#endif
 
 std::string getOsName()
 {
@@ -48,6 +52,9 @@ std::string getOsName()
 #endif
 }
 
+typedef std::chrono::high_resolution_clock Myclock;
+typedef std::chrono::nanoseconds Myres;
+
 
 class  MYTimer
 {
@@ -56,7 +63,7 @@ public:
 #if UseProfiler_RDTSCP
 		: start_(0), end_(0)
 #else
-		: t1(res::zero()), t2(res::zero())
+		: t1(Myres::zero()), t2(Myres::zero())
 #endif
 	{
 		Start();
@@ -65,21 +72,34 @@ public:
 	~MYTimer()
 	{}
 
+	static inline uint64_t get_CPUCycles()
+	{
+#ifdef _MSC_VER
+		return __rdtsc();
+#elif __GNUC__	
+		unsigned int lo, hi;
+		__asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
+		return ((uint64_t)hi << 32) | lo;
+#else
+		return 0;
+#endif
+	}
+
 	void Start()
 	{
 #if UseProfiler_RDTSCP
-		start_ = __rdtsc();
+		start_ = get_CPUCycles();
 #else
-		t1 = clock::now();
+		t1 = Myclock::now();
 #endif    
 	}
 
 	void End()
 	{
 #if UseProfiler_RDTSCP
-		end_ = __rdtsc();
+		end_ = get_CPUCycles();
 #else
-		t2 = clock::now();
+		t2 = Myclock::now();
 #endif
 	}
 
@@ -89,7 +109,7 @@ public:
 #if UseProfiler_RDTSCP
 		return float( double(end_ - start_) * InvCPUGHZ);
 #else
-		return float(std::chrono::duration_cast<res>(t2 - t1).count() * 1e-6);
+		return float(std::chrono::duration_cast<Myres>(t2 - t1).count() * 1e-6);
 #endif
 	}
 
@@ -99,14 +119,40 @@ public:
 		return GetDeltaTimeMS_NoEnd();
 	}
 
-	static float GetFrenquency()
+	static double GetCpuFrequency_Compute()
 	{
-		return 1.f / (float)InvCPUGHZ;
+#if UseProfiler_RDTSCP
+		return 1 / InvCPUGHZ;
+#else
+		return 0;
+#endif
+	}
+
+	static int GetCpuFrequency_CpuInfo()
+	{
+		int cpuInfo[4] = { 0, 0, 0, 0 };
+#ifdef _MSC_VER
+		__cpuid(cpuInfo, 0);
+		if (cpuInfo[0] >= 0x16) {
+			__cpuid(cpuInfo, 0x16);
+			return cpuInfo[0];
+		}
+#elif __GNUC__	
+		__get_cpuid(0, cpuInfo + 0, cpuInfo + 1, cpuInfo + 2, cpuInfo + 3);
+
+		if (cpuInfo[0] >= 0x16) {
+			__get_cpuid(0x16, cpuInfo + 0, cpuInfo + 1, cpuInfo + 2, cpuInfo + 3);
+			return cpuInfo[0];
+		}
+#else
+		
+#endif
+
+		return 0;
 	}
 
 private:
-	typedef std::chrono::high_resolution_clock clock;
-	typedef std::chrono::nanoseconds res;
+
 
 #if UseProfiler_RDTSCP
 
@@ -114,8 +160,8 @@ private:
 	volatile unsigned __int64 start_;
 	volatile unsigned __int64 end_;
 #else
-	clock::time_point t1;
-	clock::time_point t2;
+	Myclock::time_point t1;
+	Myclock::time_point t2;
 #endif
 
 };
@@ -123,57 +169,32 @@ private:
 #if UseProfiler_RDTSCP
 
 static double CountCpuGhz() {
-	unsigned long long frequency = _Query_perf_frequency();
-	unsigned int a;
 
-	unsigned long long CounterStart = _Query_perf_counter();
-	unsigned __int64 ss = __rdtscp(&a);
-	int aa = 0;
-	for (int i = 1; i < 100000; i++) {
-		aa += i;
-	}
-	unsigned long long CounterEnd = _Query_perf_counter();
-	unsigned __int64 ss2 = __rdtscp(&a);
+	Myclock::time_point tStart = Myclock::now();;
+	uint64_t uStart = MYTimer::get_CPUCycles();
+		
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-	double time = double(CounterEnd - CounterStart) / frequency;
-	if (aa != 0)
-	{
-		double CpuGhz = double(ss2 - ss) / (time * 1000000000);
-		return CpuGhz;
-	}
+	uint64_t uEnd = MYTimer::get_CPUCycles();
+	Myclock::time_point tEnd = Myclock::now();
 
-	return 0.0;
+	double time = double(std::chrono::duration_cast<Myres>(tEnd - tStart).count() * 1e-9);
+
+	double CpuGhz = double(uEnd - uStart) / (time * 1000000000);
+	return CpuGhz;
+
 }
 
 double MYTimer::InvCPUGHZ = 0.000001f / CountCpuGhz();
 #endif
 
 
+
+
 std::string GetCpuName()
 {
 	std::array<int, 4> cpui;
-	std::vector<std::array<int, 4>> data_;
 	std::vector<std::array<int, 4>> extdata_;
-	// Calling __cpuid with 0x0 as the function_id argument
-	// gets the number of the highest valid function ID.
-	__cpuid(cpui.data(), 0);
-	int nIds_ = cpui[0];
-
-	for (int i = 0; i <= nIds_; ++i)
-	{
-		__cpuidex(cpui.data(), i, 0);
-		data_.push_back(cpui);
-	}
-
-	// Capture vendor string
-	char vendor[0x20];
-	memset(vendor, 0, sizeof(vendor));
-	*reinterpret_cast<int*>(vendor) = data_[0][1];
-	*reinterpret_cast<int*>(vendor + 4) = data_[0][3];
-	*reinterpret_cast<int*>(vendor + 8) = data_[0][2];
-
-	// Calling __cpuid with 0x80000000 as the function_id argument
- // gets the number of the highest valid extended ID.
 	__cpuid(cpui.data(), 0x80000000);
 	int nExIds_ = cpui[0];
 
@@ -243,7 +264,9 @@ public:
 		m_string << "# GFloat Test And BenchMark" << std::endl;
 		m_string << "### OS : " << getOsName() << std::endl;
 		m_string << "### CPU : " << GetCpuName() << std::endl;
-		m_string << "### CPU frequency : " << std::setprecision(3) <<MYTimer::GetFrenquency() / 1000000.f << "GHz"<< std::endl;
+		m_string << "### CPU Base Frequency by Compute    : " << std::setprecision(3) << MYTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz"<< std::endl;
+		m_string << "### CPU Base Frequency by GetCPUInfo : " << std::setprecision(3) << MYTimer::GetCpuFrequency_CpuInfo() / 1000.f  << " GHz" << std::endl;
+
 		m_string << "### Math: float vs GFloat,  Call " << N << " times per function" << std::endl;
 		m_string << "|Function| avg error|max error| Performance float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
 		m_string << "|--|--|--|--|--|--|--|" << std::endl;
