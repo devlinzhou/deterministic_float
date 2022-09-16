@@ -30,8 +30,8 @@ you can make deterministic physics engine、pathfind、AI engine by use my GFloa
     </table>
 ## How to start
  * Window Visual Studio 2022 ： open deterministic/deterministic_float.sln
- * MacOS XCode : open deterministic/deterministic_float.xcodeproj
- * XCode ios    : open deterministic/deterministic_float_ios.xcodeproj 
+ * XCode MacOS : open deterministic/deterministic_float.xcodeproj
+ * XCode iOS   : open deterministic/deterministic_float_ios.xcodeproj 
 
 ## Current Support Platform
 ||Win64|MacOS| iOS| Android|
