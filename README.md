@@ -1,4 +1,5 @@
 ## deterministic_float
+ * deterministic float, soft float
  * Fast soft float for deterministic computing, That
 you can make deterministic physics engine、pathfind、AI engine by use my GFloat.
 ## IEEE-754 & My GFloat
