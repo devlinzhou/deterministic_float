@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA2263C428D459AC00FEE0CA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA2263C328D459AC00FEE0CA /* main.cpp */; };
 		FA38AAF528D07B2100ED6160 /* glacier_float.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA38AAF428D07B2100ED6160 /* glacier_float.cpp */; };
 		FA38AAF728D07B2900ED6160 /* deterministic_float.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA38AAF628D07B2900ED6160 /* deterministic_float.cpp */; };
 /* End PBXBuildFile section */
@@ -24,6 +25,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FA2263C328D459AC00FEE0CA /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		FA2263C528D45A4C00FEE0CA /* deterministic_float.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = deterministic_float.h; sourceTree = "<group>"; };
 		FA38AAE928D07A9200ED6160 /* deterministic_float */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = deterministic_float; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA38AAF328D07B2100ED6160 /* glacier_float.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glacier_float.h; sourceTree = "<group>"; };
 		FA38AAF428D07B2100ED6160 /* glacier_float.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glacier_float.cpp; sourceTree = "<group>"; };
@@ -47,6 +50,8 @@
 				FA38AAF428D07B2100ED6160 /* glacier_float.cpp */,
 				FA38AAF328D07B2100ED6160 /* glacier_float.h */,
 				FA38AAF628D07B2900ED6160 /* deterministic_float.cpp */,
+				FA2263C328D459AC00FEE0CA /* main.cpp */,
+				FA2263C528D45A4C00FEE0CA /* deterministic_float.h */,
 				FA38AAEA28D07A9200ED6160 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -93,7 +98,7 @@
 					};
 				};
 			};
-			buildConfigurationList = FA38AAE428D07A9200ED6160 /* Build configuration list for PBXProject "deterministic_float" */;
+			buildConfigurationList = FA38AAE428D07A9200ED6160 /* Build configuration list for PBXProject "deterministic_float_osx" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -118,6 +123,7 @@
 			files = (
 				FA38AAF528D07B2100ED6160 /* glacier_float.cpp in Sources */,
 				FA38AAF728D07B2900ED6160 /* deterministic_float.cpp in Sources */,
+				FA2263C428D459AC00FEE0CA /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,7 +262,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		FA38AAE428D07A9200ED6160 /* Build configuration list for PBXProject "deterministic_float" */ = {
+		FA38AAE428D07A9200ED6160 /* Build configuration list for PBXProject "deterministic_float_osx" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FA38AAEE28D07A9200ED6160 /* Debug */,
