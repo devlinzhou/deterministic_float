@@ -78,12 +78,15 @@ public:
 		return __rdtsc();
 #elif __GNUC__	
 
-	#ifdef __x86_64__
+	#ifdef defined(__x86_64__)
 		unsigned int lo, hi;
 		__asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
 		return ((uint64_t)hi << 32) | lo;
-	#else
+	#elif defined(__aarch64__)
 
+		uint64_t virtual_timer_value;
+		asm volatile("mrs %0, cntvct_el0" : "=r"(virtual_timer_value));
+		return virtual_timer_value;
 	#endif
 
 #else
@@ -247,7 +250,7 @@ std::string GetCpuName()
 std::string GetCompileName()
 {
 #if defined(_MSC_VER)
-	return std::to_string(_MSC_VER);
+	return "Visual Studio " + std::to_string(_MSC_VER);
 #elif __GNUC__
 	return __VERSION__;
 #else
