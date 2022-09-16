@@ -29,9 +29,14 @@
 #include <intrin.h>
 #endif
 
-#if defined(_MSC_VER) || (defined(__GNUC__) && defined(__x86_64__) && !defined(__aarch64__))
+#define __PRINT_MARCO(x) #x
+#define PRINT_MARCO(x) #x"=" __PRINT_MARCO(x)
+
+#if defined(_MSC_VER) || (defined(__GNUC__))
 #define UseProfiler_RDTSCP 1
 #endif
+
+#pragma message(PRINT_MARCO(UseProfiler_RDTSCP))
 
 std::string getOsName()
 {
@@ -40,13 +45,23 @@ std::string getOsName()
 #elif _WIN64
 	return "Windows 64-bit";
 #elif __APPLE__ || __MACH__
-	return "Mac OSX";
+	#if TARGET_OS_MAC
+		return "Mac OSX";
+	#elif TARGET_OS_IPHONE
+		return "iOS"
+	#elif TARGET_IPHONE_SIMULATOR
+		return "iOS Simulator"
+	#else
+		return "Unkown Apple device"
+	#endif
 #elif __linux__
 	return "Linux";
 #elif __FreeBSD__
 	return "FreeBSD";
 #elif __unix || __unix__
 	return "Unix";
+#elif __ANDROID__
+	return "Android";
 #else
 	return "Other";
 #endif
@@ -364,11 +379,8 @@ public:
 			float cf2 = (Gc[i].toFloat());
 			if (isinf(cf2) || isnan(cf2))
 			{
-				int a = 0;
-
 				std::cout << "isinf(cf2) || isnan(cf2)   " << i << std::endl;
 			}
-
 
 			float cAbs = abs((cf2 - cf1) / cf1);
 
