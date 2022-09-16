@@ -29,6 +29,19 @@ you can make deterministic physics engine、pathfind、AI engine by use my GFloa
         <td >7</td><td>6</td><td>...</td><td>1</td><td>0</td>
     </tr>
     </table>
+## Performance float vs GFloat
+ * some main fuction compare，more information you can look TestAndBenchMark 
+ * The ratio of performance, to do more optmization
+
+|function|float ： GFloat |
+|--|:--:|
+|add|5|
+|Mul|2|
+|Sin|10|
+|Sqrt|30|
+|exp|20|
+	
+	
 ## How to start
  * Window Visual Studio 2022 ： open deterministic/deterministic_float.sln
  * XCode MacOS : open deterministic/deterministic_float.xcodeproj
