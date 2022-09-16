@@ -31,7 +31,7 @@ you can make deterministic physics engine、pathfind、AI engine by use my GFloa
     </table>
 ## Performance float vs GFloat
  * some main fuction compare，more information you can look TestAndBenchMark 
- * The ratio of performance, to do more optmization
+ * The ratio of performance, to do more optimization
 
 |function|float ： GFloat |
 |--|:--:|
