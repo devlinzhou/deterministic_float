@@ -142,8 +142,10 @@
   <ItemGroup>
     <ClCompile Include="deterministic_float.cpp" />
     <ClCompile Include="glacier_float.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="deterministic_float.h" />
     <ClInclude Include="glacier_float.h" />
   </ItemGroup>
   <ItemGroup>

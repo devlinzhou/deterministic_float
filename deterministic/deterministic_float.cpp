@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License. 
  */
-
+#include "deterministic_float.h"
 #include "glacier_float.h"
 #include <iostream>
 #include <chrono>
@@ -29,6 +29,10 @@
 #include <intrin.h>
 #endif
 
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#endif
+
 #define __PRINT_MARCO(x) #x
 #define PRINT_MARCO(x) #x"=" __PRINT_MARCO(x)
 
@@ -37,6 +41,8 @@
 #endif
 
 #pragma message(PRINT_MARCO(UseProfiler_RDTSCP))
+#pragma message(PRINT_MARCO(__ARM_ARCH))
+
 
 std::string getOsName()
 {
@@ -48,11 +54,11 @@ std::string getOsName()
 	#if TARGET_OS_MAC
 		return "Mac OSX";
 	#elif TARGET_OS_IPHONE
-		return "iOS"
+		return "iOS";
 	#elif TARGET_IPHONE_SIMULATOR
-		return "iOS Simulator"
+		return "iOS Simulator";
 	#else
-		return "Unkown Apple device"
+		return "Unkown Apple device";
 	#endif
 #elif __linux__
 	return "Linux";
@@ -69,7 +75,6 @@ std::string getOsName()
 
 typedef std::chrono::high_resolution_clock Myclock;
 typedef std::chrono::nanoseconds Myres;
-
 
 class  MYTimer
 {
@@ -173,7 +178,11 @@ public:
 			__get_cpuid(0x16, cpuInfo + 0, cpuInfo + 1, cpuInfo + 2, cpuInfo + 3);
 			return cpuInfo[0];
 		}
-	#else
+	#elif defined(__ARM_ARCH)
+
+        uint64_t freq;
+        asm volatile("mrs %0, cntfrq_el0" : "=r" (freq));
+        return (int)(freq / 1000000);
 
 	#endif
 
@@ -420,8 +429,7 @@ public:
 };
 
 
-
-int main()
+void TestGFloat::Run()
 {
 	GFloatTest FT(1000000);
 	
