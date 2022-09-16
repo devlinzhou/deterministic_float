@@ -315,7 +315,7 @@ public:
 		std::stringstream Tstring;
 		
 		Tstring << "# GFloat Test And BenchMark" << std::endl;
-		Tstring << "### OS  : " << getOsName() << std::endl;
+		Tstring << "### Operation System  : " << getOsName() << std::endl;
 		Tstring << "### CPU : " << GetCpuName() << std::endl;
 		Tstring << "### CPU Base Frequency by Compute    : " << std::setprecision(3) << MYTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz"<< std::endl;
 		Tstring << "### CPU Base Frequency by GetCPUInfo : " << std::setprecision(3) << MYTimer::GetCpuFrequency_CpuInfo() / 1000.f  << " GHz" << std::endl;
