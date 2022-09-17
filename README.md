@@ -1,7 +1,7 @@
 ## deterministic_float
- * Deterministic float, soft float
- * Fast soft float for deterministic computing, That
-you can make deterministic physics engine、pathfind、AI engine by use my GFloat.
+ * Deterministic float point, soft float point.
+ * Fast soft float point for deterministic computing, That
+you can make **deterministic plugin** ：**Physics Engine**、**PathFinding**(recast navigation)、**AI Engine** by use GFloat to replace float-point.
 ## IEEE-754 & My GFloat
 * IEEE-754 float
   <table  >
@@ -48,9 +48,9 @@ you can make deterministic physics engine、pathfind、AI engine by use my GFloa
  * XCode iOS   : open deterministic/deterministic_float_ios.xcodeproj 
 
 ## Current Support Platform
-||Win64|MacOS| iOS| Android|
+|Operation System|Win64|MacOS| iOS| Android|
 |--|--|--|--|--|
-|| $\checkmark$  |$\checkmark$|$\checkmark$|  |
+|Now| $\checkmark$  |$\checkmark$|$\checkmark$|  |
 
 
 

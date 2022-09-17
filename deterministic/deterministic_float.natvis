@@ -3,12 +3,22 @@
   <!--from afxwin.h -->
  
    <Type Name="GFloat">
-	<DisplayString Condition="int32_t( rawint32 &amp; 255 )-127+22 >= 	0"  >{{Frac={((rawint32 >> 8)/4194304.f ) * ( 1 &lt;&lt; uint64_t( (rawint32 &amp; 255 )-127+22 ))}}}</DisplayString>
-	<DisplayString Condition="int32_t( rawint32 &amp; 255 )-127+22 &lt; 0"  >{{Frac={((rawint32 >> 8)/4194304.f ) / ( 1 &lt;&lt; uint64_t(-((rawint32 &amp; 255 )-127+22) ))}}}</DisplayString>
+	<DisplayString Condition="int32_t( rawint32 &amp; 255 )-127+22 >= 	0"  >{{Frac={((rawint32 >> 8)/4194304.f ) * ( 1 &lt;&lt; uint64_t(  (rawint32 &amp; 255 )-127+22))},  2^= {int32_t((rawint32 &amp; 255 )-127)}}}</DisplayString>
+	<DisplayString Condition="int32_t( rawint32 &amp; 255 )-127+22 &lt; 0"  >{{Frac={((rawint32 >> 8)/4194304.f ) / ( 1 &lt;&lt; uint64_t(-((rawint32 &amp; 255 )-127+22)))}, 2^= {int32_t((rawint32 &amp; 255 )-127)}}}</DisplayString>
 	<StringView>rawint32</StringView>
   </Type>
+
+
+  <Type Name="GFixedType32&lt;8&gt;" >
+    <DisplayString>{{ Frac={rawInt32 /256.f } }}</DisplayString>
+    <StringView>rawInt32</StringView>
+  </Type>
+
+  <Type Name="GFixedType32&lt;16&gt;" >
+    <DisplayString>{{ Frac={rawInt32 /65536.f } }}</DisplayString>
+    <StringView>rawInt32</StringView>
+  </Type>
   
-    
  <Type Name="GFixedType32&lt;28&gt;" >
       <DisplayString>{{ Frac={rawInt32 /268435456.f } }}</DisplayString>
 		<StringView>rawInt32</StringView>

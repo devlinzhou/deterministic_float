@@ -39,7 +39,11 @@ public:
     };
 };
 
+
+
 class GFloat{
+
+
 
 public:
 	static inline constexpr GFloat Zero()		{ return GFloat(0,		  0xE9); };
@@ -51,6 +55,7 @@ public:
 	static inline constexpr GFloat Pi_Quarter() { return GFloat(0x6487ef, 0x68); };
 	static inline constexpr GFloat Pi_Two()		{ return GFloat(0x6487ef, 0x6b); };
 	static inline constexpr GFloat Pi_Inv()		{ return GFloat(0x517cc1, 0x67); };
+	static inline constexpr GFloat Pi_TwoInv()	{ return GFloat(0x517cc1, 0x66); };
 	static inline constexpr GFloat e()			{ return GFloat(0x56fc2a, 0x6a); };
 	static inline constexpr GFloat e_Inv()		{ return GFloat(0x5e2d58, 0x67); };
 
@@ -65,6 +70,15 @@ public:
 		return  nCount == 64 ? 0 : 63 - nCount;
 #else
 
+		for( int32_t nIndex = 63; nIndex >= 0; nIndex-- )
+		{
+			if (((uint64_t)1 << nIndex) & num)
+			{
+				return nIndex;
+			}
+		}
+
+		return 0;
 #endif
     }
 
@@ -73,6 +87,11 @@ public:
 
 public:
 
+	
+
+
+	static void Init();
+
 	constexpr GFloat(const GFloat&) = default;
 
 	constexpr GFloat() : rawint32(0)
@@ -80,7 +99,7 @@ public:
 
     }
 
-    inline GFloat( int32_t TValue)
+    explicit inline GFloat( int32_t TValue)
     {
 		*this= Nomalize((int64_t)TValue, 127);
 		//*this = FromFractionAndExp(TValue, 127);
@@ -419,7 +438,7 @@ public:
         }
     }
     static GFloat Sin(const GFloat value);
-	static GFloat Sin_Table_Taylor(const GFloat value);
+	static GFloat Sin_Table(const GFloat value);
     static GFloat Cos(const GFloat value);
     static void	  SinCos(const GFloat value, GFloat& OutSin, GFloat& OutCos);
     static GFloat ASin(const GFloat value);
@@ -434,15 +453,16 @@ public:
     static GFloat Sqrt(const GFloat value){return value * InvSqrt(value);}
 
 
+	public:
+		static constexpr int32_t ms_TriTableBit = 10;
+		static constexpr int32_t ms_TriCount = 1 << ms_TriTableBit;
+
+
 private:
 
-	static constexpr int32_t TriCount = 256;
-
-	static GFloat ms_SinTable[TriCount];
-	static GFloat ms_CosTable[TriCount];
-	static GFloat ms_TanTable[TriCount];
-
-
+	static int32_t ms_SinTable[ms_TriCount];
+	static int32_t ms_CosTable[ms_TriCount];
+	static GFloat ms_TanTable[ms_TriCount];
 };
 
 #ifdef Determinate

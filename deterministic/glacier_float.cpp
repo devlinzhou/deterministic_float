@@ -14,9 +14,6 @@
 #include "glacier_float.h"
 
 
-GFloat GFloat::ms_SinTable;//[GFloat::TriCount];
-GFloat GFloat::ms_CosTable;//[GFloat::TriCount];
-GFloat GFloat::ms_TanTable;//[GFloat::TriCount];
 
 
 template<int32_t FractionNumType>
@@ -24,23 +21,23 @@ class GFixedType32
 {
 public:
 
-	explicit inline constexpr GFixedType32( int32_t raw ) 
+	explicit inline constexpr GFixedType32(int32_t raw)
 		: rawInt32(raw)
 	{
 
 	}
 
-	explicit inline constexpr GFixedType32( uint32_t a, uint32_t b, uint32_t c ) :
-		rawInt32( (a <<FractionNumType ) | ((((uint64_t)b) << FractionNumType) / c))
+	explicit inline constexpr GFixedType32(uint32_t a, uint32_t b, uint32_t c) :
+		rawInt32(int32_t((a << FractionNumType) | ((((uint64_t)b) << FractionNumType) / c)))
 	{
-	
+
 	}
 
 	static inline constexpr int32_t GetTypeNumber()
 	{
 		return FractionNumType;
 	}
-		
+
 	inline constexpr GFixedType32 operator +(GFixedType32 b) const
 	{
 		return GFixedType32(rawInt32 + b.rawInt32);
@@ -48,7 +45,7 @@ public:
 
 	inline constexpr GFixedType32 operator -() const
 	{
-		return GFixedType32(-rawInt32 );
+		return GFixedType32(-rawInt32);
 	}
 
 	inline constexpr GFixedType32 operator -(GFixedType32 b) const
@@ -58,33 +55,60 @@ public:
 
 	inline constexpr GFixedType32 operator *(GFixedType32 b) const
 	{
-		return GFixedType32( ((int64_t)rawInt32 * (int64_t)b.rawInt32) >>FractionNumType ) ;
+		return GFixedType32(((int64_t)rawInt32 * (int64_t)b.rawInt32) >> FractionNumType);
 	}
 
-	static inline constexpr GFixedType32 FromGFloat( GFloat Value)
+	 static inline constexpr GFixedType32 FromGFloat( const GFloat Value)
 	{
-		int32_t exp = Value.getexponent() - 127 +  GFixedType32<FractionNumType>::GetTypeNumber();
+		int32_t exp = Value.getexponent() - 127 + GFixedType32<FractionNumType>::GetTypeNumber();
 
-		if(exp >= 0)
+		if (exp >= 0)
 		{
-			return GFixedType32(Value.getfraction() << exp );
+			return GFixedType32(Value.getfraction() << exp);
 		}
 		else
 		{
-			return GFixedType32(Value.getfraction() >> exp );
+			return GFixedType32(Value.getfraction() >> -exp);
 		}
 	}
 
 	inline constexpr GFloat ToGFloat() const
 	{
-		return GFloat::Nomalize((int64_t)rawInt32, uint8_t( 127 - GFixedType32<FractionNumType>::GetTypeNumber()) );
+		return GFloat::Nomalize((int64_t)rawInt32, uint8_t(127 - GFixedType32<FractionNumType>::GetTypeNumber()));
 	}
 
 	int32_t rawInt32;
 };
-typedef GFixedType32<29> GFixed28;
+
+typedef GFixedType32<8>  GFixed08;
+typedef GFixedType32<16> GFixed16;
 typedef GFixedType32<29> GFixed29;
 typedef GFixedType32<30> GFixed30;
+
+
+
+int32_t GFloat::ms_SinTable[GFloat::ms_TriCount];
+int32_t GFloat::ms_CosTable[GFloat::ms_TriCount];
+GFloat GFloat::ms_TanTable[GFloat::ms_TriCount];
+
+void GFloat::Init()
+{
+	for( int32_t i = 0; i <GFloat::ms_TriCount; ++i ) // for test
+	{
+		GFixed30 SinValue = GFixed30::FromGFloat( GFloat::FromFloat(sinf((float(i) * 3.141592653f * 2 / GFloat::ms_TriCount))) );
+
+		ms_SinTable[i] = SinValue.rawInt32;
+
+		GFixed30 CosValue = GFixed30::FromGFloat(GFloat::FromFloat(sinf((float(i) * 3.141592653f * 2 / GFloat::ms_TriCount))));
+
+		ms_CosTable[i] = CosValue.rawInt32;
+
+		//ms_SinTable[i] = Sin( FromFloat( float(i) * 6.28f / GFloat::ms_TriCount )) ;
+	}
+}
+
+
+
 
 GFloat GFloat::Sin(const GFloat value) 
 {
@@ -127,13 +151,17 @@ GFloat GFloat::Sin(const GFloat value)
 	return SinValue.ToGFloat();
 }
 
-GFloat GFloat::Sin_Table_Taylor(const GFloat value)
+typedef GFixedType32<GFloat::ms_TriTableBit>  GFixedTable;
+GFloat GFloat::Sin_Table( const GFloat value)
 {
+	GFloat		TMod		= value * Pi_TwoInv();
+	GFloat		Fraction	= TMod - Floor(TMod);
+	GFixedTable	T			= GFixedTable::FromGFloat(Fraction);
 
+	int32_t nWhole = (T.rawInt32 )  & (ms_TriCount - 1);
 
-	return Zero();
+	return  GFixed30( ms_SinTable[nWhole]).ToGFloat();
 }
-
 
 GFloat GFloat::Cos(const GFloat value)
 { 
