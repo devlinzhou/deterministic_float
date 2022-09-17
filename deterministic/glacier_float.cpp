@@ -13,6 +13,12 @@
 
 #include "glacier_float.h"
 
+
+GFloat GFloat::ms_SinTable;//[GFloat::TriCount];
+GFloat GFloat::ms_CosTable;//[GFloat::TriCount];
+GFloat GFloat::ms_TanTable;//[GFloat::TriCount];
+
+
 template<int32_t FractionNumType>
 class GFixedType32
 {
@@ -120,6 +126,15 @@ GFloat GFloat::Sin(const GFloat value)
 
 	return SinValue.ToGFloat();
 }
+
+GFloat GFloat::Sin_Table_Taylor(const GFloat value)
+{
+
+
+	return Zero();
+}
+
+
 GFloat GFloat::Cos(const GFloat value)
 { 
     return Sin(value + Pi_Half());

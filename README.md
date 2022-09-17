@@ -1,5 +1,5 @@
 ## deterministic_float
- * deterministic float, soft float
+ * Deterministic float, soft float
  * Fast soft float for deterministic computing, That
 you can make deterministic physics engine、pathfind、AI engine by use my GFloat.
 ## IEEE-754 & My GFloat
@@ -30,10 +30,10 @@ you can make deterministic physics engine、pathfind、AI engine by use my GFloa
     </tr>
     </table>
 ## Performance float vs GFloat
- * some main fuction compare，more information you can look TestAndBenchMark 
+ * Some main fuction compare，more information you can look TestAndBenchMark 
  * The ratio of performance, to do more optimization
 
-|function|float ： GFloat |
+|function|float ：GFloat(ratio)|
 |--|:--:|
 |add|5|
 |Mul|2|

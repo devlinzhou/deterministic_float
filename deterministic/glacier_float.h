@@ -39,7 +39,7 @@ public:
     };
 };
 
-class GFloat final {
+class GFloat{
 
 public:
 	static inline constexpr GFloat Zero()		{ return GFloat(0,		  0xE9); };
@@ -419,6 +419,7 @@ public:
         }
     }
     static GFloat Sin(const GFloat value);
+	static GFloat Sin_Table_Taylor(const GFloat value);
     static GFloat Cos(const GFloat value);
     static void	  SinCos(const GFloat value, GFloat& OutSin, GFloat& OutCos);
     static GFloat ASin(const GFloat value);
@@ -431,6 +432,16 @@ public:
     static GFloat Pow(const GFloat base, const GFloat exponent);
     static GFloat InvSqrt(const GFloat value);
     static GFloat Sqrt(const GFloat value){return value * InvSqrt(value);}
+
+
+private:
+
+	static constexpr int32_t TriCount = 256;
+
+	static GFloat ms_SinTable[TriCount];
+	static GFloat ms_CosTable[TriCount];
+	static GFloat ms_TanTable[TriCount];
+
 
 };
 
