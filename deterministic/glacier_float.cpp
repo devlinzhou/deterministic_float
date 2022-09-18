@@ -444,32 +444,41 @@ public:
 	int64_t rawInt64;
 };
 
-GFloat GFloat::InvSqrt(const GFloat value)
+GFloat GFloat::InvSqrt(const GFloat value )
 {
     if (value.rawint32 <= 0)
         return Zero();
 
-	GFixed30 Fixed30(value.getfraction_NoShift());
+	GFixed30 Fixed30(value.getfraction_NoShift() );
 
 	int32_t exp = value.getexponent() - 127 + 22;
-
+	GFixed30  Start(0);
 	if(exp & 0x1)
 	{
 		Fixed30.rawInt32 >>= 1;
 		exp += 1;
+		//return Zero();
+		Start =  GFixed30(1, 171, 1000);
+
 	}
+	else
+	{
+		
+		Start = GFixed30(0, 822, 1000); //GFixed30::FromGFloat(start);
+	}
+
 	Fixed30.rawInt32 >>= 1;
 
 	constexpr GFixed30 F1_5(1, 1, 2);
 
-	GFixed30  Start(0,1,2);
+	//GFixed30  Start(0,1,2);
 
 	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
 	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
 	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
-	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
-	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
-	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
+	//Start = Start * (F1_5 - (Fixed30 * Start) * Start);
+	//Start = Start * (F1_5 - (Fixed30 * Start) * Start);
+	//Start = Start * (F1_5 - (Fixed30 * Start) * Start);
 
 	GFloat TResult = GFloat::Nomalize(Start.rawInt32, uint8_t(127 - GFixed30::GetTypeNumber() - (exp >> 1)));
 

@@ -449,6 +449,58 @@ public:
 		m_string << Tstring.str();
 	}
 
+	int32_t FindBest( float RMin, float RMax)
+	{
+		std::minstd_rand gen;
+		std::uniform_real_distribution<> dis(RMin, RMax);
+
+		for (int i = 0; i < N; i++) {
+			fa[i] = (float)dis(gen);
+			fb[i] = (float)dis(gen);
+			fc[i] = 1.f;
+
+			Ga[i] = GFloat::FromFloat(fa[i]);
+			Gb[i] = GFloat::FromFloat(fb[i]);
+			Gc[i] = GFloat(0);
+		}
+
+
+		for (int i = 0; i < N; i++) {
+			fc[i] = 1.f / sqrtf(fa[i]);
+			Gc[i] = GFloat::InvSqrt(Ga[i]);
+		}
+
+		float fMaxAbs = 100000000.f;
+		GFloat BestStart = GFloat::Zero();
+		for( GFloat GStart = GFloat(0,8,10); GStart < GFloat(0,9,10); GStart += GFloat(0,1,1000))
+		{
+			
+			float fabs = 0;
+			for (int i = 0; i < N; i++)
+			{
+				fc[i] = 1.f / sqrtf(fa[i]);
+				Gc[i] = GFloat::InvSqrt(Ga[i]/*,GStart*/);
+
+				if (Gc[i] != GFloat::Zero())
+				{
+					fabs += abs(Gc[i].toFloat() - fc[i]);
+				}
+			}
+			std::cout << "Current fabs " << fabs << std::endl;
+			if( fMaxAbs > fabs)
+			{
+				BestStart = GStart;
+				fMaxAbs = fabs;
+			}
+		}
+
+		std::cout << "fMaxAbs   "  << fMaxAbs<< std::endl;
+
+		std::cout << "Best GStart  " << BestStart.rawint32 << "  " << BestStart.toFloat() << std::endl;
+
+		return BestStart.rawint32 ;
+	}
+
 };
 
 
@@ -460,6 +512,8 @@ void TestGFloat::Run()
 	bool bTrigonometric = 1;
 	bool bTranscendental = 1;
 
+
+	//FT.FindBest(0.f, 10000.f);
 
 	if( bBase )
 	{
