@@ -325,14 +325,20 @@ public:
 
 		std::stringstream Tstring;
 		
-		Tstring << "# GFloat Test And BenchMark" << std::endl;
-		Tstring << "### Operation System  : " << getOsName() << std::endl;
-		Tstring << "### CPU : " << GetCpuName() << std::endl;
-		Tstring << "### CPU Base Frequency by Compute    : " << std::setprecision(3) << MYTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz"<< std::endl;
-		Tstring << "### CPU Base Frequency by GetCPUInfo : " << std::setprecision(3) << MYTimer::GetCpuFrequency_CpuInfo() / 1000.f  << " GHz" << std::endl;
-		Tstring << "### The C++ compiler version is: "<<GetCompileName()<<std::endl;
-		Tstring << "### Math: float vs GFloat,  Call " << N << " times per function" << std::endl;
-		Tstring << "### Error is the relative of camth result " << N << " times per function" << std::endl;
+		Tstring << "# GFloat Test And BenchMark" << std::endl<< std::endl;
+		
+		Tstring << "|Operation System| C++ Compiler version |CPU Name | CPU Base Frequency  |" <<std::endl;
+		Tstring << "|--|--|--|--|" << std::endl;
+		Tstring << "|" << 
+			getOsName() << "|" <<
+			GetCompileName() << std::setprecision(3) << "|" <<
+			GetCpuName() << "|" <<
+			MYTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz (compute)" <<" " <<
+			MYTimer::GetCpuFrequency_CpuInfo() / 1000.f <<" GHz (getCpuInfo)" << "|"<< std::endl;
+		
+		
+		Tstring << " * Math: float vs GFloat,  Call " << N << " times" << std::endl;
+		Tstring << " * Error is the relative of camth result " << N << " times per function" << std::endl << std::endl;
 
 		Tstring << "|Function| avg error|max error| Performance float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
 		Tstring << "|--|--|--|--|--|--|--|" << std::endl;
@@ -411,15 +417,9 @@ public:
 			f2 += abs(cf2);
 		}
 
-		//float avgerror = abs(f2 - f1) * 100.f / abs(f1);
 		float avgerror = totalabs  / nCount;
-	//	std::cout << "nCount   " << nCount << std::endl;
-	//	std::cout << "avgerror * 100.f   " << avgerror * 100.f << std::endl;
-
-		//std::cout << "totalabs  " << totalabs << std::endl;
 
 		std::stringstream Tstring;
-
 		std::cout.precision(3);
 
 		Tstring << "|" << Name << "|" << std::setiosflags(std::ios::fixed) << std::setprecision(6) << avgerror * 100.f << " %|" << Maxabs * 100.f << " %|";
@@ -450,24 +450,24 @@ void TestGFloat::Run()
 		FT.FunTest("Div",		-10000.f,  10000.f,  [&](int i)->float {return FT.fa[i] / FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] / FT.Gb[i]; });
 		FT.FunTest("Ceil",		-100000.f, 100000.f, [&](int i)->float {return ceilf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Ceil(FT.Ga[i]); });
 		FT.FunTest("Floor",		-100000.f, 100000.f, [&](int i)->float {return floorf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Floor(FT.Ga[i]); });
-		FT.FunTest("Whole",		-100000, 100000.f, [&](int i)->float {return (float)((int)(FT.fa[i])); }, [&](int i)->GFloat { return GFloat(FT.Ga[i].GetWhole()); });
+		FT.FunTest("Whole",		-100000.f, 100000.f, [&](int i)->float {return (float)((int)(FT.fa[i])); }, [&](int i)->GFloat { return GFloat(FT.Ga[i].GetWhole()); });
 		FT.FunTest("WholeFrac", -100000.f, 100000.f, [&](int i)->float {return (float)(FT.fa[i]); }, [&](int i)->GFloat { GFloat f; return GFloat(FT.Ga[i].GetWhole(f)) + f; });
-		FT.FunTest("FromInt", -100000.f, 100000.f, [&](int i)->float {return (float)((int)(FT.fa[i])); }, [&](int i)->GFloat { return GFloat((int)(FT.fa[i])); });
+		FT.FunTest("FromInt",	-100000.f, 100000.f, [&](int i)->float {return (float)((int)(FT.fa[i])); }, [&](int i)->GFloat { return GFloat((int)(FT.fa[i])); });
 		FT.FunTest("operator <", -10000.f, 10000.f, [&](int i)->float {return FT.fa[i] < FT.fb[i] ? FT.fa[i] : FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] < FT.Gb[i] ? FT.Ga[i] : FT.Gb[i]; });
 		FT.FunTest("operator -", -10000.f, 10000.f, [&](int i)->float {return -FT.fa[i]; }, [&](int i)->GFloat {return -FT.Ga[i]; });
 	}
 
 	if(bTrigonometric)
 	{
-		FT.FunTest("Sin",		-10000.f, 10000.f, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]);});
-		FT.FunTest("Cos",		-10000.f, 10000.f, [&](int i)->float {return cosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Cos(FT.Ga[i]); });
-		FT.FunTest("SinCos",	-10000.f, 10000.f, [&](int i)->float {return sinf(FT.fa[i]) + cosf(FT.fa[i]); }, [&](int i)->GFloat {GFloat fs, fc;  GFloat::SinCos(FT.Ga[i], fs, fc); return fs + fc; });
-		FT.FunTest("Tan",		-10000.f, 10000.f, [&](int i)->float {return tanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Tan(FT.Ga[i]); });
-		FT.FunTest("ASin", -1.f, 1.f, [&](int i)->float {return asinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });
+		 FT.FunTest("Sin", -10000.f, 10000.f, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
+		 FT.FunTest("Cos", -10000.f, 10000.f, [&](int i)->float {return cosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Cos(FT.Ga[i]); });
+		 FT.FunTest("SinCos", -10000.f, 10000.f, [&](int i)->float {return sinf(FT.fa[i]) + cosf(FT.fa[i]); }, [&](int i)->GFloat {GFloat fs, fc;  GFloat::SinCos(FT.Ga[i], fs, fc); return fs + fc; });
+		 FT.FunTest("Tan", -1.57f, 1.57, [&](int i)->float {return tanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Tan(FT.Ga[i]); });
+		 FT.FunTest("ASin", -1.f, 1.f, [&](int i)->float {return asinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });
 		FT.FunTest("ACos", -1.f, 1.f, [&](int i)->float {return acosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ACos(FT.Ga[i]); });
-		FT.FunTest("ATan", -10000.f, 10000.f, [&](int i)->float {return atanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ATan(FT.Ga[i]); });
-		FT.FunTest("ATan(10,x)", -10000.f, 10000.f, [&](int i)->float {return atan2f(10.f, FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ATan2(GFloat(10), FT.Ga[i]); });
-		FT.FunTest("ATan(x,10)", -10000.f, 10000.f, [&](int i)->float {return atan2f(FT.fa[i], 10.f); }, [&](int i)->GFloat {return GFloat::ATan2(FT.Ga[i], GFloat(10)); });
+		 FT.FunTest("ATan", -10000.f, 10000.f, [&](int i)->float {return atanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ATan(FT.Ga[i]); });
+		 FT.FunTest("ATan(10,x)", -10000.f, 10000.f, [&](int i)->float {return atan2f(10.f, FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ATan2(GFloat(10), FT.Ga[i]); });
+		 FT.FunTest("ATan(x,10)", -10000.f, 10000.f, [&](int i)->float {return atan2f(FT.fa[i], 10.f); }, [&](int i)->GFloat {return GFloat::ATan2(FT.Ga[i], GFloat(10)); });
 	}
 
 	if( bTranscendental )

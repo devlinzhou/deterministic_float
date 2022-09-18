@@ -258,17 +258,22 @@ GFloat GFloat::ACos(const GFloat value)
 	}
 	else
 	{
+		//float f = acosf(value.toFloat());
+
+
 		GFixed29 x1 = GFixed29::FromGFloat(value);
 		GFixed29 x2 = x1 * x1;
 
-		return (GFixed29(1,5707963, 10000000) - x1 * (GFixed29(1, 0, 2) + x2 * (GFixed29(0, 1, 6) + x2 * (GFixed29(0, 3, 40) + x2 * GFixed29(0, 5, 112))))).ToGFloat();
+		GFixed29 TResult = GFixed29(1, 5707963, 10000000) - x1 * (GFixed29(1, 0, 2) + x2 * (GFixed29(0, 1, 6) + x2 * (GFixed29(0, 3, 40) + x2 * GFixed29(0, 5, 112))));
+
+		return (TResult).ToGFloat();
 
 	}
 }
 GFloat GFloat::Tan(const GFloat value) 
 {
-    GFloat TSin = Sin(value);
-	GFloat TCos = Cos(value);
+	GFloat TSin;
+	GFloat TCos; 
     SinCos(value, TSin, TCos);
     return TSin / TCos;
 }
