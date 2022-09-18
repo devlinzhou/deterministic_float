@@ -315,8 +315,21 @@ public:
 		std::string FileName;
 
 #ifdef _WIN64
+		FileName = "../Test_BenchMark_Win";
+		if( GetCpuName().find( "12900H" ) != std::string::npos )
+		{
+			FileName += "_12900H.md";
+		}
+		else if( GetCpuName().find( "5950X" ) != std::string::npos )
+		{
+			FileName += "_5950X.md";
+		}
+		else
+		{
+			FileName = "_None.md";
+		}
 
-		FileName = "../Test_BenchMark_Win.md";
+		
 #elif __OSX__ 
 		FileName = "../Test_BenchMark_OSX.md";
 
@@ -324,21 +337,27 @@ public:
 		m_string =  std::ofstream (FileName);
 
 		std::stringstream Tstring;
+
+		std::time_t TNow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		char str[26];
+		ctime_s(str, sizeof str, &TNow);
 		
-		Tstring << "# GFloat Test And BenchMark" << std::endl<< std::endl;
-		
-		Tstring << "|Operation System| C++ Compiler version |CPU Name | CPU Base Frequency  |" <<std::endl;
+		Tstring << "# GFloat Test And BenchMark" << std::endl;
+		Tstring << " * Test time : "<< str  << std::endl;
+
+
+		Tstring << "|Operation System| C++ Compiler version |CPU  | Base Frequency  |" <<std::endl;
 		Tstring << "|--|--|--|--|" << std::endl;
 		Tstring << "|" << 
 			getOsName() << "|" <<
 			GetCompileName() << std::setprecision(3) << "|" <<
 			GetCpuName() << "|" <<
-			MYTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz (compute)" <<" " <<
-			MYTimer::GetCpuFrequency_CpuInfo() / 1000.f <<" GHz (getCpuInfo)" << "|"<< std::endl;
+			MYTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz or " <<" " <<
+			MYTimer::GetCpuFrequency_CpuInfo() / 1000.f <<" GHz " << "|"<< std::endl;
 		
 		
 		Tstring << " * Math: float vs GFloat,  Call " << N << " times" << std::endl;
-		Tstring << " * Error is the relative of camth result " << N << " times per function" << std::endl << std::endl;
+		Tstring << " * Error is the relative of camth result " << std::endl << std::endl;
 
 		Tstring << "|Function| avg error|max error| Performance float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
 		Tstring << "|--|--|--|--|--|--|--|" << std::endl;

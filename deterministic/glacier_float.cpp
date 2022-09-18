@@ -64,7 +64,7 @@ public:
 		return GFixedType32(((int64_t)rawInt32 * (int64_t)b.rawInt32) >> FractionNumType);
 	}
 
-	 static inline constexpr GFixedType32 FromGFloat( const GFloat Value)
+	static inline constexpr GFixedType32 FromGFloat( const GFloat Value)
 	{
 		int32_t exp = Value.getexponent() - 127 + GFixedType32<FractionNumType>::GetTypeNumber();
 
@@ -372,24 +372,110 @@ GFloat GFloat::Pow(const GFloat x, const GFloat y)
     return Exp(y * Log(x));
 }
 
+
+
+template<int64_t FractionNumType>
+class GFixedType64
+{
+public:
+
+	explicit inline constexpr GFixedType64(int64_t raw)
+		: rawInt64(raw)
+	{
+
+	}
+
+	explicit inline constexpr GFixedType64(uint32_t a, uint32_t b, uint32_t c) :
+		rawInt64(int64_t((a << FractionNumType) | ((((uint64_t)b) << FractionNumType) / c)))
+	{
+
+	}
+
+	static inline constexpr int64_t GetTypeNumber()
+	{
+		return FractionNumType;
+	}
+
+	inline constexpr GFixedType64 operator +(GFixedType64 b) const
+	{
+		return GFixedType64(rawInt64 + b.rawInt64);
+	}
+	inline constexpr GFixedType64 operator +=(GFixedType64 b)
+	{
+		*this = *this + b;
+		return *this;
+	}
+
+
+	inline constexpr GFixedType64 operator -() const
+	{
+		return GFixedType64(-rawInt64);
+	}
+
+	inline constexpr GFixedType64 operator -(GFixedType64 b) const
+	{
+		return GFixedType64(rawInt64 - b.rawInt64);
+	}
+
+	inline constexpr GFixedType64 operator *(GFixedType64 b) const
+	{
+		return GFixedType64(((int64_t)rawInt64 * (int64_t)b.rawInt64) >> FractionNumType);
+	}
+
+	static inline constexpr GFixedType64 FromGFloat(const GFloat Value)
+	{
+		int32_t exp = Value.getexponent() - 127 + GFixedType64<FractionNumType>::GetTypeNumber();
+
+		if (exp >= 0)
+		{
+			return GFixedType64( ((int64_t)Value.getfraction()) << exp);
+		}
+		else
+		{
+			return GFixedType64(( (int64_t)Value.getfraction() )>> -exp);
+		}
+	}
+
+	inline constexpr GFloat ToGFloat() const
+	{
+		return GFloat::Nomalize((int64_t)rawInt64, uint8_t(127 - GFixedType64<FractionNumType>::GetTypeNumber()));
+	}
+
+	int64_t rawInt64;
+};
+
 GFloat GFloat::InvSqrt(const GFloat value)
 {
     if (value.rawint32 <= 0)
         return Zero();
 
-    static const GFloat threehalfs(1, 1, 2);
+	GFixed30 Fixed30(value.getfraction_NoShift());
 
-    int32_t txep = value.getexponent() - 127 + 22;
+	int32_t exp = value.getexponent() - 127 + 22;
 
-    GFloat y = (txep & 0x1) == 0 ? 
-		GFloat::FromFractionAndExp(0x679851, uint8_t( 127 - txep / 2 + -23) ): 
-		GFloat::FromFractionAndExp(0x265064, uint8_t( 127 - txep / 2 + -22));
+	if(exp & 0x1)
+	{
+		Fixed30.rawInt32 >>= 1;
+		exp += 1;
+	}
+	Fixed30.rawInt32 >>= 1;
 
-    GFloat x2 = value * Half();
-    y = y * (threehalfs - ((x2 * y) * y));
-    y = y * (threehalfs - ((x2 * y) * y));
+	constexpr GFixed30 F1_5(1, 1, 2);
 
-    return y;
+	GFixed30  Start(0,1,2);
+
+	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
+	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
+	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
+	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
+	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
+	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
+
+	GFloat TResult = GFloat::Nomalize(Start.rawInt32, uint8_t(127 - GFixed30::GetTypeNumber() - (exp >> 1)));
+
+	GFloat Test = (value * TResult) * TResult;
+
+	return TResult;
 }
 
 

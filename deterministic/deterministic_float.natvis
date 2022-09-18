@@ -33,4 +33,9 @@
 		<StringView>rawInt32</StringView>
  </Type>
 
+  <Type Name="GFixedType64&lt;32&gt;" >
+    <DisplayString>{{ Frac={rawInt64 /4294967296.f } }}</DisplayString>
+    <StringView>rawInt32</StringView>
+  </Type>
+
 </AutoVisualizer>

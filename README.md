@@ -30,8 +30,8 @@ you can make **deterministic plugin** ：**Physics Engine**、**PathFinding**(re
     </tr>
     </table>
 ## Performance float vs GFloat
- * Some main fuction compare，more information you can look TestAndBenchMark 
- * The ratio of performance, to do more optimization
+ * Some main fuction compare，more information view TestAndBenchMark 
+ * The ratio of performance
 
 |function|float ：GFloat(ratio)|optimization |
 |--|:--:|:--: |
