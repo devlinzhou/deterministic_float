@@ -33,13 +33,13 @@ you can make **deterministic plugin** ：**Physics Engine**、**PathFinding**(re
  * Some main fuction compare，more information view TestAndBenchMark 
  * The ratio of performance
 
-|function|float ：GFloat(ratio)|optimization |
-|--|:--:|:--: |
-|add|5|todo |
-|Mul|1.05| $\checkmark$|
-|Sin|0.7|$\checkmark$|
-|Sqrt|5|$\checkmark$ |
-|exp|20|todo |
+|function|float ：GFloat(ratio)|optimization | |
+|--|:--:|:--: |:--:|
+|add|5|todo | need to improve|
+|Mul|1.05| $\checkmark$| good |
+|Sin|0.7|$\checkmark$| very good |
+|Sqrt|5|$\checkmark$ ||
+|exp|20|todo ||
 	
 	
 ## How to start

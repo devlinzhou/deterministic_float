@@ -195,8 +195,9 @@ public:
 
     static inline GFloat Nomalize(int64_t Trawvalue, uint8_t Texponent)
     {
-        uint32_t index = GBitScanReverse64(abs(Trawvalue));
-        if (index <= 22)
+		uint32_t index = GBitScanReverse64(abs(Trawvalue ));
+
+        if ( index <= 22 )
         {
             uint32_t uDelta = 22 - index;
             return GFloat::FromFractionAndExp((int32_t)(Trawvalue << uDelta), uint8_t(Texponent - uDelta));
@@ -208,42 +209,64 @@ public:
         }
     }
 
-    inline GFloat operator +(GFloat b) const
-    {
-        int32_t a_f = getfraction();
-        if (a_f == 0) return b;
-        int32_t b_f = b.getfraction();
-        if (b_f == 0) return *this;
+	inline int64_t ToInt64() const
+	{
+		return getfraction() << (32 + getexponent() - 127); // -40 < exp < 40
+	}
 
-        int32_t a_exponent = getexponent();
-        int32_t b_exponent = b.getexponent();
-        int32_t deltaexp = a_exponent - b_exponent;
+// 	inline bool CanToInt64() const
+// 	{
+// 		return 
+// 	}
 
-        if(-23 < deltaexp && deltaexp < 23)
-        {
-            int32_t FractionValue = 0;
-            int32_t c_exponent;
-            if (deltaexp >= 0)
-            {
-                FractionValue = a_f + (b_f >> deltaexp);
-                c_exponent = a_exponent;
-            }
-            else
-            {
-                FractionValue = b_f + (a_f >> -deltaexp );
-                c_exponent = b_exponent;
-            }
-            return Nomalize(FractionValue, (uint8_t) c_exponent);
-        }
-		else if( deltaexp >= 23)
+	inline GFloat operator +(GFloat b) const
+	{
+		int32_t a_e = getexponent() -127;
+		int32_t b_e = b.getexponent()-127;
+
+		if (0&&(-32 < a_e && a_e < 8) && (-32 < b_e && b_e < 8))
 		{
-			return *this;
+			int64_t Result = ToInt64() + b.ToInt64();
+			return Nomalize( Result, (uint8_t)(127-31));
 		}
 		else
 		{
-			return b;
+			int32_t a_f = getfraction();
+			if (a_f == 0) return b;
+			int32_t b_f = b.getfraction();
+			if (b_f == 0) return *this;
+
+			int32_t a_exp = getexponent();
+			int32_t b_exp = b.getexponent();
+
+			int32_t deltaexp = a_exp - b_exp;
+
+			if (-23 < deltaexp && deltaexp < 23)
+			{
+				int32_t FractionValue = 0;
+				int32_t c_exponent;
+				if (deltaexp >= 0)
+				{
+					FractionValue = a_f + (b_f >> deltaexp);
+					c_exponent = a_exp;
+				}
+				else
+				{
+					FractionValue = b_f + (a_f >> -deltaexp);
+					c_exponent = b_exp;
+				}
+				return Nomalize(FractionValue, (uint8_t)c_exponent);
+			}
+			else if (deltaexp >= 23)
+			{
+				return *this;
+			}
+			else
+			{
+				return b;
+			}
 		}
-    }
+	}
 
     inline const GFloat operator +=( GFloat b)
     {
