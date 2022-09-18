@@ -128,26 +128,26 @@ public:
         FromFloat(value);
     }*/
 
-    inline int32_t getfraction() const
+    inline constexpr int32_t getfraction() const
     {
        return rawint32 >> 8 ;
     }
-    inline int32_t getfraction_NoShift() const
+    inline constexpr int32_t getfraction_NoShift() const
     {
         return int32_t(rawint32 & 0xFFFFFF00);
     }
 
-    inline int32_t getfraction(int32_t shift) const
+    inline constexpr int32_t getfraction(int32_t shift) const
     {
         return getfraction() >> ( shift);
     }
 
-    inline int32_t getexponent() const
+    inline constexpr int32_t getexponent() const
     {
         return (rawint32 & 0xFF);
     }
 
-    static inline GFloat FromRaw32(int32_t Traw32)
+    static inline constexpr GFloat FromRaw32(int32_t Traw32)
     {
         GFloat T;
         T.rawint32 = Traw32;
@@ -161,6 +161,9 @@ public:
 
     static inline GFloat FromFloat(float f)
     {
+		if (f == 0.f || f == -0.f)
+			return Zero();
+
         FloatIEEE_745 T745;
         T745.rawint32 = *(int32_t*)&f;
 
@@ -258,7 +261,7 @@ public:
 		return rawint32 != b.rawint32;
 	}
 
-    inline const GFloat operator -() const
+    inline constexpr GFloat operator -() const
     {
         return GFloat::FromFractionAndExp(-getfraction(), (uint8_t) getexponent());
     }
@@ -270,11 +273,12 @@ public:
 
     inline const GFloat operator *(GFloat b) const
     {
-#if 1
+#if 0
         int64_t Trawvalue = (int64_t)getfraction() * b.getfraction();
         uint8_t Texponent = (uint8_t)(getexponent() + b.getexponent() - 127);
         return  GFloat::Nomalize(Trawvalue, Texponent);
-#else
+#else 
+		// I assume a and b is normalized, if a or b is zero,it will get a correct result
         int64_t Trawvalue = (int64_t)getfraction_NoShift() * b.getfraction_NoShift();
         uint8_t Texponent = (uint8_t)(getexponent() + b.getexponent() - 104);
 
@@ -322,37 +326,29 @@ public:
 
 	inline int32_t GetWhole() const
 	{
-		int32_t exp = (getexponent() - 127);
+		int32_t Frac = getfraction();
+		if ( Frac == 0)
+			return 0;
 
+		int32_t exp = (getexponent() - 127);
+		if (exp > 8)
+		{
+			return Frac << 8; // overflow
+		}
 		if (exp >= 0)
 		{
-			return getfraction() << exp;
+			return Frac << exp;
 		}
-		else if (exp > -23)// 22 or 23
+		else if (exp > -23)
 		{
-			int32_t fra = getfraction();
-
-			int32_t TRaw = fra >> -exp;
-
-			int32_t TWhole;
-			if ((TRaw << -exp) == rawint32)
+			if( rawint32 >= 0)
 			{
-				TWhole = TRaw;
-
+				return Frac >> -exp;
 			}
 			else
 			{
-				if (fra >= 0)
-				{
-					TWhole = TRaw;
-				}
-				else
-				{
-					TWhole = TRaw + 1;
-				}
+				return -((-Frac) >> -exp);
 			}
-
-			return TWhole;
 		}
 		else
 		{
@@ -426,9 +422,9 @@ public:
     {
         int32_t exp = (value.getexponent() - 127);
 
-        if (exp > 0)
+        if (exp >= 0)
             return value;
-        else if( exp > -23 )// 22 or 23
+        else if( exp > -23 )
         {
             return GFloat::FromFractionAndExp((value.getfraction() >> -exp) << -exp, (uint8_t)(exp + 127));
         }
@@ -438,7 +434,7 @@ public:
         }
     }
     static GFloat Sin(const GFloat value);
-	static GFloat Sin_Table(const GFloat value);
+
     static GFloat Cos(const GFloat value);
     static void	  SinCos(const GFloat value, GFloat& OutSin, GFloat& OutCos);
     static GFloat ASin(const GFloat value);
@@ -454,14 +450,13 @@ public:
 
 
 	public:
-		static constexpr int32_t ms_TriTableBit = 10;
+		static constexpr int32_t ms_TriTableBit = 8;
 		static constexpr int32_t ms_TriCount = 1 << ms_TriTableBit;
 
 
 private:
 
-	static int32_t ms_SinTable[ms_TriCount];
-	static int32_t ms_CosTable[ms_TriCount];
+	static int32_t ms_SinCosTable[ms_TriCount*2];
 	static GFloat ms_TanTable[ms_TriCount];
 };
 

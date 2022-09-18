@@ -332,6 +332,8 @@ public:
 		Tstring << "### CPU Base Frequency by GetCPUInfo : " << std::setprecision(3) << MYTimer::GetCpuFrequency_CpuInfo() / 1000.f  << " GHz" << std::endl;
 		Tstring << "### The C++ compiler version is: "<<GetCompileName()<<std::endl;
 		Tstring << "### Math: float vs GFloat,  Call " << N << " times per function" << std::endl;
+		Tstring << "### Error is the relative of camth result " << N << " times per function" << std::endl;
+
 		Tstring << "|Function| avg error|max error| Performance float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
 		Tstring << "|--|--|--|--|--|--|--|" << std::endl;
 
@@ -340,7 +342,7 @@ public:
 		m_string << Tstring.str();
 	}
 
-	inline void FunTest( std::string name, float RMin, float RMax, std::function<float(int i)> fun_f,std::function<GFloat(int i)> fun_G  )
+	inline void FunTest( std::string name, float RMin, float RMax, std::function<float(int i)> fun_f,std::function<GFloat(int i)> fun_G, bool bRelative = true )
 	{
 		std::minstd_rand gen;
 		std::uniform_real_distribution<> dis(RMin, RMax);
@@ -366,10 +368,10 @@ public:
 		}
 		time2 = Timer.GetDeltaTimeMS();
 
-		Count(name);
+		Count(name, bRelative);
 	}
 
-	void Count(std::string Name)
+	void Count(std::string Name, bool bRelative)
 	{
 		float f1 = 0;
 		float f2 = 0;
@@ -393,7 +395,7 @@ public:
 				std::cout << "isinf(cf2) || isnan(cf2)   " << i << std::endl;
 			}
 
-			float cAbs = abs((cf2 - cf1) / cf1);
+			float cAbs = abs((cf2 - cf1) / (bRelative ? cf1 : 1.f) );
 
 			totalabs += cAbs;
 
@@ -435,10 +437,10 @@ void TestGFloat::Run()
 {
 	GFloatTest FT(1000000);
 	
-	bool bBase = true;
-	bool bTrigonometric = true;
-	bool bTranscendental = true;
-	std::cout << "Pi_TwoInv()  " << std::hex << GFloat::Pi_TwoInv().rawint32 << "  " << GFloat::Pi_TwoInv().toFloat() << "\n";
+	bool bBase = 1;
+	bool bTrigonometric = 1;
+	bool bTranscendental = 1;
+
 
 	if( bBase )
 	{
@@ -448,28 +450,24 @@ void TestGFloat::Run()
 		FT.FunTest("Div",		-10000.f,  10000.f,  [&](int i)->float {return FT.fa[i] / FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] / FT.Gb[i]; });
 		FT.FunTest("Ceil",		-100000.f, 100000.f, [&](int i)->float {return ceilf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Ceil(FT.Ga[i]); });
 		FT.FunTest("Floor",		-100000.f, 100000.f, [&](int i)->float {return floorf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Floor(FT.Ga[i]); });
-		FT.FunTest("Whole",		-100000.f, 100000.f, [&](int i)->float {return (float)((int)(FT.fa[i])); }, [&](int i)->GFloat { return GFloat(FT.Ga[i].GetWhole()); });
+		FT.FunTest("Whole",		-100000, 100000.f, [&](int i)->float {return (float)((int)(FT.fa[i])); }, [&](int i)->GFloat { return GFloat(FT.Ga[i].GetWhole()); });
 		FT.FunTest("WholeFrac", -100000.f, 100000.f, [&](int i)->float {return (float)(FT.fa[i]); }, [&](int i)->GFloat { GFloat f; return GFloat(FT.Ga[i].GetWhole(f)) + f; });
-		FT.FunTest("FromInt",	-100000.f, 100000.f, [&](int i)->float {return (float)((int)(FT.fa[i])); }, [&](int i)->GFloat { return GFloat((int)(FT.fa[i])); });
-		FT.FunTest("operator <", -10000.f, 10000.f,  [&](int i)->float {return FT.fa[i] < FT.fb[i]? FT.fa[i] : FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] < FT.Gb[i] ? FT.Ga[i] : FT.Gb[i]; });
-		FT.FunTest("operator -", -10000.f, 10000.f,  [&](int i)->float {return -FT.fa[i]; }, [&](int i)->GFloat {return -FT.Ga[i]; });
-
+		FT.FunTest("FromInt", -100000.f, 100000.f, [&](int i)->float {return (float)((int)(FT.fa[i])); }, [&](int i)->GFloat { return GFloat((int)(FT.fa[i])); });
+		FT.FunTest("operator <", -10000.f, 10000.f, [&](int i)->float {return FT.fa[i] < FT.fb[i] ? FT.fa[i] : FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] < FT.Gb[i] ? FT.Ga[i] : FT.Gb[i]; });
+		FT.FunTest("operator -", -10000.f, 10000.f, [&](int i)->float {return -FT.fa[i]; }, [&](int i)->GFloat {return -FT.Ga[i]; });
 	}
 
 	if(bTrigonometric)
 	{
-		FT.FunTest("Sin", -10000.f, 10000.f, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
-		FT.FunTest("SinTable", -10000.f, 10000.f, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin_Table(FT.Ga[i]); });
-		//return ;
-		FT.FunTest("Cos", -10000.f, 10000.f, [&](int i)->float {return cosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Cos(FT.Ga[i]); });
-		FT.FunTest("Tan", -10000.f, 10000.f, [&](int i)->float {return tanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Tan(FT.Ga[i]); });
-	
+		FT.FunTest("Sin",		-10000.f, 10000.f, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]);});
+		FT.FunTest("Cos",		-10000.f, 10000.f, [&](int i)->float {return cosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Cos(FT.Ga[i]); });
+		FT.FunTest("SinCos",	-10000.f, 10000.f, [&](int i)->float {return sinf(FT.fa[i]) + cosf(FT.fa[i]); }, [&](int i)->GFloat {GFloat fs, fc;  GFloat::SinCos(FT.Ga[i], fs, fc); return fs + fc; });
+		FT.FunTest("Tan",		-10000.f, 10000.f, [&](int i)->float {return tanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Tan(FT.Ga[i]); });
 		FT.FunTest("ASin", -1.f, 1.f, [&](int i)->float {return asinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });
 		FT.FunTest("ACos", -1.f, 1.f, [&](int i)->float {return acosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ACos(FT.Ga[i]); });
 		FT.FunTest("ATan", -10000.f, 10000.f, [&](int i)->float {return atanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ATan(FT.Ga[i]); });
 		FT.FunTest("ATan(10,x)", -10000.f, 10000.f, [&](int i)->float {return atan2f(10.f, FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ATan2(GFloat(10), FT.Ga[i]); });
 		FT.FunTest("ATan(x,10)", -10000.f, 10000.f, [&](int i)->float {return atan2f(FT.fa[i], 10.f); }, [&](int i)->GFloat {return GFloat::ATan2(FT.Ga[i], GFloat(10)); });
-	
 	}
 
 	if( bTranscendental )
@@ -481,7 +479,7 @@ void TestGFloat::Run()
 		FT.FunTest("Pow(2,x)", -20.f, 20.f, [&](int i)->float {return powf(2.f, FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Pow(GFloat::Two(), FT.Ga[i]); });
 		FT.FunTest("Pow(x,2)", 0.55f, 20.f, [&](int i)->float {return powf(FT.fa[i], 2.f); }, [&](int i)->GFloat {return GFloat::Pow(FT.Ga[i], GFloat::Two()); });
 	}
-
+	//	std::cout << "Pi_TwoInv()  " << std::hex << GFloat::Pi_TwoInv().rawint32 << "  " << GFloat::Pi_TwoInv().toFloat() << "\n";
 }
 
 

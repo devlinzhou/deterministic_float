@@ -36,7 +36,7 @@ you can make **deterministic plugin** ：**Physics Engine**、**PathFinding**(re
 |function|float ：GFloat(ratio)|
 |--|:--:|
 |add|5|
-|Mul|2|
+|Mul|1.05|
 |Sin|10|
 |Sqrt|30|
 |exp|20|
