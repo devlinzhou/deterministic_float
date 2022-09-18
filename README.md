@@ -38,7 +38,7 @@ you can make **deterministic plugin** ：**Physics Engine**、**PathFinding**(re
 |add|5|todo |
 |Mul|1.05| $\checkmark$|
 |Sin|0.7|$\checkmark$|
-|Sqrt|30|todo |
+|Sqrt|5|$\checkmark$ |
 |exp|20|todo |
 	
 	
