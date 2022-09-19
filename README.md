@@ -1,11 +1,12 @@
 ## deterministic_float
- * Cross-platform deterministic float point, soft float point.
+ * Cross-platform deterministic float point, fast soft float point.
  * Fast soft float point for deterministic computing, That
 you can make **deterministic plugin** by use GFloat to replace float-point. like：
     * Physics Engine (Bullet、PhysX)
     * AI PathFinding (recast navigation)
     * AI Engine
-
+ * Compare the overall performance of float754 and GFloat numbers, They differ by no more than **100%**
+ * Is the fastest soft floating point in the world?
 ## IEEE-754 & My GFloat
 * IEEE-754 float
   <table  >

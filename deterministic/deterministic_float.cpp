@@ -260,13 +260,19 @@ std::string GetCpuName()
 	}
 
 	return brand_;
+#elif __APPLE__
+
+
+#if __MACH__
+	return "Apple Arm CPU";
 #else
-
-	return "Unkown CPU";
-
+	return "Apple Intel CPU";
 #endif
 
-	
+
+#else
+	return "Unkown CPU";
+#endif
 }
 
 std::string GetCompileName()
