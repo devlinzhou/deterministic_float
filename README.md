@@ -43,15 +43,7 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
 ## Performance float vs GFloat
  * Most inportance function compare, more information to view TestAndBenchMark 
  * Call every function 1000000 Times, get the float vs GFloat time
-
-|Platform|Win64 5950X|Win64 12900H | iOS A15 | MacOS M1 Pro | Android |
-|:--|:--:|:--: |:--:|:--:|:--:|
-|Add|1.47 - 4.3 ms|1.20 - 2.79  (ms)  | 1.36 - 2.14 ms|1.41 - 2.38 ms |
-|Mul|1.58 - 2.0 ms| 1.25 - 1.54 ms| 1.42 - 1.38 ms |1.51 - 1.56 ms|
-|Sin|12.08 - 15.25 ms|10.57 - 7.68 ms| 2.84 - 6.65 ms|2.89 - 7.65 ms |
-|Sqrt|1.54 - 11.46 ms|1.03 - 7.73 ms|1.14 - 7.75 ms |1.20 - 8.91 ms|
-|Exp|  |3.06 - 28.20  (ms) |7.24 - 19.70 ms|7.84 - 22.01 ms|
-
+ 
   <table  >
     <tr>
         <th colspan = "1" >Platform</th>
@@ -68,24 +60,24 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
         <td >float</td><td >GFloat</td>
     </tr>
     <tr>
-        <td>Add</td><td>1.47ms</td><td >4.3ms</td><td>1.20</td><td>2.79</td>
-        <td>1.36</td><td >2.14</td><td>1.41</td><td>2.38</td><td></td><td></td>
+        <td>Add</td><td>1.47ms</td><td >4.3ms</td><td>1.20ms</td><td>2.79ms</td>
+        <td>1.36ms</td><td >2.14ms</td><td>1.41ms</td><td>2.38ms</td><td></td><td></td>
     </tr>
     <tr>
-        <td>Mul</td><td>1.58</td><td >2.0</td><td>1.25</td><td>1.54</td>
-        <td>1.42</td><td>1.38</td><td>1.51</td><td>1.56</td><td></td><td></td>
+        <td>Mul</td><td>1.58ms</td><td >2.0ms</td><td>1.25ms</td><td>1.54ms</td>
+        <td>1.42ms</td><td>1.38ms</td><td>1.51ms</td><td>1.56ms</td><td></td><td></td>
     </tr>
       <tr>
-        <td>Sin</td><td>12.08</td><td >15.25</td><td>10.57</td><td>7.68</td>
-        <td>2.84</td><td>6.65</td><td>2.89</td><td>7.65</td><td></td><td></td>
+        <td>Sin</td><td>12.08ms</td><td >15.25ms</td><td>10.57ms</td><td>7.68ms</td>
+        <td>2.84ms</td><td>6.65ms</td><td>2.89ms</td><td>7.65ms</td><td></td><td></td>
     </tr>
       <tr>
-        <td>Sqrt</td><td>1.54</td><td >11.46</td><td>1.03</td><td> 7.73</td>
-        <td>1.14 </td><td>7.75 </td><td>1.20</td><td>8.91</td><td></td><td></td>
+        <td>Sqrt</td><td>1.54ms</td><td >11.46ms</td><td>1.03ms</td><td> 7.73ms</td>
+        <td>1.14ms </td><td>7.75ms </td><td>1.20ms</td><td>8.91ms</td><td></td><td></td>
     </tr>
       <tr>
-        <td>Exp</td><td></td><td ></td><td>3.06</td><td>28.20</td>
-        <td>7.24</td><td>19.70</td><td>7.84</td><td>22.01</td><td></td><td></td>
+        <td>Exp</td><td></td><td ></td><td>3.06ms</td><td>28.20ms</td>
+        <td>7.24ms</td><td>19.70ms</td><td>7.84ms</td><td>22.01ms</td><td></td><td></td>
     </tr>
     </table>
 	
