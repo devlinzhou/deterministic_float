@@ -30,8 +30,8 @@ you can make **deterministic plugin** ：**Physics Engine**、**PathFinding**(re
     </tr>
     </table>
 ## Performance float vs GFloat
- * Some main fuction compare，more information view TestAndBenchMark 
- * call 1000000 Times, float vs GFloat time
+ * Some main function compare，more information view TestAndBenchMark 
+ * Call 1000000 Times, float vs GFloat time
 
 |Function|Win64 5950X|Win64 12900H | iOS M1 Pro | Android |
 |:--|:--:|:--: |:--:|:--:|
