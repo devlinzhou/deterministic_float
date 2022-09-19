@@ -211,7 +211,7 @@ public:
 
 	inline int64_t ToInt64() const
 	{
-		return getfraction() << (32 + getexponent() - 127); // -40 < exp < 40
+		return ((int64_t)getfraction()) << (32 + getexponent() - 127); // -40 < exp < 40
 	}
 
 // 	inline bool CanToInt64() const
@@ -224,10 +224,13 @@ public:
 		int32_t a_e = getexponent() -127;
 		int32_t b_e = b.getexponent()-127;
 
-		if (0&&(-32 < a_e && a_e < 8) && (-32 < b_e && b_e < 8))
+		if ((-32 < a_e && a_e < 8) && (-32 < b_e && b_e < 8))
 		{
-			int64_t Result = ToInt64() + b.ToInt64();
-			return Nomalize( Result, (uint8_t)(127-31));
+			int64_t a64 = ToInt64();
+			int64_t b64 = b.ToInt64();
+			int64_t Result = a64 + b64;
+			//GFloat GR = ;
+			return Nomalize(Result, (uint8_t)(127 - 32));
 		}
 		else
 		{

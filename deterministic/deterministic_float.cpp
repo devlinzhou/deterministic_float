@@ -110,10 +110,8 @@ public:
 	#endif
 
 #else
-		
-#endif
-
 		return 0;
+#endif
 	}
 
 	void Start()
@@ -359,7 +357,7 @@ public:
 		Tstring << " * Math: float vs GFloat,  Call " << N << " times" << std::endl;
 		Tstring << " * Error is the relative of camth result " << std::endl << std::endl;
 
-		Tstring << "|Function| avg error|max error| Performance float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
+		Tstring << "|Function| avg error|max error| float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
 		Tstring << "|--|--|--|--|--|--|--|" << std::endl;
 
 		std::cout << Tstring.str();
@@ -517,12 +515,9 @@ void TestGFloat::Run()
 
 	if( bBase )
 	{
-		//FT.FunTest("Normalize", -10000.f, 10000.f, [&](int i)->float {return -FT.fa[i]; }, [&](int i)->GFloat {return GFloat::Nomalize(FT.Ga[i].rawint32, FT.Ga[i].getexponent()); });
+		//
 
-
-		FT.FunTest("**Add**",	-10000.f,  10000.f,  [&](int i)->float {return FT.fa[i] + FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] + FT.Gb[i]; });
-		
-			//	return;
+		FT.FunTest("**Add**",	-10000.f,  10000.f,  [&](int i)->float {return FT.fa[i] + FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] + FT.Gb[i]; });	
 		FT.FunTest("Sub",		-10000.f,  10000.f,  [&](int i)->float {return FT.fa[i] - FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] - FT.Gb[i]; });
 		FT.FunTest("**Mul**",	-10000.f,  10000.f,  [&](int i)->float {return FT.fa[i] * FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] * FT.Gb[i]; });
 		FT.FunTest("Div",		-10000.f,  10000.f,  [&](int i)->float {return FT.fa[i] / FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] / FT.Gb[i]; });
@@ -534,7 +529,8 @@ void TestGFloat::Run()
 		FT.FunTest("operator <", -10000.f, 10000.f, [&](int i)->float {return FT.fa[i] < FT.fb[i] ? FT.fa[i] : FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] < FT.Gb[i] ? FT.Ga[i] : FT.Gb[i]; });
 		FT.FunTest("operator -", -10000.f, 10000.f, [&](int i)->float {return -FT.fa[i]; }, [&](int i)->GFloat {return -FT.Ga[i]; });
 
-	
+		FT.FunTest("Normalize", -10000.f, 10000.f, [&](int i)->float {return FT.fa[i]; }, [&](int i)->GFloat {return GFloat::Nomalize(FT.Ga[i].getfraction(), FT.Ga[i].getexponent()); });
+
 	}
 
 	if(bTrigonometric)
@@ -542,7 +538,7 @@ void TestGFloat::Run()
 		 FT.FunTest("**Sin**", -10000.f, 10000.f,	[&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
 		 FT.FunTest("Cos",		-10000.f, 10000.f,	[&](int i)->float {return cosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Cos(FT.Ga[i]); });
 		 FT.FunTest("SinCos",	-10000.f, 10000.f,	[&](int i)->float {return sinf(FT.fa[i]) + cosf(FT.fa[i]); }, [&](int i)->GFloat {GFloat fs, fc;  GFloat::SinCos(FT.Ga[i], fs, fc); return fs + fc; });
-		 FT.FunTest("Tan",		-1.57f, 1.57,		[&](int i)->float {return tanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Tan(FT.Ga[i]); });
+		 FT.FunTest("Tan",		-1.57f, 1.57f,		[&](int i)->float {return tanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Tan(FT.Ga[i]); });
 		 FT.FunTest("ASin",		-1.f, 1.f,			[&](int i)->float {return asinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });
 		FT.FunTest("ACos",		-1.f, 1.f,			[&](int i)->float {return acosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ACos(FT.Ga[i]); });
 		 FT.FunTest("ATan",		-10000.f, 10000.f,	[&](int i)->float {return atanf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ATan(FT.Ga[i]); });
