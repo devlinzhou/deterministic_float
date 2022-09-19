@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		FA38AAF528D07B2100ED6160 /* glacier_float.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA38AAF428D07B2100ED6160 /* glacier_float.cpp */; };
 		FA38AAF728D07B2900ED6160 /* deterministic_float.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA38AAF628D07B2900ED6160 /* deterministic_float.cpp */; };
+		FAAA1CA728D83E7200B5894F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAAA1CA628D83E7200B5894F /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +29,8 @@
 		FA38AAF328D07B2100ED6160 /* glacier_float.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glacier_float.h; sourceTree = "<group>"; };
 		FA38AAF428D07B2100ED6160 /* glacier_float.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glacier_float.cpp; sourceTree = "<group>"; };
 		FA38AAF628D07B2900ED6160 /* deterministic_float.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = deterministic_float.cpp; sourceTree = "<group>"; };
+		FAAA1CA628D83E7200B5894F /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		FAAA1CA828D83E8000B5894F /* deterministic_float.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = deterministic_float.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +50,8 @@
 				FA38AAF428D07B2100ED6160 /* glacier_float.cpp */,
 				FA38AAF328D07B2100ED6160 /* glacier_float.h */,
 				FA38AAF628D07B2900ED6160 /* deterministic_float.cpp */,
+				FAAA1CA628D83E7200B5894F /* main.cpp */,
+				FAAA1CA828D83E8000B5894F /* deterministic_float.h */,
 				FA38AAEA28D07A9200ED6160 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -118,6 +123,7 @@
 			files = (
 				FA38AAF528D07B2100ED6160 /* glacier_float.cpp in Sources */,
 				FA38AAF728D07B2900ED6160 /* deterministic_float.cpp in Sources */,
+				FAAA1CA728D83E7200B5894F /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

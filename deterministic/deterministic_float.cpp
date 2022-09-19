@@ -263,10 +263,12 @@ std::string GetCpuName()
 #elif __APPLE__
 
 
-#if __MACH__
+#if __ARM_ARCH
 	return "Apple Arm CPU";
-#else
+#elif __x86_64__
 	return "Apple Intel CPU";
+#else
+	return "Unkown Apple CPU";
 #endif
 
 
