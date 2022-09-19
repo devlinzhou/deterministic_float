@@ -107,6 +107,9 @@ public:
 		uint64_t virtual_timer_value;
 		asm volatile("mrs %0, cntvct_el0" : "=r"(virtual_timer_value));
 		return virtual_timer_value;
+
+	#else
+		return 0;
 	#endif
 
 #else
@@ -363,7 +366,7 @@ public:
 		
 		
 		Tstring << " * Math: float vs GFloat,  Call " << N << " times" << std::endl;
-		Tstring << " * Error is the relative of camth result " << std::endl << std::endl;
+		Tstring << " * Error is the relative of cmath result " << std::endl << std::endl;
 
 		Tstring << "|Function| avg error|max error| float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
 		Tstring << "|--|--|--|--|--|--|--|" << std::endl;
