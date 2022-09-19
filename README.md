@@ -3,10 +3,11 @@
  * Fast soft float point for deterministic computing, That
 you can make **deterministic plugin** by use GFloat to replace float-point. like：
     * Physics Engine (Bullet、PhysX)
-    * AI PathFinding (recast navigation)
+    * AI Path Finding (Recast Navigation)
     * AI Engine
  * Compare the overall performance of float754 and GFloat numbers, They differ by no more than **100%**
-    * Is the fastest soft floating point in the world?
+    * <font color="#dd0000">Is the fastest soft floating point in the world?</font>
+
 ## IEEE-754 & My GFloat
 * IEEE-754 float
   <table  >
@@ -35,10 +36,10 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     </tr>
     </table>
 ## Performance float vs GFloat
- * Some main function compare，more information view TestAndBenchMark 
+ * Most inportance function compare, more information to view TestAndBenchMark 
  * Call every function 1000000 Times, get the float vs GFloat time
 
-|Function|Win64 5950X|Win64 12900H | iOS A15 | MacOS M1 Pro | Android |
+|Function\Platform|Win64 5950X|Win64 12900H | iOS A15 | MacOS M1 Pro | Android |
 |:--|:--:|:--: |:--:|:--:|:--:|
 |add|1.47 - 4.3 (ms)| | 1.36 - 2.14  (ms)|1.41 - 2.38  (ms) |
 |Mul|1.58 - 2.0 (ms)| 1.25 - 1.54 (ms)| 1.42 - 1.38  (ms) |1.51 - 1.56  (ms)|
@@ -60,7 +61,7 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
 ## Current Support Platform For Test&Benchmark 
 |Operation System|Win64|MacOS| iOS| Android|
 |--|--|--|--|--|
-|Now| $\checkmark$  |$\checkmark$|$\checkmark$| todo |
+|Support ?| $\checkmark$  |$\checkmark$|$\checkmark$| todo |
 
 
 
