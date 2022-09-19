@@ -1,7 +1,12 @@
 ## deterministic_float
  * Deterministic float point, soft float point.
  * Fast soft float point for deterministic computing, That
-you can make **deterministic plugin** ：**Physics Engine**、**PathFinding**(recast navigation)、**AI Engine** by use GFloat to replace float-point.
+you can make **deterministic plugin** by use GFloat to replace float-point. like：
+    * Physics Engine (Bullet、PhysX)
+    * AI PathFinding (recast navigation)
+    * AI Engine
+
+
 ## IEEE-754 & My GFloat
 * IEEE-754 float
   <table  >
@@ -31,7 +36,7 @@ you can make **deterministic plugin** ：**Physics Engine**、**PathFinding**(re
     </table>
 ## Performance float vs GFloat
  * Some main function compare，more information view TestAndBenchMark 
- * Call 1000000 Times, float vs GFloat time
+ * Call every function 1000000 Times, get the float vs GFloat time
 
 |Function|Win64 5950X|Win64 12900H | iOS M1 Pro | Android |
 |:--|:--:|:--: |:--:|:--:|
@@ -43,7 +48,7 @@ you can make **deterministic plugin** ：**Physics Engine**、**PathFinding**(re
 	
 	
 ## How to start
- * Four OS platform project for fast and easy to start test&benchmark
+ * Four OS platform projects for fast and easy to start test&benchmark
 
 |Target Platform| Compiler| Project |
 |:--|:--|:--|
