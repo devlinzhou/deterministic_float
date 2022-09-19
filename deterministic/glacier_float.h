@@ -20,10 +20,10 @@
 #endif
 
 
-class FloatIEEE_745 
+class FloatIEEE_754 
 {
 public:
-    FloatIEEE_745()
+	FloatIEEE_754()
     {
         rawint32 = 0;
     }
@@ -164,15 +164,15 @@ public:
 		if (f == 0.f || f == -0.f)
 			return Zero();
 
-        FloatIEEE_745 T745;
-        T745.rawint32 = *(int32_t*)&f;
+        FloatIEEE_754 TFloat754;
+        TFloat754.rawint32 = *(int32_t*)&f;
 
-        int32_t TRraction = (int32_t)T745.rawfloat.fraction + 0x00800000;
+        int32_t TRraction = (int32_t)TFloat754.rawfloat.fraction + 0x00800000;
         
-        if( T745.rawfloat.sign != 0)
+        if( TFloat754.rawfloat.sign != 0)
             TRraction = -TRraction;
 
-        return GFloat::FromFractionAndExp(TRraction >> 1,uint8_t(T745.rawfloat.exponent - 22));
+        return GFloat::FromFractionAndExp(TRraction >> 1,uint8_t(TFloat754.rawfloat.exponent - 22));
     }
 
     float toFloat() const
