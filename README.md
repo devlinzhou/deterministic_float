@@ -6,7 +6,7 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     * AI PathFinding (recast navigation)
     * AI Engine
  * Compare the overall performance of float754 and GFloat numbers, They differ by no more than **100%**
- * Is the fastest soft floating point in the world?
+    * Is the fastest soft floating point in the world?
 ## IEEE-754 & My GFloat
 * IEEE-754 float
   <table  >
@@ -38,13 +38,13 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
  * Some main function compare，more information view TestAndBenchMark 
  * Call every function 1000000 Times, get the float vs GFloat time
 
-|Function|Win64 5950X|Win64 12900H | iOS M1 Pro | Android |
-|:--|:--:|:--: |:--:|:--:|
-|add|1.47 - 4.3 (ms)| | |
-|Mul|1.58 - 2.0 (ms)| 1.25 - 1.54 (ms)|  |
-|Sin|12.08 - 15.25 (ms)|10.57 - 7.68 (ms)| |
-|Sqrt|1.54 - 11.46 (ms)|1.03 - 7.73 (ms) ||
-|Exp| | ||
+|Function|Win64 5950X|Win64 12900H | iOS A15 | MacOS M1 Pro | Android |
+|:--|:--:|:--: |:--:|:--:|:--:|
+|add|1.47 - 4.3 (ms)| | 1.36 - 2.14  (ms)|
+|Mul|1.58 - 2.0 (ms)| 1.25 - 1.54 (ms)| 1.42 - 1.38  (ms) |
+|Sin|12.08 - 15.25 (ms)|10.57 - 7.68 (ms)| 2.84 - 6.65  (ms)|
+|Sqrt|1.54 - 11.46 (ms)|1.03 - 7.73 (ms) |1.14 - 7.75  (ms) |
+|Exp| | |7.24 - 19.70  (ms)|
 	
 	
 ## How to start
