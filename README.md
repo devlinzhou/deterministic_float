@@ -51,6 +51,43 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
 |Sin|12.08 - 15.25 ms|10.57 - 7.68 ms| 2.84 - 6.65 ms|2.89 - 7.65 ms |
 |Sqrt|1.54 - 11.46 ms|1.03 - 7.73 ms|1.14 - 7.75 ms |1.20 - 8.91 ms|
 |Exp|  |3.06 - 28.20  (ms) |7.24 - 19.70 ms|7.84 - 22.01 ms|
+
+  <table  >
+    <tr>
+        <th colspan = "1" >Platform</th>
+        <th align="center" colspan = "2" >Win 5950X</th>
+        <th align="center" colspan = "2" >Win 12900H</th>
+        <th align="center" colspan = "2" >iOS A15</th>
+        <th align="center" colspan = "2" >OSX M1pro</th>
+        <th align="center" colspan = "2" >Android</th>
+    </tr>
+    <tr>
+        <td > </td>
+        <td >float</td><td >GFloat</td><td >float</td><td >GFloat</td>
+        <td >float</td><td >GFloat</td><td >float</td><td >GFloat</td>
+        <td >float</td><td >GFloat</td>
+    </tr>
+    <tr>
+        <td>Add</td><td>1.47ms</td><td >4.3ms</td><td>1.20</td><td>2.79</td>
+        <td>1.36</td><td >2.14</td><td>1.41</td><td>2.38</td><td></td><td></td>
+    </tr>
+    <tr>
+        <td>Mul</td><td>1.58</td><td >2.0</td><td>1.25</td><td>1.54</td>
+        <td>1.42</td><td>1.38</td><td>1.51</td><td>1.56</td><td></td><td></td>
+    </tr>
+      <tr>
+        <td>Sin</td><td>12.08</td><td >15.25</td><td>10.57</td><td>7.68</td>
+        <td>2.84</td><td>6.65</td><td>2.89</td><td>7.65</td><td></td><td></td>
+    </tr>
+      <tr>
+        <td>Sqrt</td><td>1.54</td><td >11.46</td><td>1.03</td><td> 7.73</td>
+        <td>1.14 </td><td>7.75 </td><td>1.20</td><td>8.91</td><td></td><td></td>
+    </tr>
+      <tr>
+        <td>Exp</td><td></td><td ></td><td>3.06</td><td>28.20</td>
+        <td>7.24</td><td>19.70</td><td>7.84</td><td>22.01</td><td></td><td></td>
+    </tr>
+    </table>
 	
 	
 ## How to start
