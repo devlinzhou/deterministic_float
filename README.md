@@ -43,10 +43,10 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
 ## Performance float vs GFloat
  * Most inportance function compare, more information to view TestAndBenchMark 
  * Call every function 1000000 Times, get the float vs GFloat time
- 
+
   <table  >
     <tr>
-        <th colspan = "1" >Platform</th>
+        <th colspan = "1" >OS</th>
         <th align="center" colspan = "2" >Win 5950X</th>
         <th align="center" colspan = "2" >Win 12900H</th>
         <th align="center" colspan = "2" >iOS A15</th>
