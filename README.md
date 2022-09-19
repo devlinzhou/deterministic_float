@@ -46,11 +46,11 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
 
 |Platform|Win64 5950X|Win64 12900H | iOS A15 | MacOS M1 Pro | Android |
 |:--|:--:|:--: |:--:|:--:|:--:|
-|Add|1.47 - 4.3 ms| | 1.36 - 2.14 ms|1.41 - 2.38 ms |
+|Add|1.47 - 4.3 ms|1.20 - 2.79  (ms)  | 1.36 - 2.14 ms|1.41 - 2.38 ms |
 |Mul|1.58 - 2.0 ms| 1.25 - 1.54 ms| 1.42 - 1.38 ms |1.51 - 1.56 ms|
 |Sin|12.08 - 15.25 ms|10.57 - 7.68 ms| 2.84 - 6.65 ms|2.89 - 7.65 ms |
 |Sqrt|1.54 - 11.46 ms|1.03 - 7.73 ms|1.14 - 7.75 ms |1.20 - 8.91 ms|
-|Exp| | |7.24 - 19.70 ms|7.84 - 22.01 ms|
+|Exp|  |3.06 - 28.20  (ms) |7.24 - 19.70 ms|7.84 - 22.01 ms|
 	
 	
 ## How to start
@@ -66,7 +66,7 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
 ## Current Support Platform For Test&Benchmark 
 |Operation System|Win64|MacOS| iOS| Android|
 |--|--|--|--|--|
-|Support ?| $\checkmark$  |$\checkmark$|$\checkmark$| todo |
+|Yes or No | $\checkmark$  |$\checkmark$|$\checkmark$| todo |
 
 
 
