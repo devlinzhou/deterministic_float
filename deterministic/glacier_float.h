@@ -277,12 +277,12 @@ public:
         return *this;
     }
 
-	inline const bool operator ==(GFloat b)
+	inline constexpr bool operator ==(GFloat b)
 	{
 		return rawint32 == b.rawint32;
 	}
 
-	inline const bool operator !=(GFloat b)
+	inline constexpr bool operator !=(GFloat b)
 	{
 		return rawint32 != b.rawint32;
 	}
@@ -297,7 +297,7 @@ public:
         return *this + (-b);
     }
 
-    inline const GFloat operator *(GFloat b) const
+    inline constexpr GFloat operator *(GFloat b) const
     {
 #if 0
         int64_t Trawvalue = (int64_t)getfraction() * b.getfraction();
