@@ -321,6 +321,8 @@ public:
 		Gb.resize(N);
 		Gc.resize(N);
 
+
+
 		std::string FileName;
 
 #ifdef _WIN64
@@ -379,6 +381,72 @@ public:
 		m_string << Tstring.str();
 	}
 
+inline void FunError( int NCount, std::string name, float RMin, float RMax,
+	std::function<float(int i)> fun_f,
+	std::function<GFloat(int i)> fun_G)
+{
+		std::ofstream fs("../GFloat_" + name + ".gp");
+
+		fs << "set term svg size 640, 480" << std::endl;
+		fs << "set output \"GFloat_" + name + ".svg\"" << std::endl;
+		fs << R"gp(set format y "%g%%")gp"<< std::endl;
+		fs << "set title \"GFloat::" + name + "() Relative Error"<< std::endl;
+		fs << "unset key"<< std::endl;
+		fs << "plot \"-\" with points"<< std::endl;
+
+		fs << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+
+		std::minstd_rand gen;
+		std::uniform_real_distribution<> dis(RMin, RMax);
+
+		int TN =  NCount <=  N? NCount : N;
+
+		if(0)
+		{
+			TN = GFloat::ms_TriCount;
+
+			for (int i = 0; i < TN; i++) {
+				fa[i] = float(i) * 3.141592653f * 2 / GFloat::ms_TriCount;
+				Ga[i] = GFloat::FromFloat(fa[i]);
+			
+
+
+			float fy = fa[i];
+
+
+			GFloat Gy = Ga[i];
+
+				float ferror = (Gy.toFloat() - fy) / abs(fy);
+
+				fs << fa[i] << " " << ferror * 100.0 << std::endl;
+			}
+		}
+		else
+		{
+			for (int i = 0; i < TN; i++) {
+				fa[i] = (float)dis(gen);
+				Ga[i] = GFloat::FromFloat(fa[i]);
+			}
+
+			for (int i = 0; i < TN; i++) {
+				double fy = (double)fun_f(i);
+
+				if (abs(fy) < 0.00000001f)
+					continue;
+
+				GFloat Gy = fun_G(i);
+
+				double ferror = (Gy.toDouble() - fy) / abs(fy);
+
+				fs << fa[i]  << " " << ferror * 100.0 << std::endl;
+			}
+		}
+
+
+
+		fs << "EOF" << std::endl;
+}
+
 	inline void FunTest( std::string name, float RMin, float RMax, std::function<float(int i)> fun_f,std::function<GFloat(int i)> fun_G, bool bRelative = true )
 	{
 		std::minstd_rand gen;
@@ -410,29 +478,29 @@ public:
 
 	void Count(std::string Name, bool bRelative)
 	{
-		float f1 = 0;
-		float f2 = 0;
+		double f1 = 0;
+		double f2 = 0;
 
-		float Maxabs = 0;
+		double Maxabs = 0;
 		int maxi = 0;
 
 		int nCount = 0;
-		float totalabs = 0;
+		double totalabs = 0;
 
 		for (int i = 0; i < N; i++)
 		{
-			float cf1 = (fc[i]);
+			double cf1 = (fc[i]);
 
-			if (abs(cf1) < 0.00001f)
+			if (abs(cf1) < 0.000001f)
 				continue;
 
-			float cf2 = (Gc[i].toFloat());
-			if (isinf(cf2) || isnan(cf2))
-			{
-				std::cout << "isinf(cf2) || isnan(cf2)   " << i << std::endl;
-			}
+			double cf2 = (Gc[i].toDouble());
+// 			if (isinf(cf2) || isnan(cf2))
+// 			{
+// 				std::cout << "isinf(cf2) || isnan(cf2)   " << i << std::endl;
+// 			}
 
-			float cAbs = abs((cf2 - cf1) / (bRelative ? cf1 : 1.f) );
+			double cAbs = abs((cf2 - cf1) / (bRelative ? cf1 : 1.f) );
 
 			totalabs += cAbs;
 
@@ -448,7 +516,7 @@ public:
 			f2 += abs(cf2);
 		}
 
-		float avgerror = totalabs  / nCount;
+		double avgerror = totalabs  / nCount;
 
 		std::stringstream Tstring;
 		std::cout.precision(3);
@@ -519,6 +587,20 @@ public:
 void TestGFloat::Run()
 {
 	GFloatTest FT(1000000);
+
+	bool bErrortest = 1;
+	if( bErrortest)
+	{
+		float fstart = 1.580f * 1000 ;
+
+		//FT.FunError(1000, "ACos", -1.f, 1.f, [&](int i)->float {return acosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ACos( FT.Ga[i]); });
+		//FT.FunError(1000, "ASin", -fstart, fstart, [&](int i)->float {return asinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });
+		
+		FT.FunError(1256, "Sin", -fstart, fstart, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
+
+return;	
+	}
+
 	
 	bool bBase = 1;
 	bool bTrigonometric = 1;

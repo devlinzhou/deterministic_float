@@ -177,11 +177,24 @@ public:
 
     float toFloat() const
     {
-        int32_t Texponent = getexponent() - 127;
-        double dT =  pow(2, Texponent) ;
-		double dResult = getfraction() * dT;
+		int32_t Texponent = getexponent() - 127;
+		if( -62 < Texponent &&  Texponent< 62 )
+		{
+			double dResult = Texponent >= 0 ?
+				((double)getfraction()) * double(((uint64_t)1) << Texponent):
+				((double)getfraction()) / double(((uint64_t)1) << -Texponent);
 
-        return float(dResult);
+			return float(dResult); 
+		}
+		else
+		{
+			double dT = pow(2, Texponent);
+			double dResult = getfraction() * dT;
+			return float(dResult);
+		}
+
+
+
     }
 
 	double toDouble() const

@@ -132,8 +132,12 @@ static inline int32_t Sin_Table(const GFloat value, GFixed30& Delta)
 
 	constexpr GFixed30 C_quaterPi(0, 785398164, 1000000000);
 
-	Delta = C_quaterPi * GFixed30(F30Fraction.rawInt32 & ((1 << (30 - GFloat::ms_TriTableBit)) - 1));
+	GFixed30 delta_1 =  GFixed30(F30Fraction.rawInt32 & ((1 << (30 - GFloat::ms_TriTableBit)) - 1));
 
+	GFixed30 F30Fraction_Test = ttTest + delta_1;
+
+
+	Delta = C_quaterPi * delta_1;
 	Delta.rawInt32 = Delta.rawInt32 << 3;
 
 	int32_t nWhole = (TWhole) & (GFloat::ms_TriCount - 1);
@@ -153,7 +157,7 @@ GFloat GFloat::Sin(const GFloat value)
 	GFixed30 TableSin = GFixed30(ms_SinCosTable[nWhole * 2]);
 	GFixed30 TableCos = GFixed30(ms_SinCosTable[nWhole * 2 + 1]);
 
-	GFixed30 FixedResult = TableSin + TableCos * F30Delte;
+	GFixed30 FixedResult = TableSin + TableCos * F30Delte -TableSin * F30Delte * F30Delte * GFixed30(0, 1, 2) ;
 
 	//if (nItem >= 1) FixedResult += TableCos * F30Delte;
 	//if (nItem >= 2) FixedResult +=-TableSin * F30Delte * F30Delte * GFixed30(0, 1, 2);
