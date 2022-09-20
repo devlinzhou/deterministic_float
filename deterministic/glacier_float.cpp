@@ -122,9 +122,29 @@ void GFloat::Init()
 
 static inline int32_t Sin_Table(const GFloat value, GFixed30& Delta)
 {
-	GFloat		TMod = value * GFloat::Pi_TwoInv();
+	int64_t TRaw = value.getfraction() * (int64_t)GFixed30(0, 159154943, 1000000000).rawInt32;
+	int32_t exp = value.getexponent() - 127;
+
+	int64_t NewRaw = 0;
+	GFixed30    TTF30Fraction(0);
+	if (exp > 0)
+	{
+		NewRaw = TRaw << exp;
+	}
+	else
+	{
+		NewRaw = TRaw >> -exp;
+	}
+		
+
+
+	TTF30Fraction = GFixed30(NewRaw & 0x3FFFFFFF);
+
+	GFloat		TMod = value  *GFloat::Pi_TwoInv();
 	GFloat		Fraction = TMod - GFloat::Floor(TMod); // Fraction > 0
 	GFixed30    F30Fraction = GFixed30::FromGFloat(Fraction);
+
+	F30Fraction = TTF30Fraction;
 
 	int32_t TWhole = F30Fraction.rawInt32 >> (30 - GFloat::ms_TriTableBit);
 
@@ -157,7 +177,7 @@ GFloat GFloat::Sin(const GFloat value)
 	GFixed30 TableSin = GFixed30(ms_SinCosTable[nWhole * 2]);
 	GFixed30 TableCos = GFixed30(ms_SinCosTable[nWhole * 2 + 1]);
 
-	GFixed30 FixedResult = TableSin + TableCos * F30Delte -TableSin * F30Delte * F30Delte * GFixed30(0, 1, 2) ;
+	GFixed30 FixedResult = TableSin+TableCos * F30Delte; //-TableSin * F30Delte * F30Delte * GFixed30(0, 1, 2);
 
 	//if (nItem >= 1) FixedResult += TableCos * F30Delte;
 	//if (nItem >= 2) FixedResult +=-TableSin * F30Delte * F30Delte * GFixed30(0, 1, 2);
