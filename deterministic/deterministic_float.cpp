@@ -581,6 +581,11 @@ inline void FunError( int NCount, std::string name, float RMin, float RMax,
 		return BestStart.rawint32 ;
 	}
 
+	void Test_BenchMark()
+	{
+	
+	}
+
 };
 
 
