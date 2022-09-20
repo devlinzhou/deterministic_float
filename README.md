@@ -51,33 +51,31 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
         <th align="center" colspan = "2" >Win 12900H</th>
         <th align="center" colspan = "2" >iOS A15</th>
         <th align="center" colspan = "2" >OSX M1pro</th>
-        <th align="center" colspan = "2" >Android</th>
     </tr>
     <tr>
         <td > </td>
         <td >float</td><td >GFloat</td><td >float</td><td >GFloat</td>
         <td >float</td><td >GFloat</td><td >float</td><td >GFloat</td>
-        <td >float</td><td >GFloat</td>
     </tr>
     <tr>
         <td>Add</td><td>1.47ms</td><td >4.3ms</td><td>1.20ms</td><td>2.79ms</td>
-        <td>1.36ms</td><td >2.14ms</td><td>1.41ms</td><td>2.38ms</td><td></td><td></td>
+        <td>1.36ms</td><td >2.14ms</td><td>1.41ms</td><td>2.38ms</td>
     </tr>
     <tr>
         <td>Mul</td><td>1.58ms</td><td >2.0ms</td><td>1.25ms</td><td>1.54ms</td>
-        <td>1.42ms</td><td>1.38ms</td><td>1.51ms</td><td>1.56ms</td><td></td><td></td>
+        <td>1.42ms</td><td>1.38ms</td><td>1.51ms</td><td>1.56ms</td>
     </tr>
       <tr>
         <td>Sin</td><td>12.08ms</td><td >15.25ms</td><td>10.57ms</td><td>7.68ms</td>
-        <td>2.84ms</td><td>6.65ms</td><td>2.89ms</td><td>7.65ms</td><td></td><td></td>
+        <td>2.84ms</td><td>6.65ms</td><td>2.89ms</td><td>7.65ms</td>
     </tr>
       <tr>
         <td>Sqrt</td><td>1.54ms</td><td >11.46ms</td><td>1.03ms</td><td> 7.73ms</td>
-        <td>1.14ms </td><td>7.75ms </td><td>1.20ms</td><td>8.91ms</td><td></td><td></td>
+        <td>1.14ms </td><td>7.75ms </td><td>1.20ms</td><td>8.91ms</td><
     </tr>
       <tr>
         <td>Exp</td><td>3.33ms</td><td >35.06ms</td><td>3.06ms</td><td>28.20ms</td>
-        <td>7.24ms</td><td>19.70ms</td><td>7.84ms</td><td>22.01ms</td><td></td><td></td>
+        <td>7.24ms</td><td>19.70ms</td><td>7.84ms</td><td>22.01ms</td>
     </tr>
     </table>
 	
@@ -88,8 +86,8 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
 |Target Platform| Compiler| Project |
 |:--|:--|:--|
 |Win|Visual Studio 2022| deterministic/deterministic_float.sln|
-|MacOS|XCode| deterministic/deterministic_float.xcodeproj |
-|iOS|XCode| deterministic/deterministic_float_ios.xcodeproj |
+|MacOS|XCode 13.4| deterministic/deterministic_float.xcodeproj |
+|iOS|XCode 13.4| deterministic/deterministic_float_ios.xcodeproj |
 |Android||todo|
 
 ## Current Support Platform For Test&Benchmark 

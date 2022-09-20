@@ -252,21 +252,45 @@ GFloat GFloat::ASin(const GFloat value)
 }
 GFloat GFloat::ACos(const GFloat value)
 {
-	if ((value > One()) || (value < -One()))
+
+	constexpr GFloat TOne =  GFloat::FromRaw32( One().rawint32 - 0x1000  );
+	
+	if( value > TOne )
 	{
 		return Zero();
+	}
+	else if ( value < -TOne)
+	{
+		return Pi();
 	}
 	else
 	{
 		//float f = acosf(value.toFloat());
 
 
-		GFixed29 x1 = GFixed29::FromGFloat(value);
+		GFixed29 x1 = GFixed29::FromGFloat(value);// - GFixed29(0, 1, 2);
 		GFixed29 x2 = x1 * x1;
 
 		GFixed29 TResult = GFixed29(1, 5707963, 10000000) - x1 * (GFixed29(1, 0, 2) + x2 * (GFixed29(0, 1, 6) + x2 * (GFixed29(0, 3, 40) + x2 * GFixed29(0, 5, 112))));
 
-		return (TResult).ToGFloat();
+		GFixed29 x3 = x2 * x1;
+		GFixed29 x4 = x3 * x1;
+		GFixed29 x5 = x4 * x1;
+		GFixed29 x6 = x5 * x1;
+
+
+
+		GFixed29 TResult2 = 
+			GFixed29(1,  4719755, 100000000) - 
+			GFixed29(0,  57735, 100000) * (
+				GFixed29(2, 0, 1) * x1 +
+				GFixed29(0, 2, 3) * x2 +
+				GFixed29(0, 8, 9) * x3 +
+				GFixed29(1, 1, 27) * x4 +
+				GFixed29(1, 203, 405) * x5 +
+				GFixed29(2, 76, 254) * x6);
+
+		return TResult.ToGFloat();
 
 	}
 }
