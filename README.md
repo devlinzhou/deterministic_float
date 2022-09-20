@@ -76,7 +76,7 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
         <td>1.14ms </td><td>7.75ms </td><td>1.20ms</td><td>8.91ms</td><td></td><td></td>
     </tr>
       <tr>
-        <td>Exp</td><td></td><td ></td><td>3.06ms</td><td>28.20ms</td>
+        <td>Exp</td><td>3.33ms</td><td >35.06ms</td><td>3.06ms</td><td>28.20ms</td>
         <td>7.24ms</td><td>19.70ms</td><td>7.84ms</td><td>22.01ms</td><td></td><td></td>
     </tr>
     </table>
