@@ -465,9 +465,7 @@ GFloat GFloat::InvSqrt(const GFloat value )
 	{
 		Fixed30.rawInt32 >>= 1;
 		exp += 1;
-		//return Zero();
 		Start =  GFixed30(1, 171, 1000);
-
 	}
 	else
 	{
@@ -479,18 +477,11 @@ GFloat GFloat::InvSqrt(const GFloat value )
 
 	constexpr GFixed30 F1_5(1, 1, 2);
 
-	//GFixed30  Start(0,1,2);
-
 	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
 	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
 	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
-	//Start = Start * (F1_5 - (Fixed30 * Start) * Start);
-	//Start = Start * (F1_5 - (Fixed30 * Start) * Start);
-	//Start = Start * (F1_5 - (Fixed30 * Start) * Start);
 
 	GFloat TResult = GFloat::Nomalize(Start.rawInt32, uint8_t(127 - GFixed30::GetTypeNumber() - (exp >> 1)));
-
-	GFloat Test = (value * TResult) * TResult;
 
 	return TResult;
 }
