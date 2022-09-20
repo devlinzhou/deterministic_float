@@ -454,7 +454,7 @@ public:
 		std::cout.precision(3);
 
 		Tstring << "|" << Name << "|" << std::setiosflags(std::ios::fixed) << std::setprecision(6) << avgerror * 100.f << " %|" << Maxabs * 100.f << " %|";
-		Tstring << std::setprecision(2) << time1 << " - " << time2 << "  (ms) |" << time1 / time2 << "|";
+		Tstring << std::setprecision(2) << time1 << " vs " << time2 << "  (ms) |" << time1 / time2 << "|";
 		Tstring << (time1 < time2 ? "$\\checkmark$" : "") << "|" <<( time1 > time2 ? "$\\checkmark$" : "" ) << "|" << std::endl;
 		std::cout << Tstring.str();
 
