@@ -337,7 +337,6 @@ public:
 		{
 			FileName = "_None.md";
 		}
-
 		
 #elif __OSX__ 
 		FileName = "../Test_BenchMark_OSX.md";
@@ -348,9 +347,13 @@ public:
 		std::stringstream Tstring;
 
 		std::time_t TNow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+#ifdef _MSC_VER 
 		char str[26];
 		ctime_s(str, sizeof str, &TNow);
-		
+#else
+		char* str = ctime(&TNow);
+#endif	
 		Tstring << "# GFloat Test And BenchMark" << std::endl;
 		Tstring << " * Test time : "<< str  << std::endl;
 
@@ -517,17 +520,15 @@ void TestGFloat::Run()
 {
 	GFloatTest FT(1000000);
 	
-	bool bBase = 0;
+	bool bBase = 1;
 	bool bTrigonometric = 1;
-	bool bTranscendental = 0;
+	bool bTranscendental = 1;
 
 
 	//FT.FindBest(0.f, 10000.f);
 
 	if( bBase )
 	{
-		//
-
 		FT.FunTest("**Add**",	-10000.f,  10000.f,  [&](int i)->float {return FT.fa[i] + FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] + FT.Gb[i]; });	
 		FT.FunTest("Sub",		-10000.f,  10000.f,  [&](int i)->float {return FT.fa[i] - FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] - FT.Gb[i]; });
 		FT.FunTest("**Mul**",	-10000.f,  10000.f,  [&](int i)->float {return FT.fa[i] * FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] * FT.Gb[i]; });
@@ -539,7 +540,6 @@ void TestGFloat::Run()
 		FT.FunTest("FromInt",	-100000.f, 100000.f, [&](int i)->float {return (float)((int)(FT.fa[i])); }, [&](int i)->GFloat { return GFloat((int)(FT.fa[i])); });
 		FT.FunTest("operator <", -10000.f, 10000.f, [&](int i)->float {return FT.fa[i] < FT.fb[i] ? FT.fa[i] : FT.fb[i]; }, [&](int i)->GFloat {return FT.Ga[i] < FT.Gb[i] ? FT.Ga[i] : FT.Gb[i]; });
 		FT.FunTest("operator -", -10000.f, 10000.f, [&](int i)->float {return -FT.fa[i]; }, [&](int i)->GFloat {return -FT.Ga[i]; });
-
 		FT.FunTest("Normalize", -10000.f, 10000.f, [&](int i)->float {return FT.fa[i]; }, [&](int i)->GFloat {return GFloat::Nomalize(FT.Ga[i].getfraction(), FT.Ga[i].getexponent()); });
 
 	}
