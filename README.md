@@ -5,8 +5,10 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     * Physics Engine (Bullet、PhysX)
     * AI Path Finding (Recast Navigation)
     * AI Engine
- * Compare the overall performance of float754 and GFloat numbers, They differ by no more than **100%**
-    * **Is the fastest soft floating point in the world**?
+ * Compare the overall performance of float754 and GFloat numbers, They differ by no more than **100%**, compare multiply and add function:
+    * Windows platform my GFloat's performance is 100% slower than float
+    * Apple platform GFloat's performance is only 40% slower than float
+    * **Is the fastest soft floating-point in the world**?
 
 ## IEEE-754 & My GFloat
 * IEEE-754 float
