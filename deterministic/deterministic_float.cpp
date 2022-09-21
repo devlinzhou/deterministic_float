@@ -494,6 +494,9 @@ inline void FunError( int NCount, std::string name, float RMin, float RMax,
 			double cf1 = (dc[i]);
 			double cf2 = (Gc[i].toDouble());
 
+			if( abs(cf1) < 0.0000000000001 )
+				continue;
+
 			double cAbs = abs((cf2 - cf1) / cf1 );
 			totalabs += cAbs;
 			nCount++;
