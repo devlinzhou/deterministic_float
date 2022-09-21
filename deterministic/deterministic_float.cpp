@@ -428,7 +428,7 @@ inline void FunError( int NCount, std::string name, float RMin, float RMax,
 				continue;
 			GFloat Gy = fun_G(i);
 
-			double ferror = (Gy.toDouble() - fy) / abs(fy);
+			double ferror = (Gy.toDouble() - fy);// / abs(fy);
 
 			fs << fa[i] << " " << ferror * 100.0 << std::endl;
 		}
@@ -494,18 +494,14 @@ inline void FunError( int NCount, std::string name, float RMin, float RMax,
 			double cf1 = (dc[i]);
 			double cf2 = (Gc[i].toDouble());
 
-			if(abs(cf1) < 0.000001) continue;
-// 			if (isinf(cf2) || isnan(cf2))
-// 			{
-// 				std::cout << "isinf(cf2) || isnan(cf2)   " << i << std::endl;
-// 			}
-
 			double cAbs = abs((cf2 - cf1) / cf1 );
 			totalabs += cAbs;
 			nCount++;
-			if (Maxabs < cAbs){
+			if (Maxabs < cAbs)
+			{
 				Maxabs = cAbs;
-				maxi = i;}
+				maxi = i;
+			}
 
 			f1 += abs(cf1);
 			f2 += abs(cf2);
@@ -528,7 +524,6 @@ inline void FunError( int NCount, std::string name, float RMin, float RMax,
 	{
 		std::minstd_rand gen;
 		std::uniform_real_distribution<> dis(RMin, RMax);
-
 		for (int i = 0; i < N; i++) {
 			fa[i] = (float)dis(gen);
 			fb[i] = (float)dis(gen);
@@ -538,8 +533,6 @@ inline void FunError( int NCount, std::string name, float RMin, float RMax,
 			Gb[i] = GFloat::FromFloat(fb[i]);
 			Gc[i] = GFloat(0);
 		}
-
-
 		for (int i = 0; i < N; i++) {
 			fc[i] = 1.f / sqrtf(fa[i]);
 			Gc[i] = GFloat::InvSqrt(Ga[i]);
@@ -548,8 +541,7 @@ inline void FunError( int NCount, std::string name, float RMin, float RMax,
 		float fMaxAbs = 100000000.f;
 		GFloat BestStart = GFloat::Zero();
 		for( GFloat GStart = GFloat(0,8,10); GStart < GFloat(0,9,10); GStart += GFloat(0,1,1000))
-		{
-			
+		{		
 			float fabs = 0;
 			for (int i = 0; i < N; i++)
 			{
@@ -570,9 +562,7 @@ inline void FunError( int NCount, std::string name, float RMin, float RMax,
 		}
 
 		std::cout << "fMaxAbs   "  << fMaxAbs<< std::endl;
-
 		std::cout << "Best GStart  " << BestStart.rawint32 << "  " << BestStart.toFloat() << std::endl;
-
 		return BestStart.rawint32 ;
 	}
 
@@ -583,16 +573,13 @@ void TestGFloat::Run()
 {
 	GFloatTest FT(1000000);
 
-	bool bErrortest = 0;
+	bool bErrortest = 1;
 	if( bErrortest)
 	{
-		float fstart = 1.580f * 1000 ;
-
+		float fstart = 1.580f ;
 		//FT.FunError(1000, "ACos", -1.f, 1.f, [&](int i)->float {return acosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ACos( FT.Ga[i]); });
-		//FT.FunError(1000, "ASin", -fstart, fstart, [&](int i)->float {return asinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });
-		
+		//FT.FunError(1000, "ASin", -fstart, fstart, [&](int i)->float {return asinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });	
 		FT.FunError(1256, "Sin", -fstart, fstart, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
-
 return;	
 	}
 
@@ -615,17 +602,17 @@ return;
 		FT.FunTest("Whole",		-100000.f, 100000.f, [&](int i)->float {return (float)((int)(FT.fa[i])); },	[&](int i)->double {return (double)((int)(FT.da[i])); }, [&](int i)->GFloat { return GFloat(FT.Ga[i].GetWhole()); });
 		FT.FunTest("WholeFrac", -100000.f, 100000.f, [&](int i)->float {return (float)(FT.fa[i]); },		[&](int i)->double {return (double)(FT.da[i]); },	[&](int i)->GFloat { GFloat f; return GFloat(FT.Ga[i].GetWhole(f)) + f; });
 		FT.FunTest("FromInt",	-100000.f, 100000.f, [&](int i)->float {return (float)((int)(FT.fa[i])); }, [&](int i)->double {return (double)((int)(FT.da[i])); }, [&](int i)->GFloat { return GFloat((int)(FT.fa[i])); });
-		FT.FunTest("operator <", -10000.f, 10000.f,  [&](int i)->float {return FT.fa[i]<FT.fb[i]?FT.fa[i]:FT.fb[i]; },[&](int i)->double {return FT.da[i]<FT.db[i]?FT.da[i]:FT.db[i]; }, [&](int i)->GFloat {return FT.Ga[i]<FT.Gb[i]?FT.Ga[i]:FT.Gb[i];});
-		FT.FunTest("operator -", -10000.f, 10000.f,  [&](int i)->float {return -FT.fa[i]; },				[&](int i)->double {return -FT.da[i]; },			[&](int i)->GFloat {return -FT.Ga[i]; });
-		FT.FunTest("Normalize",  -10000.f, 10000.f,  [&](int i)->float {return FT.fa[i]; },					[&](int i)->double {return FT.da[i]; },				[&](int i)->GFloat {return GFloat::Nomalize(FT.Ga[i].getfraction(), FT.Ga[i].getexponent()); });
+		FT.FunTest("<",			-10000.f,  10000.f,  [&](int i)->float {return FT.fa[i]<FT.fb[i]?FT.fa[i]:FT.fb[i]; },[&](int i)->double {return FT.da[i]<FT.db[i]?FT.da[i]:FT.db[i]; }, [&](int i)->GFloat {return FT.Ga[i]<FT.Gb[i]?FT.Ga[i]:FT.Gb[i];});
+		FT.FunTest("-()",		-10000.f,  10000.f,  [&](int i)->float {return -FT.fa[i]; },				[&](int i)->double {return -FT.da[i]; },			[&](int i)->GFloat {return -FT.Ga[i]; });
+		FT.FunTest("Normalize", -10000.f,  10000.f,  [&](int i)->float {return FT.fa[i]; },					[&](int i)->double {return FT.da[i]; },				[&](int i)->GFloat {return GFloat::Nomalize(FT.Ga[i].getfraction(), FT.Ga[i].getexponent()); });
 
 	}
 
 	if(bTrigonometric)
 	{
-		FT.FunTest("**Sin**",	-10000.f, 10000.f,	[&](int i)->float {return sinf(FT.fa[i]); },			[&](int i)->double {return sin(FT.da[i]); },		[&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
+		FT.FunTest("**Sin**",	-10.f, 10.f,	[&](int i)->float {return sinf(FT.fa[i]); },			[&](int i)->double {return sin(FT.da[i]); },		[&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
 		//return;
-		FT.FunTest("Cos",		-10000.f, 10000.f,	[&](int i)->float {return cosf(FT.fa[i]); },			[&](int i)->double {return cos(FT.da[i]); },		[&](int i)->GFloat {return GFloat::Cos(FT.Ga[i]); });
+		FT.FunTest("Cos",		-10.f, 10.f,	[&](int i)->float {return cosf(FT.fa[i]); },			[&](int i)->double {return cos(FT.da[i]); },		[&](int i)->GFloat {return GFloat::Cos(FT.Ga[i]); });
 		FT.FunTest("SinCos",	-10000.f, 10000.f,	[&](int i)->float {return sinf(FT.fa[i])+cosf(FT.fa[i]);}, [&](int i)->double {return sin(FT.da[i])+cos(FT.da[i]); },[&](int i)->GFloat {GFloat fs, fc;  GFloat::SinCos(FT.Ga[i], fs, fc); return fs + fc; });
 		FT.FunTest("Tan",		-1.57f, 1.57f,		[&](int i)->float {return tanf(FT.fa[i]); },			[&](int i)->double {return tan(FT.da[i]); },		[&](int i)->GFloat {return GFloat::Tan(FT.Ga[i]); });
 		FT.FunTest("ASin",		-1.f, 1.f,			[&](int i)->float {return asinf(FT.fa[i]); },			[&](int i)->double {return asin(FT.da[i]); },		[&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });
