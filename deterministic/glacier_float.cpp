@@ -64,6 +64,11 @@ public:
 		return GFixedType32(((int64_t)rawInt32 * (int64_t)b.rawInt32) >> FractionNumType);
 	}
 
+	inline constexpr GFixedType32 operator /(GFixedType32 b) const
+	{
+		return GFixedType32(((((int64_t)rawInt32)<<FractionNumType )/ (int64_t)b.rawInt32));
+	}
+
 	static inline constexpr GFixedType32 FromGFloat( const GFloat Value)
 	{
 		int32_t exp = Value.getexponent() - 127 + GFixedType32<FractionNumType>::GetTypeNumber();
@@ -278,9 +283,11 @@ GFloat GFloat::ASin(const GFloat value)
 		int32_t nLow = -ms_TriCount >> 2;
 		int32_t nHigh = ms_TriCount >> 2;
 
+		int32_t nMiddle = 0;
+
 		while ( (nLow != nHigh) && (nLow < (nHigh-1)))
 		{
-			int32_t nMiddle = (nLow + nHigh) >>1;
+			nMiddle = (nLow + nHigh) >>1;
 
 			if( ms_SinCosTable[(nMiddle&(ms_TriCount-1))*2] <= FValue.rawInt32 )
 			{
@@ -291,8 +298,29 @@ GFloat GFloat::ASin(const GFloat value)
 				nHigh = nMiddle;
 			}
 		}
-		
-		return GFloat(nLow) * Pi() / GFloat(ms_TriCount >> 1);
+		GFixed30 F30Pi_half(1,570796327,1000000000 );
+
+		GFixed30 TSin( ms_SinCosTable[(nMiddle & (ms_TriCount - 1)) * 2]);
+		GFixed30 TCos( ms_SinCosTable[(nMiddle & (ms_TriCount - 1)) * 2+1]);
+
+
+		int64_t Traw = F30Pi_half.rawInt32 * (int64_t)nLow;
+
+		GFixed30 AlignResult = GFixed30( (int32_t)(Traw >> (ms_TriTableBit - 2) ));
+
+		GFixed30 Delta = FValue - AlignResult;
+
+		GFixed30 TDelta = (TCos * Delta) / TSin;
+		GFixed30 TResult = AlignResult;
+		//if( nLow > 48)
+		//	TResult = AlignResult + (TSin * Delta) / TCos;
+
+		if(nLow < 0)
+		{
+		//	TResult = AlignResult + (TSin * Delta) / TCos;
+		}
+
+		return TResult.ToGFloat();
     }
 }
 GFloat GFloat::ACos(const GFloat value)

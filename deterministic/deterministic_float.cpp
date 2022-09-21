@@ -581,11 +581,11 @@ void TestGFloat::Run()
 {
 	GFloatTest FT(1000000);
 
-	bool bErrortest = 0;
+	bool bErrortest = 1;
 	if( bErrortest)
 	{
 		float fstart = 1.580f ;
-		//FT.FunError(1000, true, "ACos", -0.f, 0.95f, [&](int i)->double {return acos(FT.da[i]); }, [&](int i)->GFloat {return GFloat::ACos( FT.Ga[i]); });
+		FT.FunError(1000, false, "ACos", -0.f, 0.95f, [&](int i)->double {return acos(FT.da[i]); }, [&](int i)->GFloat {return GFloat::ACos( FT.Ga[i]); });
 		FT.FunError(1000, false, "ASin", -1.f, 1.f, [&](int i)->double {return asin(FT.da[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });	
 		//FT.FunError(1256, "Sin", -fstart, fstart, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
 return;	
