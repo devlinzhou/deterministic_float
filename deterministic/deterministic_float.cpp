@@ -381,16 +381,18 @@ public:
 		m_string << Tstring.str();
 	}
 
-inline void FunError( int NCount, std::string name, float RMin, float RMax,
-	std::function<float(int i)> fun_f,
+inline void FunError( int NCount, bool bRelative, std::string name, float RMin, float RMax,
+	std::function<double(int i)> fun_f,
 	std::function<GFloat(int i)> fun_G)
 {
-	std::ofstream fs("../GFloat_" + name + ".gp");
+	std::string CurrentType = bRelative ? "Relative" : "Absolute";
+
+	std::ofstream fs("../GFloat_" + name + "_" + CurrentType + ".gp");
 
 	fs << "set term svg size 640, 480" << std::endl;
-	fs << "set output \"GFloat_" + name + ".svg\"" << std::endl;
+	fs << "set output \"GFloat_" + name + "_" + CurrentType + ".svg\"" << std::endl;
 	fs << R"gp(set format y "%g%%")gp" << std::endl;
-	fs << "set title \"GFloat::" + name + "() Relative Error" << std::endl;
+	fs << "set title \"GFloat::" + name + "() " + CurrentType + " Error\"" << std::endl;
 	fs << "unset key" << std::endl;
 	fs << "plot \"-\" with points" << std::endl;
 
@@ -417,20 +419,23 @@ inline void FunError( int NCount, std::string name, float RMin, float RMax,
 	else
 	{
 		for (int i = 0; i < TN; i++) {
-			fa[i] = (float)dis(gen);
-			Ga[i] = GFloat::FromFloat(fa[i]);
+			da[i] = dis(gen);
+			Ga[i] = GFloat::FromFloat((float)da[i]);
 		}
 
 		for (int i = 0; i < TN; i++) {
-			double fy = (double)fun_f(i);
+			double fy = fun_f(i);
 
-			if (abs(fy) < 0.00000001f)
-				continue;
+			//if (abs(fy) < 0.00000001f)
+			//	continue;
 			GFloat Gy = fun_G(i);
 
-			double ferror = (Gy.toDouble() - fy);// / abs(fy);
+			double ferror = ( (Gy.toDouble() - fy )/( bRelative ? abs(fy): 1.) );
 
-			fs << fa[i] << " " << ferror * 100.0 << std::endl;
+			fs << da[i] << " " << ferror * 100.0 << std::endl;
+
+			//fs << da[i] << " " << fy  << std::endl;
+			//fs << da[i] << " " << Gy.toDouble() << std::endl;
 		}
 	}
 
@@ -580,9 +585,9 @@ void TestGFloat::Run()
 	if( bErrortest)
 	{
 		float fstart = 1.580f ;
-		//FT.FunError(1000, "ACos", -1.f, 1.f, [&](int i)->float {return acosf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ACos( FT.Ga[i]); });
-		//FT.FunError(1000, "ASin", -fstart, fstart, [&](int i)->float {return asinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });	
-		FT.FunError(1256, "Sin", -fstart, fstart, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
+		//FT.FunError(1000, true, "ACos", -0.f, 0.95f, [&](int i)->double {return acos(FT.da[i]); }, [&](int i)->GFloat {return GFloat::ACos( FT.Ga[i]); });
+		FT.FunError(1000, false, "ASin", -1.f, 1.f, [&](int i)->double {return asin(FT.da[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });	
+		//FT.FunError(1256, "Sin", -fstart, fstart, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
 return;	
 	}
 
