@@ -581,7 +581,7 @@ void TestGFloat::Run()
 {
 	GFloatTest FT(1000000);
 
-	bool bErrortest = 1;
+	bool bErrortest = 0;
 	if( bErrortest)
 	{
 		float fstart = 1.580f ;

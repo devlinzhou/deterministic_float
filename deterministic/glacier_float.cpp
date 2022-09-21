@@ -280,47 +280,19 @@ GFloat GFloat::ASin(const GFloat value)
     {
 		GFixed30 FValue =  GFixed30::FromGFloat(value);
 
-		int32_t nLow = -ms_TriCount >> 2;
-		int32_t nHigh = ms_TriCount >> 2;
-
-		int32_t nMiddle = 0;
-
-		while ( (nLow != nHigh) && (nLow < (nHigh-1)))
-		{
-			nMiddle = (nLow + nHigh) >>1;
-
-			if( ms_SinCosTable[(nMiddle&(ms_TriCount-1))*2] <= FValue.rawInt32 )
-			{
-				nLow = nMiddle;
-			}
-			else
-			{
-				nHigh = nMiddle;
-			}
-		}
-		GFixed30 F30Pi_half(1,570796327,1000000000 );
-
-		GFixed30 TSin( ms_SinCosTable[(nMiddle & (ms_TriCount - 1)) * 2]);
-		GFixed30 TCos( ms_SinCosTable[(nMiddle & (ms_TriCount - 1)) * 2+1]);
 
 
-		int64_t Traw = F30Pi_half.rawInt32 * (int64_t)nLow;
+		GFixed29 x1 = GFixed29::FromGFloat(value);
+		GFixed29 x2 = x1 * x1;
 
-		GFixed30 AlignResult = GFixed30( (int32_t)(Traw >> (ms_TriTableBit - 2) ));
+		return (x1 * (GFixed29(1, 0, 2) +
+			x2 * (GFixed29(0, 1, 6) +
+				x2 * (GFixed29(0, 3, 40) +
+					x2 * (GFixed29(0, 5, 112) +
+						x2 * (GFixed29(0, 35, 1152) +
+							x2 * (GFixed29(0, 63, 2816)))))))).ToGFloat();
 
-		GFixed30 Delta = FValue - AlignResult;
-
-		GFixed30 TDelta = (TCos * Delta) / TSin;
-		GFixed30 TResult = AlignResult;
-		//if( nLow > 48)
-		//	TResult = AlignResult + (TSin * Delta) / TCos;
-
-		if(nLow < 0)
-		{
-		//	TResult = AlignResult + (TSin * Delta) / TCos;
-		}
-
-		return TResult.ToGFloat();
+		//return TResult.ToGFloat();
     }
 }
 GFloat GFloat::ACos(const GFloat value)
