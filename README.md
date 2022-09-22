@@ -6,9 +6,20 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     * AI Path Finding (Recast Navigation)
     * AI Engine
  * Compare the overall performance of float754 and GFloat numbers, They differ by no more than **100%**, compare multiply and add function:
-    * Windows platform my GFloat's performance is 100% slower than float
-    * Apple platform GFloat's performance is only 40% slower than float
+    * Windows platform my GFloat's performance is nearly 100% slower than float
+    * Apple platform(ARM64 CPU) GFloat's performance is only 40% slower than float
     * **Is the fastest soft floating-point in the world**?
+
+
+  * 跨平台的确定性浮点数，高性能的软件浮点数
+  * 你可以使用我的浮点数替代各种中间件的浮点数，从而实现待确定性的计算，实现帧同步游戏逻辑、加密货币计算逻辑也可以，例如：
+    * 物理引擎（Bullet、PhysX）
+    * AI 寻路（Recast Navigation）
+    * AI 引擎
+  * 整体上我的GFloat 与 IEEE754 硬件浮点数float 性能差距不到100%，也就是不到1倍差距。参考显卡衡量计算能力的乘加指令，主要比较乘法和加法函数的性能。
+    * windows平台上的的GFloat比float慢100%
+    * 苹果平台（ARM64 CPU)，我的GFloat仅慢40%
+    * **是否是世界上最快的软件浮点数**？
 
 ## IEEE-754 & My GFloat
 * IEEE-754 float
