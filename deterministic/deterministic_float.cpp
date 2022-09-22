@@ -579,13 +579,13 @@ inline void FunError( int NCount, bool bRelative, std::string name, float RMin, 
 	}
 
 };
+// why add 9, for Resist the c++ compiler optimizations
 
 #define GMYFun( a, c ) \
 {\
-	for (int j = 0; j < N; j+=10 )\
-	{  \
+	for (int j = 0; j < N; j+=9 )\
+	{\
         int i = j;GFloat f; \
-		(c) = (a);i++;\
 		(c) = (a);i++;\
 		(c) = (a);i++;\
 		(c) = (a);i++;\
@@ -611,6 +611,9 @@ void TestGFloat::Run()
         //FT.FunError(1256, "Sin", -fstart, fstart, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
         return;
     }
+
+   // FT.FunTest("Mul+Add",   -10000.f, 10000.f, [&](int N)->void {GMYFun(FT.fa[i]*FT.fb[i]+FT.fa[i],FT.fc[i])}, [&](int N)->void {GMYFun(FT.da[i] * FT.db[i] + FT.da[i], FT.dc[i])}, [&](int N)->void {GMYFun(FT.Ga[i] * FT.Gb[i] + FT.Ga[i], FT.Gc[i])});
+
     FT.FunTest("Add",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] + FT.fb[i], FT.fc[i])},   [&](int N)->void{GMYFun(FT.da[i] + FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] + FT.Gb[i], FT.Gc[i])});
 	FT.FunTest("Sub",	    -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] - FT.fb[i], FT.fc[i])},   [&](int N)->void{GMYFun(FT.da[i] - FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] - FT.Gb[i], FT.Gc[i] ) });
 	FT.FunTest("Mul",	    -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] * FT.fb[i], FT.fc[i])},   [&](int N)->void{GMYFun(FT.da[i] * FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] * FT.Gb[i], FT.Gc[i] ) });
