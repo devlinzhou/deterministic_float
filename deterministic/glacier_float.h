@@ -87,9 +87,6 @@ public:
 
 public:
 
-	
-
-
 	static void Init();
 
 	constexpr GFloat(const GFloat&) = default;
