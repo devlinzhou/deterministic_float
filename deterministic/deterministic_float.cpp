@@ -579,19 +579,13 @@ inline void FunError( int NCount, bool bRelative, std::string name, float RMin, 
 	}
 
 };
-// why add 9, for Resist the c++ compiler optimizations
+// why add 3, for Resist the c++ compiler optimizations
 
 #define GMYFun( a, c ) \
 {\
-	for (int j = 0; j < N; j+=9 )\
+	for (int j = 0; j < N; j+=3 )\
 	{\
         int i = j;GFloat f; \
-		(c) = (a);i++;\
-		(c) = (a);i++;\
-		(c) = (a);i++;\
-		(c) = (a);i++;\
-		(c) = (a);i++;\
-		(c) = (a);i++;\
 		(c) = (a);i++;\
 		(c) = (a);i++;\
 		(c) = (a);\

@@ -5,8 +5,8 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     * Physics Engine (Bullet、PhysX)
     * AI Path Finding (Recast Navigation)
     * AI Engine
- * Compare the overall performance of float754 and GFloat numbers, They differ by no more than **500%**, Refer to the multiply-add instructions for measuring the computing power of the graphics card. compare multiply and add function:
-    * Windows platform my GFloat's performance is nearly 400% slower than float
+ * Compare the overall performance of float754 and GFloat numbers, They differ by no more than 200%, Refer to the multiply-add instructions for measuring the computing power of the graphics card. compare multiply and add function:
+    * Windows platform(Intel i9-12900H) my GFloat's performance is nearly 200% slower than float
     * Apple platform(ARM64 CPU) GFloat's performance is  200% slower than float
 
 
@@ -15,9 +15,9 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     * 物理引擎（Bullet、PhysX）
     * AI 寻路（Recast Navigation）
     * AI 引擎
-  * 整体上我的GFloat 与 IEEE754 硬件浮点数float 性能差距 maybe 500%。参考显卡衡量计算能力的乘加指令，主要比较乘法和加法函数的性能。
-    * windows平台上 GFloat比float慢400%
-    * 苹果平台（ARM64 CPU)，GFloat比float慢200%
+  * 整体上我的GFloat 与 IEEE754 硬件浮点数float 性能差距 maybe 200%。参考显卡衡量计算能力的乘加指令，主要比较乘法和加法函数的性能。
+    * windows(Intel i9-12900H)平台上 GFloat比float慢200%
+    * 苹果(ARM64 CPU)平台上GFloat比float慢200%
  
 
 ## IEEE-754 & My GFloat
@@ -59,11 +59,11 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
 Platform|Win64 5950X|Win64 12900H | iOS A15 | MacOS M1 Pro | Android |
 |:--|:--:|:--: |:--:|:--:|:--:|
 | |float vs GFloat| float vs GFloat| float vs GFloat|float vs GFloat |float vs GFloat
-|add|1.47 vs 4.3 ms| 1.20 vs	2.79ms| 1.36 vs 2.14 ms|1.41 vs 2.38 ms |
-|Mul|1.58 vs 2.0 ms| 1.25 vs 1.54 ms| 1.42 vs 1.38 ms |1.51 vs 1.56 ms|
-|Sin|12.08 vs 5.71 ms|10.57 vs 7.68 ms| 2.84 vs 6.65 ms|2.89 vs 7.65 ms |
-|Sqrt|1.54 vs 11.46 ms|1.03 vs 7.73 ms|1.14 vs 7.75 ms |1.20 vs 8.91 ms|
-|Exp| 3.33 vs 35.06ms| 3.06 vs 28.20ms|7.24 vs 19.70 ms|7.84 vs 22.01 ms|
+|add|1.47 vs 4.3 ms| 0.58 vs	2.01ms| 1.36 vs 2.14 ms|1.41 vs 2.38 ms |
+|Mul|1.58 vs 2.0 ms| 0.42 vs 0.69 ms| 1.42 vs 1.38 ms |1.51 vs 1.56 ms|
+|Sin|12.08 vs 5.71 ms|8.6 vs 3.15 ms| 2.84 vs 6.65 ms|2.89 vs 7.65 ms |
+|Sqrt|1.54 vs 11.46 ms|0.7 vs 6.2 ms|1.14 vs 7.75 ms |1.20 vs 8.91 ms|
+|Exp| 3.33 vs 35.06ms| 2.15 vs 24.52ms|7.24 vs 19.70 ms|7.84 vs 22.01 ms|
 	
 ## How to start
  * Four OS platform projects for fast and easy to start test&benchmark
