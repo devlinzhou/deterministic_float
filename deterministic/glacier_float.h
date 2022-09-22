@@ -101,7 +101,7 @@ public:
 
     explicit inline GFloat( int32_t TValue)
     {
-		*this= Nomalize((int64_t)TValue, 127);
+		*this= Normalize((int64_t)TValue, 127);
 		//*this = FromFractionAndExp(TValue, 127);
     }
 
@@ -120,7 +120,7 @@ public:
 
         int64_t TRawn = (TValue << exp ) / b;
 
-        *this = Nomalize(TRawn, uint8_t(127 - exp));
+        *this = Normalize(TRawn, uint8_t(127 - exp));
     }
 
     /*inline Float32(float value )
@@ -206,7 +206,7 @@ public:
 		return (dResult);
 	}
 
-    static inline GFloat Nomalize(int64_t Trawvalue, uint8_t Texponent)
+    static inline GFloat Normalize(int64_t Trawvalue, uint8_t Texponent)
     {
 		uint32_t index = GBitScanReverse64(abs(Trawvalue ));
 
@@ -232,7 +232,7 @@ public:
 // 		return 
 // 	}
 
-	inline GFloat operator +(GFloat b) const
+	inline  GFloat operator +(GFloat b) const
 	{
 		int32_t a_e = getexponent() -127;
 		int32_t b_e = b.getexponent()-127;
@@ -243,7 +243,7 @@ public:
 			int64_t b64 = b.ToInt64();
 			int64_t Result = a64 + b64;
 			//GFloat GR = ;
-			return Nomalize(Result, (uint8_t)(127 - 32));
+			return Normalize(Result, (uint8_t)(127 - 32));
 		}
 		else
 		{
@@ -271,7 +271,7 @@ public:
 					FractionValue = b_f + (a_f >> -deltaexp);
 					c_exponent = b_exp;
 				}
-				return Nomalize(FractionValue, (uint8_t)c_exponent);
+				return Normalize(FractionValue, (uint8_t)c_exponent);
 			}
 			else if (deltaexp >= 23)
 			{
@@ -336,7 +336,7 @@ public:
         int64_t Trawvalue = ((int64_t)getfraction() << 32) / nDivid;
         uint8_t Texponent = (uint8_t)(getexponent() - b.getexponent() + 127 - 32);
 
-        return  GFloat::Nomalize(Trawvalue, Texponent);
+        return  GFloat::Normalize(Trawvalue, Texponent);
     }
 
     inline bool operator > (GFloat b) const

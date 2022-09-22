@@ -85,7 +85,7 @@ public:
 
 	inline constexpr GFloat ToGFloat() const
 	{
-		return GFloat::Nomalize((int64_t)rawInt32, uint8_t(127 - GFixedType32<FractionNumType>::GetTypeNumber()));
+		return GFloat::Normalize((int64_t)rawInt32, uint8_t(127 - GFixedType32<FractionNumType>::GetTypeNumber()));
 	}
 
 	int32_t rawInt32;
@@ -467,7 +467,7 @@ public:
 
 	inline constexpr GFloat ToGFloat() const
 	{
-		return GFloat::Nomalize((int64_t)rawInt64, uint8_t(127 - GFixedType64<FractionNumType>::GetTypeNumber()));
+		return GFloat::Normalize((int64_t)rawInt64, uint8_t(127 - GFixedType64<FractionNumType>::GetTypeNumber()));
 	}
 
 	int64_t rawInt64;
@@ -502,7 +502,7 @@ GFloat GFloat::InvSqrt(const GFloat value )
 	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
 	Start = Start * (F1_5 - (Fixed30 * Start) * Start);
 
-	GFloat TResult = GFloat::Nomalize(Start.rawInt32, uint8_t(127 - GFixed30::GetTypeNumber() - (exp >> 1)));
+	GFloat TResult = GFloat::Normalize(Start.rawInt32, uint8_t(127 - GFixed30::GetTypeNumber() - (exp >> 1)));
 
 	return TResult;
 }
