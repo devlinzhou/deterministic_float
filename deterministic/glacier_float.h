@@ -212,7 +212,7 @@ public:
         }
     }
 
-    inline int64_t ToInt64() const
+    inline constexpr int64_t ToInt64() const
     {
         return ((int64_t)getfraction()) << (32 + getexponent() - 127); // -40 < exp < 40
     }
@@ -222,7 +222,45 @@ public:
 //         return 
 //     }
 
-    GFORCE_INLINE GFloat operator +(GFloat b) const
+    inline GFloat Add( const GFloat b ) const
+    {
+        int32_t a_f = getfraction();
+        if (a_f == 0) return b;
+        int32_t b_f = b.getfraction();
+        if (b_f == 0) return *this;
+
+        int32_t a_exp = getexponent();
+        int32_t b_exp = b.getexponent();
+
+        int32_t deltaexp = a_exp - b_exp;
+
+        if (-23 < deltaexp && deltaexp < 23)
+        {
+            int32_t FractionValue = 0;
+            int32_t c_exponent;
+            if (deltaexp >= 0)
+            {
+                FractionValue = a_f + (b_f >> deltaexp);
+                c_exponent = a_exp;
+            }
+            else
+            {
+                FractionValue = b_f + (a_f >> -deltaexp);
+                c_exponent = b_exp;
+            }
+            return Normalize(FractionValue, (uint8_t)c_exponent);
+        }
+        else if (deltaexp >= 23)
+        {
+            return *this;
+        }
+        else
+        {
+            return b;
+        }
+    }
+
+    GFORCE_INLINE GFloat operator +( const GFloat b) const
     {
         int32_t a_e = getexponent() -127;
         int32_t b_e = b.getexponent()-127;
@@ -237,40 +275,7 @@ public:
         }
         else
         {
-            int32_t a_f = getfraction();
-            if (a_f == 0) return b;
-            int32_t b_f = b.getfraction();
-            if (b_f == 0) return *this;
-
-            int32_t a_exp = getexponent();
-            int32_t b_exp = b.getexponent();
-
-            int32_t deltaexp = a_exp - b_exp;
-
-            if (-23 < deltaexp && deltaexp < 23)
-            {
-                int32_t FractionValue = 0;
-                int32_t c_exponent;
-                if (deltaexp >= 0)
-                {
-                    FractionValue = a_f + (b_f >> deltaexp);
-                    c_exponent = a_exp;
-                }
-                else
-                {
-                    FractionValue = b_f + (a_f >> -deltaexp);
-                    c_exponent = b_exp;
-                }
-                return Normalize(FractionValue, (uint8_t)c_exponent);
-            }
-            else if (deltaexp >= 23)
-            {
-                return *this;
-            }
-            else
-            {
-                return b;
-            }
+            return Add(b);
         }
     }
 
