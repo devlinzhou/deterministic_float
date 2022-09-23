@@ -208,14 +208,11 @@ public:
         else
         {
             uint32_t uDelta = index - 22;
-            return GFloat::FromFractionAndExp((int32_t)( Trawvalue >> uDelta), uint8_t(Texponent + uDelta));
+            return GFloat::FromFractionAndExp((int32_t)(Trawvalue >> uDelta), uint8_t(Texponent + uDelta));
         }
     }
 
-    inline constexpr int64_t ToInt64() const
-    {
-        return ((int64_t)getfraction()) << (32 + getexponent() - 127); // -40 < exp < 40
-    }
+
 
 //     inline bool CanToInt64() const
 //     {
@@ -260,6 +257,11 @@ public:
         }
     }
 
+    inline constexpr int64_t ToInt64() const
+    {
+        return ((int64_t)getfraction_NoShift()) << (32 - 8 + getexponent() - 127); // -40 < exp < 40
+    }
+
     GFORCE_INLINE GFloat operator +( const GFloat b) const
     {
         int32_t a_e = getexponent() -127;
@@ -270,7 +272,6 @@ public:
             int64_t a64 = ToInt64();
             int64_t b64 = b.ToInt64();
             int64_t Result = a64 + b64;
-            //GFloat GR = ;
             return Normalize(Result, (uint8_t)(127 - 32));
         }
         else
