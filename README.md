@@ -15,8 +15,8 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     * 物理引擎（Bullet、PhysX）
     * AI 寻路（Recast Navigation）
     * AI 引擎
-  * 整体上我的GFloat 与 IEEE754 硬件浮点数float 性能差距 maybe 200%。参考显卡衡量计算能力的乘加指令，主要比较乘法和加法函数的性能。
-    * windows(Intel i9-12900H)平台上 GFloat比float慢200%
+  * 整体上GFloat与IEEE754的硬件浮点数float，性能差距在200%以内。参考显卡衡量计算能力的乘加指令，主要比较乘法和加法函数的性能：
+    * windows(Intel i9-12900H)平台上GFloat比float慢200%
     * 苹果(ARM64 CPU)平台上GFloat比float慢200%
  
 
