@@ -17,13 +17,15 @@
 
 #ifdef _MSC_VER
 #include <intrin.h>
+#define GFORCE_INLINE _forceinline
+#else
+#define GFORCE_INLINE inline   
 #endif
-
 
 class FloatIEEE_754 
 {
 public:
-	FloatIEEE_754()
+    FloatIEEE_754()
     {
         rawint32 = 0;
     }
@@ -39,46 +41,41 @@ public:
     };
 };
 
-
-
-class GFloat{
-
-
-
+class GFloat
+{
 public:
-	static inline constexpr GFloat Zero()		{ return GFloat(0,		  0xE9); };
-	static inline constexpr GFloat One()		{ return GFloat(0x400000, 0x69); };
-	static inline constexpr GFloat Half()		{ return GFloat(0x400000, 0x68); };
-	static inline constexpr GFloat Two()		{ return GFloat(0x400000, 0x6A); };
-    static inline constexpr GFloat Pi()			{ return GFloat(0x6487ef, 0x6a); };//Float(3,141592654, 1000000000); 
-	static inline constexpr GFloat Pi_Half()	{ return GFloat(0x6487ef, 0x69); };
-	static inline constexpr GFloat Pi_Quarter() { return GFloat(0x6487ef, 0x68); };
-	static inline constexpr GFloat Pi_Two()		{ return GFloat(0x6487ef, 0x6b); };
-	static inline constexpr GFloat Pi_Inv()		{ return GFloat(0x517cc1, 0x67); };
-	static inline constexpr GFloat Pi_TwoInv()	{ return GFloat(0x517cc1, 0x66); };
-	static inline constexpr GFloat e()			{ return GFloat(0x56fc2a, 0x6a); };
-	static inline constexpr GFloat e_Inv()		{ return GFloat(0x5e2d58, 0x67); };
+    static inline constexpr GFloat Zero()       { return GFloat(0,          0xE9); };
+    static inline constexpr GFloat One()        { return GFloat(0x400000,   0x69); };
+    static inline constexpr GFloat Half()       { return GFloat(0x400000,   0x68); };
+    static inline constexpr GFloat Two()        { return GFloat(0x400000,   0x6A); };
+    static inline constexpr GFloat Pi()         { return GFloat(0x6487ef,   0x6a); };//Float(3,141592654, 1000000000); 
+    static inline constexpr GFloat Pi_Half()    { return GFloat(0x6487ef,   0x69); };
+    static inline constexpr GFloat Pi_Quarter() { return GFloat(0x6487ef,   0x68); };
+    static inline constexpr GFloat Pi_Two()     { return GFloat(0x6487ef,   0x6b); };
+    static inline constexpr GFloat Pi_Inv()     { return GFloat(0x517cc1,   0x67); };
+    static inline constexpr GFloat Pi_TwoInv()  { return GFloat(0x517cc1,   0x66); };
+    static inline constexpr GFloat e()          { return GFloat(0x56fc2a,   0x6a); };
+    static inline constexpr GFloat e_Inv()      { return GFloat(0x5e2d58,   0x67); };
 
     static inline uint32_t GBitScanReverse64( uint64_t num)
     {
 #ifdef _MSC_VER
-		unsigned long Index;
-		_BitScanReverse64(&Index, num);
-		return Index;
+        unsigned long Index;
+        _BitScanReverse64(&Index, num);
+        return Index;
 #elif __GNUC__
-		auto nCount = __builtin_clzll(num);
-		return  nCount == 64 ? 0 : 63 - nCount;
+        auto nCount = __builtin_clzll(num);
+        return  nCount == 64 ? 0 : 63 - nCount;
 #else
+        for( int32_t nIndex = 63; nIndex >= 0; nIndex-- )
+        {
+            if (((uint64_t)1 << nIndex) & num)
+            {
+                return nIndex;
+            }
+        }
 
-		for( int32_t nIndex = 63; nIndex >= 0; nIndex-- )
-		{
-			if (((uint64_t)1 << nIndex) & num)
-			{
-				return nIndex;
-			}
-		}
-
-		return 0;
+        return 0;
 #endif
     }
 
@@ -87,25 +84,25 @@ public:
 
 public:
 
-	static void Init();
+    static void Init();
 
-	constexpr GFloat(const GFloat&) = default;
+    constexpr GFloat(const GFloat&) = default;
 
-	constexpr GFloat() : rawint32(0)
+    constexpr GFloat() : rawint32(0)
     {
 
     }
 
     explicit inline GFloat( int32_t TValue)
     {
-		*this= Normalize((int64_t)TValue, 127);
-		//*this = FromFractionAndExp(TValue, 127);
+        *this= Normalize((int64_t)TValue, 127);
+        //*this = FromFractionAndExp(TValue, 127);
     }
 
-	constexpr GFloat(int32_t Traw32, uint8_t exp ) :
-		rawint32((Traw32 << 8) | int32_t(exp))
-	{
-	}
+    constexpr GFloat(int32_t Traw32, uint8_t exp ) :
+        rawint32((Traw32 << 8) | int32_t(exp))
+    {
+    }
 
     explicit inline GFloat(int32_t Traw32, uint32_t a, uint32_t b)
     {
@@ -153,13 +150,13 @@ public:
 
     static inline constexpr GFloat FromFractionAndExp(int32_t Traw32, uint8_t exp)
     {
-		return GFloat(Traw32, exp);
+        return GFloat(Traw32, exp);
     }
 
     static inline GFloat FromFloat(float f)
     {
-		if (f == 0.f || f == -0.f)
-			return Zero();
+        if (f == 0.f || f == -0.f)
+            return Zero();
 
         FloatIEEE_754 TFloat754;
         TFloat754.rawint32 = *(int32_t*)&f;
@@ -174,38 +171,34 @@ public:
 
     float toFloat() const
     {
-		int32_t Texponent = getexponent() - 127;
-		if( -62 < Texponent &&  Texponent< 62 )
-		{
-			double dResult = Texponent >= 0 ?
-				((double)getfraction()) * double(((uint64_t)1) << Texponent):
-				((double)getfraction()) / double(((uint64_t)1) << -Texponent);
-
-			return float(dResult); 
-		}
-		else
-		{
-			double dT = pow(2, Texponent);
-			double dResult = getfraction() * dT;
-			return float(dResult);
-		}
-
-
-
+        int32_t Texponent = getexponent() - 127;
+        if( -62 < Texponent &&  Texponent< 62 )
+        {
+            double dResult = Texponent >= 0 ?
+                ((double)getfraction()) * double(((uint64_t)1) << Texponent):
+                ((double)getfraction()) / double(((uint64_t)1) << -Texponent);
+            return float(dResult); 
+        }
+        else
+        {
+            double dT = pow(2, Texponent);
+            double dResult = getfraction() * dT;
+            return float(dResult);
+        }
     }
 
-	double toDouble() const
-	{
-		int32_t Texponent = getexponent() - 127;
-		double dT = pow(2, Texponent);
-		double dResult = getfraction() * dT;
+    double toDouble() const
+    {
+        int32_t    Texponent    =    getexponent() - 127;
+        double dT = pow(2, Texponent);
+        double dResult = getfraction() * dT;
 
-		return (dResult);
-	}
+        return (dResult);
+    }
 
     static inline GFloat Normalize(int64_t Trawvalue, uint8_t Texponent)
     {
-		uint32_t index = GBitScanReverse64(abs(Trawvalue ));
+        uint32_t index = GBitScanReverse64(abs(Trawvalue ));
 
         if ( index <= 22 )
         {
@@ -219,67 +212,67 @@ public:
         }
     }
 
-	inline int64_t ToInt64() const
-	{
-		return ((int64_t)getfraction()) << (32 + getexponent() - 127); // -40 < exp < 40
-	}
+    inline int64_t ToInt64() const
+    {
+        return ((int64_t)getfraction()) << (32 + getexponent() - 127); // -40 < exp < 40
+    }
 
-// 	inline bool CanToInt64() const
-// 	{
-// 		return 
-// 	}
+//     inline bool CanToInt64() const
+//     {
+//         return 
+//     }
 
-	inline  GFloat operator +(GFloat b) const
-	{
-		int32_t a_e = getexponent() -127;
-		int32_t b_e = b.getexponent()-127;
+    GFORCE_INLINE GFloat operator +(GFloat b) const
+    {
+        int32_t a_e = getexponent() -127;
+        int32_t b_e = b.getexponent()-127;
 
-		if ((-32 < a_e && a_e < 8) && (-32 < b_e && b_e < 8))
-		{
-			int64_t a64 = ToInt64();
-			int64_t b64 = b.ToInt64();
-			int64_t Result = a64 + b64;
-			//GFloat GR = ;
-			return Normalize(Result, (uint8_t)(127 - 32));
-		}
-		else
-		{
-			int32_t a_f = getfraction();
-			if (a_f == 0) return b;
-			int32_t b_f = b.getfraction();
-			if (b_f == 0) return *this;
+        if ((-32 < a_e && a_e < 8) && (-32 < b_e && b_e < 8))
+        {
+            int64_t a64 = ToInt64();
+            int64_t b64 = b.ToInt64();
+            int64_t Result = a64 + b64;
+            //GFloat GR = ;
+            return Normalize(Result, (uint8_t)(127 - 32));
+        }
+        else
+        {
+            int32_t a_f = getfraction();
+            if (a_f == 0) return b;
+            int32_t b_f = b.getfraction();
+            if (b_f == 0) return *this;
 
-			int32_t a_exp = getexponent();
-			int32_t b_exp = b.getexponent();
+            int32_t a_exp = getexponent();
+            int32_t b_exp = b.getexponent();
 
-			int32_t deltaexp = a_exp - b_exp;
+            int32_t deltaexp = a_exp - b_exp;
 
-			if (-23 < deltaexp && deltaexp < 23)
-			{
-				int32_t FractionValue = 0;
-				int32_t c_exponent;
-				if (deltaexp >= 0)
-				{
-					FractionValue = a_f + (b_f >> deltaexp);
-					c_exponent = a_exp;
-				}
-				else
-				{
-					FractionValue = b_f + (a_f >> -deltaexp);
-					c_exponent = b_exp;
-				}
-				return Normalize(FractionValue, (uint8_t)c_exponent);
-			}
-			else if (deltaexp >= 23)
-			{
-				return *this;
-			}
-			else
-			{
-				return b;
-			}
-		}
-	}
+            if (-23 < deltaexp && deltaexp < 23)
+            {
+                int32_t FractionValue = 0;
+                int32_t c_exponent;
+                if (deltaexp >= 0)
+                {
+                    FractionValue = a_f + (b_f >> deltaexp);
+                    c_exponent = a_exp;
+                }
+                else
+                {
+                    FractionValue = b_f + (a_f >> -deltaexp);
+                    c_exponent = b_exp;
+                }
+                return Normalize(FractionValue, (uint8_t)c_exponent);
+            }
+            else if (deltaexp >= 23)
+            {
+                return *this;
+            }
+            else
+            {
+                return b;
+            }
+        }
+    }
 
     inline const GFloat operator +=( GFloat b)
     {
@@ -287,15 +280,15 @@ public:
         return *this;
     }
 
-	inline constexpr bool operator ==(GFloat b)
-	{
-		return rawint32 == b.rawint32;
-	}
+    inline constexpr bool operator ==(GFloat b)
+    {
+        return rawint32 == b.rawint32;
+    }
 
-	inline constexpr bool operator !=(GFloat b)
-	{
-		return rawint32 != b.rawint32;
-	}
+    inline constexpr bool operator !=(GFloat b)
+    {
+        return rawint32 != b.rawint32;
+    }
 
     inline constexpr GFloat operator -() const
     {
@@ -314,7 +307,7 @@ public:
         uint8_t Texponent = (uint8_t)(getexponent() + b.getexponent() - 127);
         return  GFloat::Nomalize(Trawvalue, Texponent);
 #else 
-		// I assume a and b is normalized, if a or b is zero,it will get a correct result
+        // I assume a and b is normalized, if a or b is zero,it will get a correct result
         int64_t Trawvalue = (int64_t)getfraction_NoShift() * b.getfraction_NoShift();
         uint8_t Texponent = (uint8_t)(getexponent() + b.getexponent() - 104);
 
@@ -360,80 +353,80 @@ public:
         return TDelta.rawint32 <= 0;
     }
 
-	inline int32_t GetWhole() const
-	{
-		int32_t Frac = getfraction();
-		if ( Frac == 0)
-			return 0;
+    inline int32_t GetWhole() const
+    {
+        int32_t Frac = getfraction();
+        if ( Frac == 0)
+            return 0;
 
-		int32_t exp = (getexponent() - 127);
-		if (exp > 8)
-		{
-			return Frac << 8; // overflow
-		}
-		if (exp >= 0)
-		{
-			return Frac << exp;
-		}
-		else if (exp > -23)
-		{
-			if( rawint32 >= 0)
-			{
-				return Frac >> -exp;
-			}
-			else
-			{
-				return -((-Frac) >> -exp);
-			}
-		}
-		else
-		{
-			return 0;
-		}
-	}
+        int32_t exp = (getexponent() - 127);
+        if (exp > 8)
+        {
+            return Frac << 8; // overflow
+        }
+        if (exp >= 0)
+        {
+            return Frac << exp;
+        }
+        else if (exp > -23)
+        {
+            if( rawint32 >= 0)
+            {
+                return Frac >> -exp;
+            }
+            else
+            {
+                return -((-Frac) >> -exp);
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
 
     inline int32_t GetWhole(GFloat& OutFraction) const
     {
-		int32_t exp = (getexponent() - 127);
-		
-		if (exp >= 0)
-		{
-			OutFraction = Zero();
-			return getfraction() << exp;
-		}
-		else if (exp > -23)// 22 or 23
-		{
-			int32_t fra = getfraction();
+        int32_t exp = (getexponent() - 127);
+        
+        if (exp >= 0)
+        {
+            OutFraction = Zero();
+            return getfraction() << exp;
+        }
+        else if (exp > -23)// 22 or 23
+        {
+            int32_t fra = getfraction();
 
-			int32_t TRaw = fra >> -exp;
+            int32_t TRaw = fra >> -exp;
 
-			int32_t TWhole;
-			if( (TRaw << -exp ) == rawint32 )
-			{
-				TWhole = TRaw;
-				OutFraction = Zero();
-			}
-			else
-			{
-				if( fra >=0 )
-				{
-					TWhole = TRaw;
-				}
-				else
-				{
-					TWhole = TRaw + 1;
-				}
+            int32_t TWhole;
+            if( (TRaw << -exp ) == rawint32 )
+            {
+                TWhole = TRaw;
+                OutFraction = Zero();
+            }
+            else
+            {
+                if( fra >=0 )
+                {
+                    TWhole = TRaw;
+                }
+                else
+                {
+                    TWhole = TRaw + 1;
+                }
 
-				OutFraction =  *this - GFloat(TWhole); // to do
-			}
+                OutFraction =  *this - GFloat(TWhole); // to do
+            }
 
-			return TWhole;
-		}
-		else
-		{
-			OutFraction = *this;
-			return 0;
-		}	
+            return TWhole;
+        }
+        else
+        {
+            OutFraction = *this;
+            return 0;
+        }    
     }
 
     static GFloat Ceil( const GFloat value)
@@ -446,7 +439,7 @@ public:
         {
             GFloat TFloor = GFloat::FromFractionAndExp((value.getfraction() >> -exp) << -exp, (uint8_t)( exp + 127));
 
-			return TFloor == value ? TFloor : TFloor + One();
+            return TFloor == value ? TFloor : TFloor + One();
         }
         else
         {
@@ -469,10 +462,10 @@ public:
             return value.getfraction() > 0 ? Zero() : -One();
         }
     }
-    static GFloat Sin(const GFloat value);
 
+    static GFloat Sin(const GFloat value);
     static GFloat Cos(const GFloat value);
-    static void	  SinCos(const GFloat value, GFloat& OutSin, GFloat& OutCos);
+    static void   SinCos(const GFloat value, GFloat& OutSin, GFloat& OutCos);
     static GFloat ASin(const GFloat value);
     static GFloat ACos(const GFloat value);
     static GFloat Tan(const GFloat value);
@@ -485,15 +478,14 @@ public:
     static GFloat Sqrt(const GFloat value){return value * InvSqrt(value);}
 
 
-	public:
-		static constexpr int32_t ms_TriTableBit = 8;
-		static constexpr int32_t ms_TriCount = 1 << ms_TriTableBit;
-
+public:
+    static constexpr int32_t ms_TriTableBit = 8;
+    static constexpr int32_t ms_TriCount = 1 << ms_TriTableBit;
 
 private:
 
-	static int32_t ms_SinCosTable[ms_TriCount*2];
-	static GFloat ms_TanTable[ms_TriCount];
+    static int32_t  ms_SinCosTable[ms_TriCount*2];
+    static GFloat   ms_TanTable[ms_TriCount];
 };
 
 #ifdef Determinate

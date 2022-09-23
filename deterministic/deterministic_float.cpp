@@ -47,29 +47,29 @@
 std::string getOsName()
 {
 #if defined(_WIN32) && !defined(_WIN64)
-	return "Windows 32-bit";
+    return "Windows 32-bit";
 #elif _WIN64
-	return "Windows 64-bit";
+    return "Windows 64-bit";
 #elif __APPLE__ || __MACH__
-	#if TARGET_OS_MAC
-		return "Mac OSX";
-	#elif TARGET_OS_IPHONE
-		return "iOS";
-	#elif TARGET_IPHONE_SIMULATOR
-		return "iOS Simulator";
-	#else
-		return "Unkown Apple device";
-	#endif
+    #if TARGET_OS_MAC
+        return "Mac OSX";
+    #elif TARGET_OS_IPHONE
+        return "iOS";
+    #elif TARGET_IPHONE_SIMULATOR
+        return "iOS Simulator";
+    #else
+        return "Unkown Apple device";
+    #endif
 #elif __linux__
-	return "Linux";
+    return "Linux";
 #elif __FreeBSD__
-	return "FreeBSD";
+    return "FreeBSD";
 #elif __unix || __unix__
-	return "Unix";
+    return "Unix";
 #elif __ANDROID__
-	return "Android";
+    return "Android";
 #else
-	return "Other";
+    return "Other";
 #endif
 }
 
@@ -79,132 +79,131 @@ typedef std::chrono::nanoseconds Myres;
 class  MYTimer
 {
 public:
-	MYTimer()
+    MYTimer()
 #if UseProfiler_RDTSCP
-		: start_(0), end_(0)
+        : start_(0), end_(0)
 #else
-		: t1(Myres::zero()), t2(Myres::zero())
+        : t1(Myres::zero()), t2(Myres::zero())
 #endif
-	{
-		Start();
-	}
+    {
+        Start();
+    }
 
-	~MYTimer()
-	{}
+    ~MYTimer()
+    {}
 
-	static inline uint64_t get_CPUCycles()
-	{
+    static inline uint64_t get_CPUCycles()
+    {
 #ifdef _MSC_VER
-		return __rdtsc();
-#elif __GNUC__	
+        return __rdtsc();
+#elif __GNUC__    
 
-	#ifdef defined(__x86_64__)
-		unsigned int lo, hi;
-		__asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
-		return ((uint64_t)hi << 32) | lo;
-	#elif defined(__aarch64__)
+    #ifdef defined(__x86_64__)
+        unsigned int lo, hi;
+        __asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
+        return ((uint64_t)hi << 32) | lo;
+    #elif defined(__aarch64__)
 
-		uint64_t virtual_timer_value;
-		asm volatile("mrs %0, cntvct_el0" : "=r"(virtual_timer_value));
-		return virtual_timer_value;
+        uint64_t virtual_timer_value;
+        asm volatile("mrs %0, cntvct_el0" : "=r"(virtual_timer_value));
+        return virtual_timer_value;
 
-	#else
-		return 0;
-	#endif
+    #else
+        return 0;
+    #endif
 
 #else
-		return 0;
+        return 0;
 #endif
-	}
+    }
 
-	void Start()
-	{
+    void Start()
+    {
 #if UseProfiler_RDTSCP
-		start_ = get_CPUCycles();
+        start_ = get_CPUCycles();
 #else
-		t1 = Myclock::now();
+        t1 = Myclock::now();
 #endif    
-	}
+    }
 
-	void End()
-	{
+    void End()
+    {
 #if UseProfiler_RDTSCP
-		end_ = get_CPUCycles();
+        end_ = get_CPUCycles();
 #else
-		t2 = Myclock::now();
+        t2 = Myclock::now();
 #endif
-	}
+    }
 
 
-	float GetDeltaTimeMS_NoEnd()
-	{
+    float GetDeltaTimeMS_NoEnd()
+    {
 #if UseProfiler_RDTSCP
-		return float( double(end_ - start_) * InvCPUGHZ);
+        return float( double(end_ - start_) * InvCPUGHZ);
 #else
-		return float(std::chrono::duration_cast<Myres>(t2 - t1).count() * 1e-6);
+        return float(std::chrono::duration_cast<Myres>(t2 - t1).count() * 1e-6);
 #endif
-	}
+    }
 
-	float GetDeltaTimeMS()
-	{
-		End();
-		return GetDeltaTimeMS_NoEnd();
-	}
+    float GetDeltaTimeMS()
+    {
+        End();
+        return GetDeltaTimeMS_NoEnd();
+    }
 
-	static double GetCpuFrequency_Compute()
-	{
+    static double GetCpuFrequency_Compute()
+    {
 #if UseProfiler_RDTSCP
-		return 1 / InvCPUGHZ;
+        return 1 / InvCPUGHZ;
 #else
-		return 0;
+        return 0;
 #endif
-	}
+    }
 
-	static int GetCpuFrequency_CpuInfo()
-	{
-		int cpuInfo[4] = { 0, 0, 0, 0 };
+    static int GetCpuFrequency_CpuInfo()
+    {
+        int cpuInfo[4] = { 0, 0, 0, 0 };
 #ifdef _MSC_VER
-		__cpuid(cpuInfo, 0);
-		if (cpuInfo[0] >= 0x16) {
-			__cpuid(cpuInfo, 0x16);
-			return cpuInfo[0];
-		}
+        __cpuid(cpuInfo, 0);
+        if (cpuInfo[0] >= 0x16) {
+            __cpuid(cpuInfo, 0x16);
+            return cpuInfo[0];
+        }
 #elif __GNUC__
 
-	#ifdef defined(__x86_64__) && !defined(__aarch64__)
+    #ifdef defined(__x86_64__) && !defined(__aarch64__)
 
-		__get_cpuid(0, cpuInfo + 0, cpuInfo + 1, cpuInfo + 2, cpuInfo + 3);
+        __get_cpuid(0, cpuInfo + 0, cpuInfo + 1, cpuInfo + 2, cpuInfo + 3);
 
-		if (cpuInfo[0] >= 0x16) {
-			__get_cpuid(0x16, cpuInfo + 0, cpuInfo + 1, cpuInfo + 2, cpuInfo + 3);
-			return cpuInfo[0];
-		}
-	#elif defined(__ARM_ARCH)
+        if (cpuInfo[0] >= 0x16) {
+            __get_cpuid(0x16, cpuInfo + 0, cpuInfo + 1, cpuInfo + 2, cpuInfo + 3);
+            return cpuInfo[0];
+        }
+    #elif defined(__ARM_ARCH)
 
         uint64_t freq;
         asm volatile("mrs %0, cntfrq_el0" : "=r" (freq));
         return (int)(freq / 1000000);
 
-	#endif
+    #endif
 
 #else
-		
+        
 #endif
 
-		return 0;
-	}
+        return 0;
+    }
 
 private:
 
-
 #if UseProfiler_RDTSCP
 
-	static double InvCPUGHZ;
-	volatile uint64_t start_;
-	volatile uint64_t end_;
+    static double InvCPUGHZ;
+    volatile uint64_t start_;
+    volatile uint64_t end_;
 #else
-	Myclock::time_point t1;
-	Myclock::time_point t2;
+    Myclock::time_point t1;
+    Myclock::time_point t2;
 #endif
 
 };
@@ -213,312 +212,307 @@ private:
 
 static double CountCpuGhz() {
 
-	Myclock::time_point tStart = Myclock::now();;
-	uint64_t uStart = MYTimer::get_CPUCycles();
-		
-	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    Myclock::time_point tStart = Myclock::now();;
+    uint64_t uStart = MYTimer::get_CPUCycles();
+        
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-	uint64_t uEnd = MYTimer::get_CPUCycles();
-	Myclock::time_point tEnd = Myclock::now();
+    uint64_t uEnd = MYTimer::get_CPUCycles();
+    Myclock::time_point tEnd = Myclock::now();
 
-	double time = double(std::chrono::duration_cast<Myres>(tEnd - tStart).count() * 1e-9);
+    double time = double(std::chrono::duration_cast<Myres>(tEnd - tStart).count() * 1e-9);
 
-	double CpuGhz = double(uEnd - uStart) / (time * 1000000000);
-	return CpuGhz;
+    double CpuGhz = double(uEnd - uStart) / (time * 1000000000);
+    return CpuGhz;
 
 }
 
 double MYTimer::InvCPUGHZ = 0.000001f / CountCpuGhz();
 #endif
 
-
-
-
 std::string GetCpuName()
 {
 #if defined(_MSC_VER)
-	std::array<int, 4> cpui;
-	std::vector<std::array<int, 4>> extdata_;
-	__cpuid(cpui.data(), 0x80000000);
-	int nExIds_ = cpui[0];
+    std::array<int, 4> cpui;
+    std::vector<std::array<int, 4>> extdata_;
+    __cpuid(cpui.data(), 0x80000000);
+    int nExIds_ = cpui[0];
 
-	char brand[0x40];
-	memset(brand, 0, sizeof(brand));
+    char brand[0x40];
+    memset(brand, 0, sizeof(brand));
 
-	for (int i = 0x80000000; i <= nExIds_; ++i)
-	{
-		__cpuidex(cpui.data(), i, 0);
-		extdata_.push_back(cpui);
-	}
+    for (int i = 0x80000000; i <= nExIds_; ++i)
+    {
+        __cpuidex(cpui.data(), i, 0);
+        extdata_.push_back(cpui);
+    }
 
-	std::string brand_;
+    std::string brand_;
 
-	// Interpret CPU brand string if reported
-	if (nExIds_ >= 0x80000004)
-	{
-		memcpy(brand, extdata_[2].data(), sizeof(cpui));
-		memcpy(brand + 16, extdata_[3].data(), sizeof(cpui));
-		memcpy(brand + 32, extdata_[4].data(), sizeof(cpui));
-		brand_ = brand;
-	}
+    // Interpret CPU brand string if reported
+    if (nExIds_ >= 0x80000004)
+    {
+        memcpy(brand, extdata_[2].data(), sizeof(cpui));
+        memcpy(brand + 16, extdata_[3].data(), sizeof(cpui));
+        memcpy(brand + 32, extdata_[4].data(), sizeof(cpui));
+        brand_ = brand;
+    }
 
-	return brand_;
+    return brand_;
 #elif __APPLE__
 
 
 #if __ARM_ARCH
-	return "Apple Arm CPU";
+    return "Apple Arm CPU";
 #elif __x86_64__
-	return "Apple Intel CPU";
+    return "Apple Intel CPU";
 #else
-	return "Unkown Apple CPU";
+    return "Unkown Apple CPU";
 #endif
 
 
 #else
-	return "Unkown CPU";
+    return "Unkown CPU";
 #endif
 }
 
 std::string GetCompileName()
 {
 #if defined(_MSC_VER)
-	return "Visual Studio " + std::to_string(_MSC_VER);
+    return "Visual Studio " + std::to_string(_MSC_VER);
 #elif __GNUC__
-	return __VERSION__;
+    return __VERSION__;
 #else
-	return "Unkown Compile";
+    return "Unkown Compile";
 #endif
 }
-
-
 
 class GFloatTest
 {
 public:
-	std::vector<float>  fa;
-	std::vector<float>  fb;
-	std::vector<float>  fc;
-	std::vector<double>  da;
-	std::vector<double>  db;
-	std::vector<double>  dc;
-	std::vector<GFloat> Ga;
-	std::vector<GFloat> Gb;
-	std::vector<GFloat> Gc;
+    std::vector<float>  fa;
+    std::vector<float>  fb;
+    std::vector<float>  fc;
+    std::vector<double>  da;
+    std::vector<double>  db;
+    std::vector<double>  dc;
+    std::vector<GFloat> Ga;
+    std::vector<GFloat> Gb;
+    std::vector<GFloat> Gc;
 
-	int N;
-	double time1 = 0;
-	double time2 = 0;
-	MYTimer Timer;
-	std::ofstream m_string;
+    int N;
+    double time1 = 0;
+    double time2 = 0;
+    MYTimer Timer;
+    std::ofstream m_string;
 
-	GFloatTest(int TN)
-	{
-		GFloat::Init();
-		N = TN;
-		fa.resize(N);
-		fb.resize(N);
-		fc.resize(N);
-		da.resize(N);
-		db.resize(N);
-		dc.resize(N);
-		Ga.resize(N);
-		Gb.resize(N);
-		Gc.resize(N);
+    GFloatTest(int TN)
+    {
+        GFloat::Init();
+        N = TN;
+        fa.resize(N);
+        fb.resize(N);
+        fc.resize(N);
+        da.resize(N);
+        db.resize(N);
+        dc.resize(N);
+        Ga.resize(N);
+        Gb.resize(N);
+        Gc.resize(N);
 
-		std::string FileName;
+        std::string FileName;
 #ifdef _WIN64
-		FileName = "../Test_BenchMark_Win";
-		if( GetCpuName().find( "12900H" ) != std::string::npos )
-		{
-			FileName += "_12900H.md";
-		}
-		else if( GetCpuName().find( "5950X" ) != std::string::npos )
-		{
-			FileName += "_5950X.md";
-		}
-		else
-		{
-			FileName = "_None.md";
-		}	
+        FileName = "../Test_BenchMark_Win";
+        if( GetCpuName().find( "12900H" ) != std::string::npos )
+        {
+            FileName += "_12900H.md";
+        }
+        else if( GetCpuName().find( "5950X" ) != std::string::npos )
+        {
+            FileName += "_5950X.md";
+        }
+        else
+        {
+            FileName = "_None.md";
+        }    
 #elif __OSX__ 
-		FileName = "../Test_BenchMark_OSX.md";
-#endif	
-		m_string =  std::ofstream (FileName);
+        FileName = "../Test_BenchMark_OSX.md";
+#endif    
+        m_string =  std::ofstream (FileName);
 
-		std::stringstream Tstring;
+        std::stringstream Tstring;
 
-		std::time_t TNow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        std::time_t TNow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
 #ifdef _MSC_VER 
-		char str[26];
-		ctime_s(str, sizeof str, &TNow);
+        char str[26];
+        ctime_s(str, sizeof str, &TNow);
 #else
-		char* str = ctime(&TNow);
-#endif	
-		Tstring << "# GFloat Test And BenchMark" << std::endl;
-		Tstring << " * Test time : "<< str  << std::endl;
+        char* str = ctime(&TNow);
+#endif    
+        Tstring << "# GFloat Test And BenchMark" << std::endl;
+        Tstring << " * Test time : "<< str  << std::endl;
 
 
-		Tstring << "|Operation System| C++ Compiler version |CPU  | Base Frequency  |" <<std::endl;
-		Tstring << "|:--:|:--:|:--:|:--:|" << std::endl;
-		Tstring << "|" << 
-			getOsName() << "|" <<
-			GetCompileName()  << std::setprecision(3) << "|" <<
-			GetCpuName() << "|" <<
-			MYTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz or " <<" " <<
-			MYTimer::GetCpuFrequency_CpuInfo() / 1000.f <<" GHz " << "|"<< std::endl;
-		
-		
-		Tstring << " * Performance: float vs GFloat,  Call " << N << " times" << std::endl;
-		Tstring << " * Error : the relative error between cmath (double) and GFloat Math " << std::endl << std::endl;
+        Tstring << "|Operation System| C++ Compiler version |CPU  | Base Frequency  |" <<std::endl;
+        Tstring << "|:--:|:--:|:--:|:--:|" << std::endl;
+        Tstring << "|" << 
+            getOsName() << "|" <<
+            GetCompileName()  << std::setprecision(3) << "|" <<
+            GetCpuName() << "|" <<
+            MYTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz or " <<" " <<
+            MYTimer::GetCpuFrequency_CpuInfo() / 1000.f <<" GHz " << "|"<< std::endl;
+        
+        
+        Tstring << " * Performance: float vs GFloat,  Call " << N << " times" << std::endl;
+        Tstring << " * Error : the relative error between cmath (double) and GFloat Math " << std::endl << std::endl;
 
-		Tstring << "|Function| avg error|max error| float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
-		Tstring << "|--|--|--|--|--|--|--|" << std::endl;
+        Tstring << "|Function| avg error|max error| float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
+        Tstring << "|--|--|--|--|--|--|--|" << std::endl;
 
-		std::cout << Tstring.str();
+        std::cout << Tstring.str();
 
-		m_string << Tstring.str();
-	}
+        m_string << Tstring.str();
+    }
 
 inline void FunError( int NCount, bool bRelative, std::string name, float RMin, float RMax,
-	std::function<double(int i)> fun_f,
-	std::function<GFloat(int i)> fun_G)
+    std::function<double(int i)> fun_f,
+    std::function<GFloat(int i)> fun_G)
 {
-	std::string CurrentType = bRelative ? "Relative" : "Absolute";
+    std::string CurrentType = bRelative ? "Relative" : "Absolute";
 
-	std::ofstream fs("../GFloat_" + name + "_" + CurrentType + ".gp");
+    std::ofstream fs("../GFloat_" + name + "_" + CurrentType + ".gp");
 
-	fs << "set term svg size 640, 480" << std::endl;
-	fs << "set output \"GFloat_" + name + "_" + CurrentType + ".svg\"" << std::endl;
-	fs << R"gp(set format y "%g%%")gp" << std::endl;
-	fs << "set title \"GFloat::" + name + "() " + CurrentType + " Error\"" << std::endl;
-	fs << "unset key" << std::endl;
-	fs << "plot \"-\" with points" << std::endl;
+    fs << "set term svg size 640, 480" << std::endl;
+    fs << "set output \"GFloat_" + name + "_" + CurrentType + ".svg\"" << std::endl;
+    fs << R"gp(set format y "%g%%")gp" << std::endl;
+    fs << "set title \"GFloat::" + name + "() " + CurrentType + " Error\"" << std::endl;
+    fs << "unset key" << std::endl;
+    fs << "plot \"-\" with points" << std::endl;
 
-	fs << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+    fs << std::setprecision(std::numeric_limits<double>::digits10 + 1);
 
-	std::minstd_rand gen;
-	std::uniform_real_distribution<> dis(RMin, RMax);
+    std::minstd_rand gen;
+    std::uniform_real_distribution<> dis(RMin, RMax);
 
-	int TN = NCount <= N ? NCount : N;
+    int TN = NCount <= N ? NCount : N;
 
-	if (0)
-	{
-		TN = GFloat::ms_TriCount;
-		for (int i = 0; i < TN; i++) {
-			fa[i] = float(i) * 3.141592653f * 2 / GFloat::ms_TriCount;
-			Ga[i] = GFloat::FromFloat(fa[i]);
+    if (0)
+    {
+        TN = GFloat::ms_TriCount;
+        for (int i = 0; i < TN; i++) {
+            fa[i] = float(i) * 3.141592653f * 2 / GFloat::ms_TriCount;
+            Ga[i] = GFloat::FromFloat(fa[i]);
 
-			float fy = fa[i];
-			GFloat Gy = Ga[i];
-			float ferror = (Gy.toFloat() - fy) / abs(fy);
-			fs << fa[i] << " " << ferror * 100.0 << std::endl;
-		}
-	}
-	else
-	{
-		for (int i = 0; i < TN; i++) {
-			da[i] = dis(gen);
-			Ga[i] = GFloat::FromFloat((float)da[i]);
-		}
+            float fy = fa[i];
+            GFloat Gy = Ga[i];
+            float ferror = (Gy.toFloat() - fy) / abs(fy);
+            fs << fa[i] << " " << ferror * 100.0 << std::endl;
+        }
+    }
+    else
+    {
+        for (int i = 0; i < TN; i++) {
+            da[i] = dis(gen);
+            Ga[i] = GFloat::FromFloat((float)da[i]);
+        }
 
-		for (int i = 0; i < TN; i++) {
-			double fy = fun_f(i);
+        for (int i = 0; i < TN; i++) {
+            double fy = fun_f(i);
 
-			//if (abs(fy) < 0.00000001f)
-			//	continue;
-			GFloat Gy = fun_G(i);
+            //if (abs(fy) < 0.00000001f)
+            //    continue;
+            GFloat Gy = fun_G(i);
 
-			double ferror = ( (Gy.toDouble() - fy )/( bRelative ? abs(fy): 1.) );
+            double ferror = ( (Gy.toDouble() - fy )/( bRelative ? abs(fy): 1.) );
 
-			fs << da[i] << " " << ferror * 100.0 << std::endl;
+            fs << da[i] << " " << ferror * 100.0 << std::endl;
 
-			//fs << da[i] << " " << fy  << std::endl;
-			//fs << da[i] << " " << Gy.toDouble() << std::endl;
-		}
-	}
+            //fs << da[i] << " " << fy  << std::endl;
+            //fs << da[i] << " " << Gy.toDouble() << std::endl;
+        }
+    }
 
-	fs << "EOF" << std::endl;
+    fs << "EOF" << std::endl;
 }
 
-	inline void FunTest(
-		std::string name,
-		float RMin, float RMax,
-		std::function<void(int N)> fun_f,
-		std::function<void(int N)> fun_d,
-		std::function<void(int N)> fun_G  )
-	{
-		std::minstd_rand gen;
-		std::uniform_real_distribution<> dis(RMin, RMax);
+    inline void FunTest(
+        std::string name,
+        float RMin, float RMax,
+        std::function<void(int N)> fun_f,
+        std::function<void(int N)> fun_d,
+        std::function<void(int N)> fun_G  )
+    {
+        std::minstd_rand gen;
+        std::uniform_real_distribution<> dis(RMin, RMax);
 
-		for (int i = 0; i < N; i++) {
-			fa[i] = (float)dis(gen);
-			fb[i] = (float)dis(gen);
-			fc[i] = 1.f;
-			da[i] = (double)fa[i];
-			db[i] = (double)fb[i];
-			dc[i] = 1.f;
-			Ga[i] = GFloat::FromFloat(fa[i]);
-			Gb[i] = GFloat::FromFloat(fb[i]);
-			Gc[i] = GFloat(1);}
+        for (int i = 0; i < N; i++) {
+            fa[i] = (float)dis(gen);
+            fb[i] = (float)dis(gen);
+            fc[i] = 1.f;
+            da[i] = (double)fa[i];
+            db[i] = (double)fb[i];
+            dc[i] = 1.f;
+            Ga[i] = GFloat::FromFloat(fa[i]);
+            Gb[i] = GFloat::FromFloat(fb[i]);
+            Gc[i] = GFloat(1);}
 
-		Timer.Start();
-		{
-			 fun_f(N);
-		}
-		time1 = Timer.GetDeltaTimeMS();
-
-
-		fun_d(N);
+        Timer.Start();
+        {
+             fun_f(N);
+        }
+        time1 = Timer.GetDeltaTimeMS();
 
 
-		Timer.Start();
-		{
-			fun_G(N);
-		}
-		time2 = Timer.GetDeltaTimeMS();
+        fun_d(N);
 
 
-		Count(name );
-	}
+        Timer.Start();
+        {
+            fun_G(N);
+        }
+        time2 = Timer.GetDeltaTimeMS();
 
-	void Count(std::string Name )
-	{
-		double f1 = 0;
-		double f2 = 0;
 
-		double Maxabs = 0;
-		int maxi = 0;
+        Count(name );
+    }
 
-		int nCount = 0;
-		double totalabs = 0;
+    void Count(std::string Name )
+    {
+        double f1 = 0;
+        double f2 = 0;
 
-		for (int i = 0; i < N; i++)
-		{
-			double cf1 = (dc[i]);
-			double cf2 = (Gc[i].toDouble());
+        double Maxabs = 0;
+        int maxi = 0;
 
-			if( abs(cf1) < 0.0000000000001 )
-				continue;
+        int nCount = 0;
+        double totalabs = 0;
 
-			double cAbs = abs((cf2 - cf1) / cf1 );
-			totalabs += cAbs;
-			nCount++;
-			if (Maxabs < cAbs)
-			{
-				Maxabs = cAbs;
-				maxi = i;
-			}
+        for (int i = 0; i < N; i++)
+        {
+            double cf1 = (dc[i]);
+            double cf2 = (Gc[i].toDouble());
 
-			f1 += abs(cf1);
-			f2 += abs(cf2);
-		}
+            if( abs(cf1) < 0.0000000000001 )
+                continue;
 
-		double avgerror = totalabs  / nCount;
+            double cAbs = abs((cf2 - cf1) / cf1 );
+            totalabs += cAbs;
+            nCount++;
+            if (Maxabs < cAbs)
+            {
+                Maxabs = cAbs;
+                maxi = i;
+            }
 
-		std::stringstream Tstring;
-		std::cout.precision(3);
+            f1 += abs(cf1);
+            f2 += abs(cf2);
+        }
+
+        double avgerror = totalabs  / nCount;
+
+        std::stringstream Tstring;
+        std::cout.precision(3);
 
         Tstring << "|" << std::setiosflags(std::ios::left)<< std::setw(10);
         Tstring << Name;
@@ -526,75 +520,75 @@ inline void FunError( int NCount, bool bRelative, std::string name, float RMin, 
         Tstring << "|" << std::setiosflags(std::ios::right) << std::setw( 14) << Maxabs * 100.f << " %";
         Tstring << "|" << std::setiosflags(std::ios::right) << std::setw( 5) <<std::setprecision(2) << time1;
         Tstring <<" vs "<< std::setiosflags(std::ios::right) << std::setw( 5) << time2 << "  (ms)|" << time1 / time2 << "|";
-		Tstring << (time1 < time2 ? "$\\checkmark$" : "") << "|" <<( time1 > time2 ? "$\\checkmark$" : "" ) << "|" << std::endl;
-		std::cout << Tstring.str();
+        Tstring << (time1 < time2 ? "$\\checkmark$" : "") << "|" <<( time1 > time2 ? "$\\checkmark$" : "" ) << "|" << std::endl;
+        std::cout << Tstring.str();
 
-		m_string << Tstring.str();
-	}
+        m_string << Tstring.str();
+    }
 
-	int32_t FindBest( float RMin, float RMax)
-	{
-		std::minstd_rand gen;
-		std::uniform_real_distribution<> dis(RMin, RMax);
-		for (int i = 0; i < N; i++) {
-			fa[i] = (float)dis(gen);
-			fb[i] = (float)dis(gen);
-			fc[i] = 1.f;
+    int32_t FindBest( float RMin, float RMax)
+    {
+        std::minstd_rand gen;
+        std::uniform_real_distribution<> dis(RMin, RMax);
+        for (int i = 0; i < N; i++) {
+            fa[i] = (float)dis(gen);
+            fb[i] = (float)dis(gen);
+            fc[i] = 1.f;
 
-			Ga[i] = GFloat::FromFloat(fa[i]);
-			Gb[i] = GFloat::FromFloat(fb[i]);
-			Gc[i] = GFloat(0);
-		}
-		for (int i = 0; i < N; i++) {
-			fc[i] = 1.f / sqrtf(fa[i]);
-			Gc[i] = GFloat::InvSqrt(Ga[i]);
-		}
+            Ga[i] = GFloat::FromFloat(fa[i]);
+            Gb[i] = GFloat::FromFloat(fb[i]);
+            Gc[i] = GFloat(0);
+        }
+        for (int i = 0; i < N; i++) {
+            fc[i] = 1.f / sqrtf(fa[i]);
+            Gc[i] = GFloat::InvSqrt(Ga[i]);
+        }
 
-		float fMaxAbs = 100000000.f;
-		GFloat BestStart = GFloat::Zero();
-		for( GFloat GStart = GFloat(0,8,10); GStart < GFloat(0,9,10); GStart += GFloat(0,1,1000))
-		{		
-			float fabs = 0;
-			for (int i = 0; i < N; i++)
-			{
-				fc[i] = 1.f / sqrtf(fa[i]);
-				Gc[i] = GFloat::InvSqrt(Ga[i]/*,GStart*/);
+        float fMaxAbs = 100000000.f;
+        GFloat BestStart = GFloat::Zero();
+        for( GFloat GStart = GFloat(0,8,10); GStart < GFloat(0,9,10); GStart += GFloat(0,1,1000))
+        {        
+            float fabs = 0;
+            for (int i = 0; i < N; i++)
+            {
+                fc[i] = 1.f / sqrtf(fa[i]);
+                Gc[i] = GFloat::InvSqrt(Ga[i]/*,GStart*/);
 
-				if (Gc[i] != GFloat::Zero())
-				{
-					fabs += abs(Gc[i].toFloat() - fc[i]);
-				}
-			}
-			std::cout << "Current fabs " << fabs << std::endl;
-			if( fMaxAbs > fabs)
-			{
-				BestStart = GStart;
-				fMaxAbs = fabs;
-			}
-		}
+                if (Gc[i] != GFloat::Zero())
+                {
+                    fabs += abs(Gc[i].toFloat() - fc[i]);
+                }
+            }
+            std::cout << "Current fabs " << fabs << std::endl;
+            if( fMaxAbs > fabs)
+            {
+                BestStart = GStart;
+                fMaxAbs = fabs;
+            }
+        }
 
-		std::cout << "fMaxAbs   "  << fMaxAbs<< std::endl;
-		std::cout << "Best GStart  " << BestStart.rawint32 << "  " << BestStart.toFloat() << std::endl;
-		return BestStart.rawint32 ;
-	}
+        std::cout << "fMaxAbs   "  << fMaxAbs<< std::endl;
+        std::cout << "Best GStart  " << BestStart.rawint32 << "  " << BestStart.toFloat() << std::endl;
+        return BestStart.rawint32 ;
+    }
 
 };
 // why add 3, for Resist the c++ compiler optimizations
 
 #define GMYFun( a, c ) \
 {\
-	for (int j = 0; j < N; j+=3 )\
-	{\
+    for (int j = 0; j < N; j+=3 )\
+    {\
         int i = j;GFloat f; \
-		(c) = (a);i++;\
-		(c) = (a);i++;\
-		(c) = (a);\
-	}\
+        (c) = (a);i++;\
+        (c) = (a);i++;\
+        (c) = (a);\
+    }\
 }\
 
 void TestGFloat::Run()
 {
-	GFloatTest FT(1000000);
+    GFloatTest FT(1000000);
 
     bool bErrortest = 0;
     if (bErrortest)
@@ -608,38 +602,36 @@ void TestGFloat::Run()
 
    // FT.FunTest("Mul+Add",   -10000.f, 10000.f, [&](int N)->void {GMYFun(FT.fa[i]*FT.fb[i]+FT.fa[i],FT.fc[i])}, [&](int N)->void {GMYFun(FT.da[i] * FT.db[i] + FT.da[i], FT.dc[i])}, [&](int N)->void {GMYFun(FT.Ga[i] * FT.Gb[i] + FT.Ga[i], FT.Gc[i])});
 
-    FT.FunTest("Add",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] + FT.fb[i], FT.fc[i])},   [&](int N)->void{GMYFun(FT.da[i] + FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] + FT.Gb[i], FT.Gc[i])});
-	FT.FunTest("Sub",	    -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] - FT.fb[i], FT.fc[i])},   [&](int N)->void{GMYFun(FT.da[i] - FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] - FT.Gb[i], FT.Gc[i] ) });
-	FT.FunTest("Mul",	    -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] * FT.fb[i], FT.fc[i])},   [&](int N)->void{GMYFun(FT.da[i] * FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] * FT.Gb[i], FT.Gc[i] ) });
-	FT.FunTest("Div",	    -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] / FT.fb[i], FT.fc[i])},   [&](int N)->void{GMYFun(FT.da[i] / FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] / FT.Gb[i], FT.Gc[i] ) });
-	FT.FunTest("Ceil",		-10000.f, 10000.f, [&](int N)->void{GMYFun(ceilf(FT.fa[i])    , FT.fc[i])},   [&](int N)->void{GMYFun(ceil(FT.da[i]),    FT.dc[i] )},    [&](int N)->void {GMYFun(GFloat::Ceil(FT.Ga[i]), FT.Gc[i])});
-	FT.FunTest("Floor",		-10000.f, 10000.f, [&](int N)->void{GMYFun(floorf(FT.fa[i])   , FT.fc[i])},   [&](int N)->void{GMYFun(floor(FT.da[i]),   FT.dc[i])},     [&](int N)->void {GMYFun(GFloat::Floor(FT.Ga[i]), FT.Gc[i])});
-	FT.FunTest("Whole",		-10000.f, 10000.f, [&](int N)->void{GMYFun((float)int(FT.fa[i]),FT.fc[i])},   [&](int N)->void{GMYFun((double)int(FT.da[i]), FT.dc[i])}, [&](int N)->void {GMYFun(GFloat(FT.Ga[i].GetWhole()), FT.Gc[i] )});
-    FT.FunTest("WholeFrac", -10000.f, 10000.f, [&](int N)->void{GMYFun((float)FT.fa[i]    , FT.fc[i])},   [&](int N)->void{GMYFun((double)FT.da[i],  FT.dc[i])},     [&](int N)->void {GMYFun(GFloat(FT.Ga[i].GetWhole(f)) + f, FT.Gc[i])});
-    FT.FunTest("Normalize", -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i], FT.fc[i] )},             [&](int N)->void{GMYFun(FT.da[i], FT.dc[i])},              [&](int N)->void {GMYFun(GFloat::Normalize(FT.Ga[i].getfraction(), FT.Ga[i].getexponent()), FT.Gc[i])});
-    FT.FunTest("FromInt",   -10000.f, 10000.f, [&](int N)->void{GMYFun((float)int(FT.fa[i]),FT.fc[i])},   [&](int N)->void{GMYFun((double)int(FT.da[i]),FT.dc[i])},  [&](int N)->void {GMYFun(GFloat((int)FT.fa[i]), FT.Gc[i]) });
-    FT.FunTest("-()",       -10000.f, 10000.f, [&](int N)->void{GMYFun(-FT.fa[i], FT.fc[i] )},            [&](int N)->void{GMYFun(-FT.da[i], FT.dc[i] ) },           [&](int N)->void {GMYFun(-FT.Ga[i], FT.Gc[i] ) });
+    FT.FunTest("Add",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] + FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] + FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] + FT.Gb[i], FT.Gc[i])});
+    FT.FunTest("Sub",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] - FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] - FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] - FT.Gb[i], FT.Gc[i] ) });
+    FT.FunTest("Mul",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] * FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] * FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] * FT.Gb[i], FT.Gc[i] ) });
+    FT.FunTest("Div",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] / FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] / FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] / FT.Gb[i], FT.Gc[i] ) });
+    FT.FunTest("Ceil",      -10000.f, 10000.f, [&](int N)->void{GMYFun(ceilf(FT.fa[i])    , FT.fc[i])}, [&](int N)->void{GMYFun(ceil(FT.da[i]),    FT.dc[i] )},     [&](int N)->void {GMYFun(GFloat::Ceil(FT.Ga[i]), FT.Gc[i])});
+    FT.FunTest("Floor",     -10000.f, 10000.f, [&](int N)->void{GMYFun(floorf(FT.fa[i])   , FT.fc[i])}, [&](int N)->void{GMYFun(floor(FT.da[i]),   FT.dc[i])},      [&](int N)->void {GMYFun(GFloat::Floor(FT.Ga[i]), FT.Gc[i])});
+    FT.FunTest("Whole",     -10000.f, 10000.f, [&](int N)->void{GMYFun((float)int(FT.fa[i]),FT.fc[i])}, [&](int N)->void{GMYFun((double)int(FT.da[i]), FT.dc[i])},  [&](int N)->void {GMYFun(GFloat(FT.Ga[i].GetWhole()), FT.Gc[i] )});
+    FT.FunTest("WholeFrac", -10000.f, 10000.f, [&](int N)->void{GMYFun((float)FT.fa[i]    , FT.fc[i])}, [&](int N)->void{GMYFun((double)FT.da[i],  FT.dc[i])},      [&](int N)->void {GMYFun(GFloat(FT.Ga[i].GetWhole(f)) + f, FT.Gc[i])});
+    FT.FunTest("Normalize", -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i], FT.fc[i] )},           [&](int N)->void{GMYFun(FT.da[i], FT.dc[i])},               [&](int N)->void {GMYFun(GFloat::Normalize(FT.Ga[i].getfraction(), FT.Ga[i].getexponent()), FT.Gc[i])});
+    FT.FunTest("FromInt",   -10000.f, 10000.f, [&](int N)->void{GMYFun((float)int(FT.fa[i]),FT.fc[i])}, [&](int N)->void{GMYFun((double)int(FT.da[i]),FT.dc[i])},   [&](int N)->void {GMYFun(GFloat((int)FT.fa[i]), FT.Gc[i]) });
+    FT.FunTest("-()",       -10000.f, 10000.f, [&](int N)->void{GMYFun(-FT.fa[i], FT.fc[i] )},          [&](int N)->void{GMYFun(-FT.da[i], FT.dc[i] ) },            [&](int N)->void {GMYFun(-FT.Ga[i], FT.Gc[i] ) });
     FT.FunTest("<",         -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i]<FT.fb[i]?FT.fa[i]:FT.fb[i],FT.fc[i])},[&](int N)->void {GMYFun(FT.da[i]<FT.db[i]?FT.da[i]:FT.db[i],FT.dc[i])},[&](int N)->void{ GMYFun(FT.Ga[i]<FT.Gb[i]?FT.Ga[i]:FT.Gb[i],FT.Gc[i]) });
 
 
-
-	FT.FunTest("Sin",	    -10000.f, 10000.f,  [&](int N)->void{GMYFun(sinf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(sin(FT.da[i]),   FT.dc[i])},  [&](int N)->void { GMYFun(GFloat::Sin(FT.Ga[i]), FT.Gc[i])});
-	FT.FunTest("Cos",	    -10000.f, 10000.f,  [&](int N)->void{GMYFun(cosf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(cos(FT.da[i]),   FT.dc[i])},  [&](int N)->void { GMYFun(GFloat::Cos(FT.Ga[i]), FT.Gc[i])});
+    FT.FunTest("Sin",       -10000.f, 10000.f,  [&](int N)->void{GMYFun(sinf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(sin(FT.da[i]),   FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Sin(FT.Ga[i]), FT.Gc[i])});
+    FT.FunTest("Cos",       -10000.f, 10000.f,  [&](int N)->void{GMYFun(cosf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(cos(FT.da[i]),   FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Cos(FT.Ga[i]), FT.Gc[i])});
     FT.FunTest("SinCos",    -10000.f, 10000.f,  [&](int N)->void{GMYFun(sinf(FT.fa[i])+cosf(FT.fa[i]), FT.fc[i])}, [&](int N)->void {GMYFun(sin(FT.da[i])+cos(FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::Sin(FT.Ga[i])+GFloat::Cos(FT.Ga[i]), FT.Gc[i])});
-    FT.FunTest("Tan",	    -10000.f, 10000.f,  [&](int N)->void{GMYFun(tanf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(tan(FT.da[i]),   FT.dc[i])},  [&](int N)->void { GMYFun(GFloat::Tan(FT.Ga[i]), FT.Gc[i])});
-	FT.FunTest("ASin",	    -1.f, 1.f,          [&](int N)->void{GMYFun(asinf(FT.fa[i]), FT.fc[i])},    [&](int N)->void{GMYFun(asin(FT.da[i]),  FT.dc[i])},  [&](int N)->void { GMYFun(GFloat::ASin(FT.Ga[i]), FT.Gc[i])});
-	FT.FunTest("ACos",	    -1.f, 1.f,          [&](int N)->void{GMYFun(acosf(FT.fa[i]), FT.fc[i])},    [&](int N)->void{GMYFun(acos(FT.da[i]),  FT.dc[i])},  [&](int N)->void { GMYFun(GFloat::ACos(FT.Ga[i]), FT.Gc[i])});
-    FT.FunTest("ATan",      -1.5f, 1.57f,       [&](int N)->void {GMYFun(atanf(FT.fa[i]), FT.fc[i])}, [&](int N)->void {GMYFun(atan(FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::ATan(FT.Ga[i]), FT.Gc[i])});
+    FT.FunTest("Tan",       -10000.f, 10000.f,  [&](int N)->void{GMYFun(tanf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(tan(FT.da[i]),   FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Tan(FT.Ga[i]), FT.Gc[i])});
+    FT.FunTest("ASin",      -1.f, 1.f,          [&](int N)->void{GMYFun(asinf(FT.fa[i]), FT.fc[i])},    [&](int N)->void{GMYFun(asin(FT.da[i]),  FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::ASin(FT.Ga[i]), FT.Gc[i])});
+    FT.FunTest("ACos",      -1.f, 1.f,          [&](int N)->void{GMYFun(acosf(FT.fa[i]), FT.fc[i])},    [&](int N)->void{GMYFun(acos(FT.da[i]),  FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::ACos(FT.Ga[i]), FT.Gc[i])});
+    FT.FunTest("ATan",      -1.5f, 1.57f,       [&](int N)->void {GMYFun(atanf(FT.fa[i]), FT.fc[i])},   [&](int N)->void {GMYFun(atan(FT.da[i]), FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::ATan(FT.Ga[i]), FT.Gc[i])});
     FT.FunTest("ATan(10,x)", -10000.f, 10000.f, [&](int N)->void {GMYFun(atan2f(10.f,FT.fa[i]), FT.fc[i])}, [&](int N)->void {GMYFun(atan2(10.,FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::ATan2(GFloat(10),FT.Ga[i]), FT.Gc[i])});
     FT.FunTest("ATan(x,10)", -10000.f, 10000.f, [&](int N)->void {GMYFun(atan2f(FT.fa[i],10.f), FT.fc[i])}, [&](int N)->void {GMYFun(atan2(FT.da[i],10.), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::ATan2(FT.Ga[i],GFloat(10)), FT.Gc[i])});
 
-
-	FT.FunTest("Sqrt",		0.f, 10000.f,	    [&](int N)->void{GMYFun(sqrtf(FT.fa[i]), FT.fc[i])},	[&](int N)->void{GMYFun(sqrt(FT.da[i]),  FT.dc[i])},    [&](int N)->void { GMYFun(GFloat::Sqrt(FT.Ga[i]), FT.Gc[i])});
-	FT.FunTest("InvSqrt",	0.f, 10000.f,	    [&](int N)->void{GMYFun(1.f/sqrtf(FT.fa[i]), FT.fc[i])},[&](int N)->void{GMYFun(1./sqrt(FT.da[i]),FT.dc[i])},   [&](int N)->void { GMYFun(GFloat::InvSqrt(FT.Ga[i]), FT.Gc[i])});
-	FT.FunTest("Exp",		-20.f, 20.f,	    [&](int N)->void{GMYFun(expf(FT.fa[i]), FT.fc[i])},		[&](int N)->void{GMYFun(exp(FT.da[i]),   FT.dc[i])},	[&](int N)->void { GMYFun(GFloat::Exp(FT.Ga[i]), FT.Gc[i])});
-	FT.FunTest("Log",		0.f, 10000.f,	    [&](int N)->void{GMYFun(logf(FT.fa[i]), FT.fc[i])},		[&](int N)->void{GMYFun(log(FT.da[i]),   FT.dc[i])},	[&](int N)->void { GMYFun(GFloat::Log(FT.Ga[i]), FT.Gc[i])});
-    FT.FunTest("Pow(2,x)", -20.f, 20.f,         [&](int N)->void{GMYFun(powf(2.f, FT.fa[i]), FT.fc[i])},[&](int N)->void{GMYFun(pow(2., FT.da[i]), FT.dc[i])},  [&](int N)->void { GMYFun(GFloat::Pow(GFloat::Two(), FT.Ga[i]), FT.Gc[i])});
-    FT.FunTest("Pow(x,2)", 0.55f, 20,           [&](int N)->void{GMYFun(powf(FT.fa[i], 2.f), FT.fc[i])},[&](int N)->void{GMYFun(pow(FT.da[i], 2.), FT.dc[i])},  [&](int N)->void { GMYFun(GFloat::Pow(FT.Ga[i], GFloat::Two()), FT.Gc[i])});
+    FT.FunTest("Sqrt",      0.f, 10000.f,       [&](int N)->void{GMYFun(sqrtf(FT.fa[i]), FT.fc[i])},    [&](int N)->void{GMYFun(sqrt(FT.da[i]),  FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Sqrt(FT.Ga[i]), FT.Gc[i])});
+    FT.FunTest("InvSqrt",   0.f, 10000.f,       [&](int N)->void{GMYFun(1.f/sqrtf(FT.fa[i]), FT.fc[i])},[&](int N)->void{GMYFun(1./sqrt(FT.da[i]),FT.dc[i])},       [&](int N)->void { GMYFun(GFloat::InvSqrt(FT.Ga[i]), FT.Gc[i])});
+    FT.FunTest("Exp",       -20.f, 20.f,        [&](int N)->void{GMYFun(expf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(exp(FT.da[i]),   FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Exp(FT.Ga[i]), FT.Gc[i])});
+    FT.FunTest("Log",       0.f, 10000.f,       [&](int N)->void{GMYFun(logf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(log(FT.da[i]),   FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Log(FT.Ga[i]), FT.Gc[i])});
+    FT.FunTest("Pow(2,x)",  -20.f, 20.f,        [&](int N)->void{GMYFun(powf(2.f, FT.fa[i]), FT.fc[i])},[&](int N)->void{GMYFun(pow(2., FT.da[i]), FT.dc[i])},      [&](int N)->void { GMYFun(GFloat::Pow(GFloat::Two(), FT.Ga[i]), FT.Gc[i])});
+    FT.FunTest("Pow(x,2)",  0.55f, 20,          [&](int N)->void{GMYFun(powf(FT.fa[i], 2.f), FT.fc[i])},[&](int N)->void{GMYFun(pow(FT.da[i], 2.), FT.dc[i])},      [&](int N)->void { GMYFun(GFloat::Pow(FT.Ga[i], GFloat::Two()), FT.Gc[i])});
 
 }
 
