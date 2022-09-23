@@ -59,7 +59,7 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
 Platform|Win64 5950X|Win64 12900H | iOS A15 | MacOS M1 Pro | Android |
 |:--|:--:|:--: |:--:|:--:|:--:|
 | |float vs GFloat| float vs GFloat| float vs GFloat|float vs GFloat |float vs GFloat
-|add|0.63 vs 2.63 ms| 0.44 vs .48ms| 1.36 vs 2.14 ms|0.34 vs 2.24 ms |
+|add|0.63 vs 2.63 ms| 0.44 vs 1.48ms| 1.36 vs 2.14 ms|0.34 vs 2.24 ms |
 |Mul|0.70 vs 1.14 ms| 0.52 vs 0.79 ms| 1.42 vs 1.38 ms |0.34 vs 0.93 ms|
 |Sin|10.20 vs 4.99 ms|8.6 vs 3.15 ms| 2.84 vs 6.65 ms|2.29 vs 3.68 ms |
 |Sqrt|1.08 vs 9.29  ms|0.7 vs 6.2 ms|1.14 vs 7.75 ms |0.64 vs 8.33 ms|
