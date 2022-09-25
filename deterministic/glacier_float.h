@@ -486,6 +486,11 @@ public:
         }
     }
 
+    static GFloat Abs(const GFloat value)
+    {
+        return value.rawint32 >= 0 ? value : -value;
+    }
+
     static GFloat Sin(const GFloat value);
     static GFloat Cos(const GFloat value);
     static void   SinCos(const GFloat value, GFloat& OutSin, GFloat& OutCos);
