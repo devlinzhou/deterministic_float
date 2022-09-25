@@ -5,7 +5,7 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     * Physics Engine (Bullet、PhysX)
     * AI Path Finding (Recast Navigation)
     * AI Engine
- * Compare the overall performance of float754 and GFloat numbers, They differ by no more than 200%, Refer to the multiply-add instructions for measuring the computing power of the graphics card. compare multiply and add function:
+ * Compare the overall performance of hard float IEEE-754 and GFloat numbers, They differ by no more than 200%, Refer to the multiply-add instructions for measuring the computing power of the graphics card. compare multiply and add function:
     * Windows platform(Intel i9-12900H) my GFloat's performance is nearly 200% slower than float
     * Apple platform(ARM64 CPU) GFloat's performance is  200% slower than float
 
