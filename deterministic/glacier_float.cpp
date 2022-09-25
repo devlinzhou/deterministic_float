@@ -366,7 +366,8 @@ GFloat GFloat::Exp(const GFloat value)
     }
     else
     {
-        return One() / Exp(-value);
+        GFloat TF = -value;
+        return One() / Exp(TF);
     }
 }
 GFloat GFloat::Log(const GFloat value)

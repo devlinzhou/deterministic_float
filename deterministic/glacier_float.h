@@ -17,6 +17,7 @@
 
 #ifdef _MSC_VER
 #include <intrin.h>
+#include <immintrin.h>
 #define GFORCE_INLINE _forceinline
 #else
 #define GFORCE_INLINE inline   
@@ -200,6 +201,13 @@ public:
     {
         uint32_t index = GBitScanReverse64(abs(Trawvalue ));
 
+#if 0
+
+        uint32_t uDelta = index - 22;
+        return GFloat::FromFractionAndExp((int32_t)( _rotr64(Trawvalue, uDelta)), uint8_t(Texponent + uDelta));
+
+
+#else
         if ( index <= 22 )
         {
             uint32_t uDelta = 22 - index;
@@ -210,6 +218,8 @@ public:
             uint32_t uDelta = index - 22;
             return GFloat::FromFractionAndExp((int32_t)(Trawvalue >> uDelta), uint8_t(Texponent + uDelta));
         }
+
+#endif
     }
 
 
@@ -264,10 +274,10 @@ public:
 
     GFORCE_INLINE GFloat operator +( const GFloat b) const
     {
-        int32_t a_e = getexponent() -127;
-        int32_t b_e = b.getexponent()-127;
+        int32_t a_e = getexponent();// -127;
+        int32_t b_e = b.getexponent();//-127;
 
-        if ((-32 < a_e && a_e < 8) && (-32 < b_e && b_e < 8))
+        if (( (-32 +127) < a_e && a_e < (8 +127 )) && ((-32 +127) < b_e && b_e < (8 +127 )))
         {
             int64_t a64 = ToInt64();
             int64_t b64 = b.ToInt64();
@@ -298,7 +308,14 @@ public:
 
     inline constexpr GFloat operator -() const
     {
-        return GFloat::FromFractionAndExp(-getfraction(), (uint8_t) getexponent());
+        int32_t nFraction = getfraction();
+
+        if( nFraction ==  0xff800000 )
+        {
+            nFraction = nFraction +1;
+        }
+
+        return GFloat::FromFractionAndExp(-nFraction, (uint8_t) getexponent());
     }
 
     inline const GFloat operator -(GFloat b) const
