@@ -52,7 +52,7 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     
     * $\mathbf{X}_{GFloat} = (-1)^\mathbf{sign} \times (\mathbf{fraction}) \times 2 ^{\mathbf{exponent} - 127}$
 
-## Performance float vs GFloat
+## Performance float（IEEE745） vs GFloat
  * Several important functions compare, for more information to view TestAndBenchMark 
  * Call every function 1000000 Times, get the float vs GFloat time
 
