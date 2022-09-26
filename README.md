@@ -11,7 +11,7 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
 
 
   * 跨平台的确定性浮点数，高性能的软件浮点数
-  * 你可以使用我的浮点数替代各种中间件的浮点数，从而实现带确定性的计算，实现帧同步游戏逻辑，也可以实现加密货币计算逻辑，例如：
+  * 你可以使用GFloat替代各种中间件的浮点数，从而实现带确定性的计算，实现帧同步游戏逻辑，也可以实现加密货币计算逻辑，例如：
     * 物理引擎（Bullet、PhysX）
     * AI 寻路（Recast Navigation）
     * AI 引擎
@@ -20,7 +20,7 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     * 苹果(ARM64 CPU)平台上GFloat比float慢200%
  
 
-## IEEE-754 & My GFloat
+## IEEE-754 float & My GFloat
 * IEEE-754 float
   <table  >
     <tr>
