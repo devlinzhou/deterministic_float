@@ -269,7 +269,7 @@ public:
 
     inline constexpr int64_t ToInt64() const
     {
-        return ((int64_t)getfraction_NoShift()) << (32 - 8 + getexponent() - 127); // -40 < exp < 40
+        return ((int64_t)getfraction()) << (32 + getexponent() - 127); // -40 < exp < 40
     }
 
     GFORCE_INLINE GFloat operator +( const GFloat b) const
@@ -501,6 +501,7 @@ public:
     static GFloat ATan2(const GFloat y, const GFloat x);
     static GFloat Exp(const GFloat value);
     static GFloat Log(const GFloat value);
+    static GFloat Log2(const GFloat value);
     static GFloat Pow(const GFloat base, const GFloat exponent);
     static GFloat InvSqrt(const GFloat value );
     static GFloat Sqrt(const GFloat value){return value * InvSqrt(value);}

@@ -18,7 +18,11 @@
     <DisplayString>{{ Frac={rawInt32 /65536.f } }}</DisplayString>
     <StringView>rawInt32</StringView>
   </Type>
-  
+
+  <Type Name="GFixedType32&lt;27&gt;" >
+    <DisplayString>{{ Frac={rawInt32 /134217728.f } }}</DisplayString>
+    <StringView>rawInt32</StringView>
+  </Type>
  <Type Name="GFixedType32&lt;28&gt;" >
       <DisplayString>{{ Frac={rawInt32 /268435456.f } }}</DisplayString>
 		<StringView>rawInt32</StringView>

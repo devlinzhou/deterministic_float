@@ -92,8 +92,12 @@ public:
 
 typedef GFixedType32<8>  GFixed08;
 typedef GFixedType32<16> GFixed16;
-typedef GFixedType32<29> GFixed29;
-typedef GFixedType32<30> GFixed30;
+typedef GFixedType32<26> GFixed26;
+typedef GFixedType32<27> GFixed27;  //-16~16
+typedef GFixedType32<28> GFixed28;  //-8~8
+typedef GFixedType32<29> GFixed29;  //-4~4
+typedef GFixedType32<30> GFixed30;  //-2~2
+typedef GFixedType32<31> GFixed31;  //-1~1
 
 
 int32_t GFloat::ms_SinCosTable[GFloat::ms_TriCount * 2] = {
@@ -379,10 +383,9 @@ static inline GFloat s_Exp( const GFloat value )
         GFixed29(0, 1, 120)))))).ToGFloat();
 }
 
-
 GFloat GFloat::Exp(const GFloat value)
 { 
-    if(value >= Zero())
+    if (value >= Zero())
     {
         return s_Exp(value);
     }
@@ -392,26 +395,61 @@ GFloat GFloat::Exp(const GFloat value)
         return One() / s_Exp(TF);
     }
 }
+//MiniMaxApproximation[Log2[x], {x, {0.5, 0.999999}, 5, 0}]
+static inline int64_t s_Log2( const GFloat value)
+{
+    int32_t TExp =  value.getexponent() - 127 + 23;
+
+    GFixed27 x1 = GFixed27(value.getfraction_NoShift()>>4);
+
+    GFixed27 TResult = -GFixed27(3,72096,100000) + 
+        x1*( GFixed27(9,  62979, 100000) +
+        x1*(-GFixed27(12, 68320, 100000) +
+        x1*( GFixed27(10, 99420, 100000) +
+        x1*(-GFixed27(5,  29593, 100000) +
+        x1*( GFixed27(1,   7610, 100000))))));
+
+    int64_t TRaw = ( (int64_t)TExp << 32 ) + ( (int64_t)TResult.rawInt32 << (32 - GFixed27::GetTypeNumber() ) );
+
+    return TRaw;
+}
+
+
 GFloat GFloat::Log(const GFloat value)
 { 
-    if( value <= Zero() )
+  //  return Log2(value) * GFloat(0,69314718, 100000000); 
+
+    if (value.rawint32 <= 0)
     {
         return Zero();
     }
-    else if (value < Two())
+    else
     {
-        GFixed29 x1 = GFixed29::FromGFloat(value - One());
+        GFixed26 Ln_2 = GFixed26(0,69314718, 100000000);
 
-        return ( x1 * ( GFixed29(1,0, 2) + x1 * ( -GFixed29(0,1, 2) + x1 *( GFixed29(0,1, 3) - x1 *( GFixed29(0,1, 4) - x1 * GFixed29(0,1, 5)))))).ToGFloat();
+        int64_t TRaw = (s_Log2(value) * Ln_2.rawInt32)>>GFixed26::GetTypeNumber();
+
+        return GFloat::Normalize(TRaw, (uint8_t)(127 - 32));;
+    }
+}
+
+GFloat GFloat::Log2(const GFloat value)
+{
+    if (value.rawint32 <= 0 )
+    {
+        return Zero();
     }
     else
     {
-        return One() + Log(value * e_Inv());
+        int64_t TRaw = s_Log2(value);
+
+        return GFloat::Normalize( TRaw, (uint8_t)(127 - 32) );;
     }
 }
+
 GFloat GFloat::Pow(const GFloat x, const GFloat y)
 {
-    if (x <= Zero())
+    if (x.rawint32 <= 0)
         return Zero();
 
     return Exp(y * Log(x));

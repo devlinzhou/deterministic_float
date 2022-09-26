@@ -419,17 +419,11 @@ inline void FunError( int NCount, bool bRelative, std::string name, float RMin, 
 
         for (int i = 0; i < TN; i++) {
             double fy = fun_f(i);
-
-            //if (abs(fy) < 0.00000001f)
-            //    continue;
             GFloat Gy = fun_G(i);
 
             double ferror = ( (Gy.toDouble() - fy )/( bRelative ? abs(fy): 1.) );
 
             fs << da[i] << " " << ferror * 100.0 << std::endl;
-
-            //fs << da[i] << " " << fy  << std::endl;
-            //fs << da[i] << " " << Gy.toDouble() << std::endl;
         }
     }
 
@@ -585,21 +579,32 @@ inline void FunError( int NCount, bool bRelative, std::string name, float RMin, 
 
 void TestGFloat::Run()
 {
-    GFloatTest FT(10000000);
+   float tf =  log2f(0.45);
+
+
+    GFloatTest FT(1000000);
 
     bool bErrortest = 0;
     if (bErrortest)
     {
         float fstart = 1.580f;
-        FT.FunError(1000, false, "ACos", -0.f, 0.95f, [&](int i)->double {return acos(FT.da[i]); }, [&](int i)->GFloat {return GFloat::ACos(FT.Ga[i]); });
-        FT.FunError(1000, false, "ASin", -1.f, 1.f, [&](int i)->double {return asin(FT.da[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });
+        //FT.FunError(1000, false, "ACos", -0.f, 0.95f, [&](int i)->double {return acos(FT.da[i]); }, [&](int i)->GFloat {return GFloat::ACos(FT.Ga[i]); });
+       // FT.FunError(1000, false, "ASin", -1.f, 1.f, [&](int i)->double {return asin(FT.da[i]); }, [&](int i)->GFloat {return GFloat::ASin(FT.Ga[i]); });
+        FT.FunError(1000, true, "Log2", 0, 1.f, [&](int i)->double {return log2(FT.da[i]); }, [&](int i)->GFloat {return GFloat::Log2(FT.Ga[i]); });
+        FT.FunError(1000, false, "Log2", 0.0, 1.0f, [&](int i)->double {return log2(FT.da[i]); }, [&](int i)->GFloat {return GFloat::Log2(FT.Ga[i]); });
+
+       // FT.FunError(1000, true, "Log", 0, 1.f, [&](int i)->double {return log(FT.da[i]); }, [&](int i)->GFloat {return GFloat::Log(FT.Ga[i]); });
+       // FT.FunError(1000, false, "Log", 0, 1.f, [&](int i)->double {return log(FT.da[i]); }, [&](int i)->GFloat {return GFloat::Log(FT.Ga[i]); });
+
         //FT.FunError(1256, "Sin", -fstart, fstart, [&](int i)->float {return sinf(FT.fa[i]); }, [&](int i)->GFloat {return GFloat::Sin(FT.Ga[i]); });
         return;
     }
+   // FT.FunTest("Log_2", 0.f, 1.f, [&](int N)->void {GMYFun(log2f(FT.fa[i]), FT.fc[i])}, [&](int N)->void {GMYFun(log2(FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::Log2(FT.Ga[i]), FT.Gc[i])});
+   // FT.FunTest("Add", 0.f, 1.f, [&](int N)->void {GMYFun(FT.fa[i] + FT.fb[i], FT.fc[i])}, [&](int N)->void {GMYFun(FT.da[i] + FT.db[i], FT.dc[i])}, [&](int N)->void {GMYFun(FT.Ga[i] + FT.Gb[i], FT.Gc[i])});
 
    // FT.FunTest("Mul+Add",   -10000.f, 10000.f, [&](int N)->void {GMYFun(FT.fa[i]*FT.fb[i]+FT.fa[i],FT.fc[i])}, [&](int N)->void {GMYFun(FT.da[i] * FT.db[i] + FT.da[i], FT.dc[i])}, [&](int N)->void {GMYFun(FT.Ga[i] * FT.Gb[i] + FT.Ga[i], FT.Gc[i])});
-
-    FT.FunTest("Add",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] + FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] + FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] + FT.Gb[i], FT.Gc[i])});
+   // return;
+    FT.FunTest("Add",        10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] + FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] + FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] + FT.Gb[i], FT.Gc[i])});
     FT.FunTest("Sub",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] - FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] - FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] - FT.Gb[i], FT.Gc[i] ) });
     FT.FunTest("Mul",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] * FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] * FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] * FT.Gb[i], FT.Gc[i] ) });
     FT.FunTest("Div",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] / FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] / FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] / FT.Gb[i], FT.Gc[i] ) });
@@ -621,15 +626,17 @@ void TestGFloat::Run()
     FT.FunTest("ASin",      -1.f, 1.f,          [&](int N)->void {GMYFun(asinf(FT.fa[i]), FT.fc[i])}, [&](int N)->void {GMYFun(asin(FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::ASin(FT.Ga[i]), FT.Gc[i])});
     FT.FunTest("ACos",      -1.f, 1.f,          [&](int N)->void {GMYFun(acosf(FT.fa[i]), FT.fc[i])}, [&](int N)->void {GMYFun(acos(FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::ACos(FT.Ga[i]), FT.Gc[i])});
     FT.FunTest("ATan",      -1.5f, 1.57f,       [&](int N)->void {GMYFun(atanf(FT.fa[i]), FT.fc[i])},   [&](int N)->void {GMYFun(atan(FT.da[i]), FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::ATan(FT.Ga[i]), FT.Gc[i])});
-   FT.FunTest("ATan(10,x)", -10000.f, 10000.f, [&](int N)->void {GMYFun(atan2f(10.f,FT.fa[i]), FT.fc[i])}, [&](int N)->void {GMYFun(atan2(10.,FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::ATan2(GFloat(10),FT.Ga[i]), FT.Gc[i])});
-   FT.FunTest("ATan(x,10)", -10000.f, 10000.f, [&](int N)->void {GMYFun(atan2f(FT.fa[i],10.f), FT.fc[i])}, [&](int N)->void {GMYFun(atan2(FT.da[i],10.), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::ATan2(FT.Ga[i],GFloat(10)), FT.Gc[i])});
+   FT.FunTest("ATan(10,x)", -10000.f, 10000.f,  [&](int N)->void {GMYFun(atan2f(10.f,FT.fa[i]), FT.fc[i])}, [&](int N)->void {GMYFun(atan2(10.,FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::ATan2(GFloat(10),FT.Ga[i]), FT.Gc[i])});
+   FT.FunTest("ATan(x,10)", -10000.f, 10000.f,  [&](int N)->void {GMYFun(atan2f(FT.fa[i],10.f), FT.fc[i])}, [&](int N)->void {GMYFun(atan2(FT.da[i],10.), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::ATan2(FT.Ga[i],GFloat(10)), FT.Gc[i])});
   // return;
-   FT.FunTest("Sqrt",      0.f, 10000.f,       [&](int N)->void{GMYFun(sqrtf(FT.fa[i]), FT.fc[i])},    [&](int N)->void{GMYFun(sqrt(FT.da[i]),  FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Sqrt(FT.Ga[i]), FT.Gc[i])});
-   FT.FunTest("InvSqrt",   0.f, 10000.f,       [&](int N)->void{GMYFun(1.f/sqrtf(FT.fa[i]), FT.fc[i])},[&](int N)->void{GMYFun(1./sqrt(FT.da[i]),FT.dc[i])},       [&](int N)->void { GMYFun(GFloat::InvSqrt(FT.Ga[i]), FT.Gc[i])});
-   FT.FunTest("Exp",       -20.f, 20.f,        [&](int N)->void{GMYFun(expf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(exp(FT.da[i]),   FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Exp(FT.Ga[i]), FT.Gc[i])});
-   FT.FunTest("Log",       0.f, 10000.f,       [&](int N)->void{GMYFun(logf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(log(FT.da[i]),   FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Log(FT.Ga[i]), FT.Gc[i])});
-   FT.FunTest("Pow(2,x)",  -20.f, 20.f,        [&](int N)->void{GMYFun(powf(2.f, FT.fa[i]), FT.fc[i])},[&](int N)->void{GMYFun(pow(2., FT.da[i]), FT.dc[i])},      [&](int N)->void { GMYFun(GFloat::Pow(GFloat::Two(), FT.Ga[i]), FT.Gc[i])});
-   FT.FunTest("Pow(x,2)",  0.55f, 20,          [&](int N)->void{GMYFun(powf(FT.fa[i], 2.f), FT.fc[i])},[&](int N)->void{GMYFun(pow(FT.da[i], 2.), FT.dc[i])},      [&](int N)->void { GMYFun(GFloat::Pow(FT.Ga[i], GFloat::Two()), FT.Gc[i])});
+   FT.FunTest("Sqrt",      0.f, 10000.f,        [&](int N)->void{GMYFun(sqrtf(FT.fa[i]), FT.fc[i])},    [&](int N)->void{GMYFun(sqrt(FT.da[i]),  FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Sqrt(FT.Ga[i]), FT.Gc[i])});
+   FT.FunTest("InvSqrt",   0.f, 10000.f,        [&](int N)->void{GMYFun(1.f/sqrtf(FT.fa[i]), FT.fc[i])},[&](int N)->void{GMYFun(1./sqrt(FT.da[i]),FT.dc[i])},       [&](int N)->void { GMYFun(GFloat::InvSqrt(FT.Ga[i]), FT.Gc[i])});
+   FT.FunTest("Exp",       -20.f, 20.f,         [&](int N)->void{GMYFun(expf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(exp(FT.da[i]),   FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Exp(FT.Ga[i]), FT.Gc[i])});
+   FT.FunTest("Log_e",      0.f, 10000.f,       [&](int N)->void{GMYFun(logf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(log(FT.da[i]),   FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Log(FT.Ga[i]), FT.Gc[i])});
+   FT.FunTest("Log_2",      0.f, 10000.f,       [&](int N)->void{GMYFun(log2f(FT.fa[i]), FT.fc[i])}, [&](int N)->void {GMYFun(log2(FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::Log2(FT.Ga[i]), FT.Gc[i])});
+
+   FT.FunTest("Pow(2,x)",  -20.f, 20.f,         [&](int N)->void{GMYFun(powf(2.f, FT.fa[i]), FT.fc[i])},[&](int N)->void{GMYFun(pow(2., FT.da[i]), FT.dc[i])},      [&](int N)->void { GMYFun(GFloat::Pow(GFloat::Two(), FT.Ga[i]), FT.Gc[i])});
+   FT.FunTest("Pow(x,2)",  0.55f, 20,           [&](int N)->void{GMYFun(powf(FT.fa[i], 2.f), FT.fc[i])},[&](int N)->void{GMYFun(pow(FT.da[i], 2.), FT.dc[i])},      [&](int N)->void { GMYFun(GFloat::Pow(FT.Ga[i], GFloat::Two()), FT.Gc[i])});
 
 }
 
