@@ -1,40 +1,40 @@
 # GFloat Test And BenchMark
- * Test time : Mon Sep 26 21:29:15 2022
+ * Test time : Tue Sep 27 00:22:23 2022
 
 |Operation System| C++ Compiler version |CPU  | Base Frequency  |
 |:--:|:--:|:--:|:--:|
 |Windows 64-bit|Visual Studio 1931|12th Gen Intel(R) Core(TM) i9-12900H|2.92 GHz or  2.9 GHz |
- * Performance: float vs GFloat,  Call 1000000 times
+ * Performance: float vs GFloat,  Call 2000000 times
  * Error : the relative error between cmath (double) and GFloat Math 
 
 |Function| avg error|max error| float vs GFloat | float / GFloat | float fast| GFloat fast|
 |--|--|--|--|--|--|--|
-|Add       |  0.000000 %|      0.000000 %| 0.44 vs  1.61  (ms)|0.27|$\checkmark$||
-|Sub       |  0.000055 %|     11.111111 %| 0.44 vs  3.77  (ms)|0.12|$\checkmark$||
-|Mul       |  0.000014 %|      0.000070 %| 0.44 vs  0.70  (ms)|0.63|$\checkmark$||
-|Div       |  0.000011 %|      0.000046 %| 0.64 vs  2.03  (ms)|0.31|$\checkmark$||
-|Ceil      |  0.000009 %|      0.781250 %| 5.40 vs  2.68  (ms)|2.01||$\checkmark$|
-|Floor     |  0.000000 %|      0.000000 %| 5.85 vs  0.93  (ms)|6.30||$\checkmark$|
-|Whole     |  0.000004 %|      0.142857 %| 0.53 vs  5.78  (ms)|0.09|$\checkmark$||
-|WholeFrac |  0.000004 %|      0.000012 %| 0.32 vs  8.28  (ms)|0.04|$\checkmark$||
-|Normalize |  0.000004 %|      0.000012 %| 0.33 vs  0.83  (ms)|0.40|$\checkmark$||
-|FromInt   |  0.000000 %|      0.000000 %| 0.52 vs  1.25  (ms)|0.41|$\checkmark$||
-|-()       |  0.000004 %|      0.000012 %| 0.36 vs  0.54  (ms)|0.66|$\checkmark$||
-|<         |  0.000004 %|      0.000012 %| 0.43 vs  7.46  (ms)|0.06|$\checkmark$||
-|Abs       |  0.000004 %|      0.000012 %| 0.33 vs  4.24  (ms)|0.08|$\checkmark$||
-|Sin       |  0.254217 %|  44469.186153 %| 8.18 vs  2.96  (ms)|2.76||$\checkmark$|
-|Cos       |  0.180190 %|  14521.000767 %|10.24 vs  3.23  (ms)|3.17||$\checkmark$|
-|SinCos    |  0.197822 %|   9571.942496 %|13.11 vs  8.55  (ms)|1.53||$\checkmark$|
-|Tan       |  0.425105 %|  44469.206359 %| 8.57 vs  8.11  (ms)|1.06||$\checkmark$|
-|ASin      |  0.474911 %|     14.587558 %|10.00 vs  8.93  (ms)|1.12||$\checkmark$|
-|ACos      |  2.121254 %|   7499.923180 %| 9.22 vs 11.55  (ms)|0.80|$\checkmark$||
-|ATan      |  2.082307 %|     10.347341 %|11.23 vs 12.05  (ms)|0.93|$\checkmark$||
-|ATan(10,x)|  0.002442 %|     10.290108 %| 9.12 vs 25.08  (ms)|0.36|$\checkmark$||
-|ATan(x,10)|  0.003470 %|     10.345940 %| 9.22 vs 31.69  (ms)|0.29|$\checkmark$||
-|Sqrt      |  0.000170 %|      0.001553 %| 0.65 vs  6.25  (ms)|0.10|$\checkmark$||
-|InvSqrt   |  0.000154 %|      0.001526 %| 1.31 vs  5.60  (ms)|0.23|$\checkmark$||
-|Exp       |  0.023400 %|      0.165236 %| 2.60 vs 24.32  (ms)|0.11|$\checkmark$||
-|Log_e     |  0.000127 %|      0.154715 %| 2.66 vs  4.13  (ms)|0.64|$\checkmark$||
-|Log_2     |  0.000126 %|      0.154719 %|19.23 vs  3.48  (ms)|5.52||$\checkmark$|
-|Pow(2,x)  |  0.023150 %|      0.055209 %| 4.73 vs 31.70  (ms)|0.15|$\checkmark$||
-|Pow(x,2)  |  0.012264 %|      0.064328 %| 4.72 vs 25.60  (ms)|0.18|$\checkmark$||
+|Add       |  0.000000 %|      0.000000 %| 0.88 vs  3.17  (ms)|0.28|$\checkmark$||
+|Sub       |  0.000099 %|    100.000000 %| 0.88 vs  4.76  (ms)|0.19|$\checkmark$||
+|Mul       |  0.000014 %|      0.000071 %| 0.86 vs  1.42  (ms)|0.61|$\checkmark$||
+|Div       |  0.000011 %|      0.000047 %| 1.38 vs  4.62  (ms)|0.30|$\checkmark$||
+|Ceil      |  0.000009 %|      0.781250 %|11.40 vs  5.27  (ms)|2.16||$\checkmark$|
+|Floor     |  0.000000 %|      0.000000 %|11.15 vs  1.71  (ms)|6.51||$\checkmark$|
+|Whole     |  0.000004 %|      0.338983 %| 0.79 vs 11.46  (ms)|0.07|$\checkmark$||
+|WholeFrac |  0.000004 %|      0.000012 %| 0.78 vs 14.89  (ms)|0.05|$\checkmark$||
+|Normalize |  0.000004 %|      0.000012 %| 0.70 vs  1.83  (ms)|0.38|$\checkmark$||
+|FromInt   |  0.000000 %|      0.000000 %| 0.78 vs  2.23  (ms)|0.35|$\checkmark$||
+|-()       |  0.000004 %|      0.000012 %| 0.86 vs  1.08  (ms)|0.80|$\checkmark$||
+|<         |  0.000004 %|      0.000012 %| 0.91 vs 15.26  (ms)|0.06|$\checkmark$||
+|Abs       |  0.000004 %|      0.000012 %| 0.82 vs  8.69  (ms)|0.09|$\checkmark$||
+|Sin       |  0.000064 %|      2.318618 %| 4.14 vs 16.64  (ms)|0.25|$\checkmark$||
+|Cos       |  0.545417 %|  45301.917045 %|16.48 vs 17.25  (ms)|0.96|$\checkmark$||
+|SinCos    |  0.395063 %|  73044.076252 %|25.01 vs 34.62  (ms)|0.72|$\checkmark$||
+|Tan       |  0.425419 %|  50528.119428 %|16.94 vs 14.62  (ms)|1.16||$\checkmark$|
+|ASin      |  2.024203 %|      3.519171 %|18.70 vs 15.44  (ms)|1.21||$\checkmark$|
+|ACos      |  0.863858 %|   6582.283104 %|18.62 vs 15.74  (ms)|1.18||$\checkmark$|
+|ATan      |  0.000038 %|      0.021311 %|14.78 vs 39.42  (ms)|0.37|$\checkmark$||
+|ATan(10,x)|  0.010550 %|      0.021383 %|18.77 vs 53.73  (ms)|0.35|$\checkmark$||
+|ATan(x,10)|  0.000121 %|      0.021407 %|18.09 vs 68.40  (ms)|0.26|$\checkmark$||
+|Sqrt      |  0.000171 %|      0.001553 %| 1.33 vs 14.43  (ms)|0.09|$\checkmark$||
+|InvSqrt   |  0.000154 %|      0.001529 %| 2.43 vs 10.23  (ms)|0.24|$\checkmark$||
+|Exp       |  0.023412 %|      0.165236 %| 4.78 vs 48.29  (ms)|0.10|$\checkmark$||
+|Log_e     |  0.000127 %|      0.154715 %| 4.88 vs  7.17  (ms)|0.68|$\checkmark$||
+|Log_2     |  0.000126 %|      0.154719 %|37.91 vs  6.64  (ms)|5.71||$\checkmark$|
+|Pow(2,x)  |  0.023153 %|      0.055230 %|10.00 vs 63.20  (ms)|0.16|$\checkmark$||
+|Pow(x,2)  |  0.012261 %|      0.064361 %| 9.65 vs 49.82  (ms)|0.19|$\checkmark$||

@@ -227,8 +227,83 @@ static inline int32_t Sin_Table(const GFloat value, GFixed30& Delta)
     return nWhole;
 }
 
+static inline int32_t s_Sin(const GFloat value, GFixed30& Delta)
+{
+    int32_t exp = value.getexponent() - 127;
+
+    if (-64 >= exp || exp >= 64)
+    {
+        Delta = GFixed30(0, 0, 1);
+        return 0;
+    }
+
+    int64_t TRaw = value.getfraction() * (int64_t)GFixed30(0, 159154943, 1000000000).rawInt32;
+
+    int64_t NewRaw = exp >= 0 ? TRaw << exp : TRaw >> -exp;
+
+    GFixed30   F30Fraction = GFixed30((NewRaw) & 0x3FFFFFFF);
+
+    int32_t TWhole = F30Fraction.rawInt32 >> (30 - GFloat::ms_TriTableBit);
+
+    constexpr GFixed30 C_quaterPi(0, 785398164, 1000000000);
+
+    GFixed30 delta_1 = GFixed30(F30Fraction.rawInt32 & ((1 << (30 - GFloat::ms_TriTableBit)) - 1));
+
+    Delta = C_quaterPi * delta_1;
+
+    Delta.rawInt32 = Delta.rawInt32 << 3;
+
+    int32_t nWhole = (TWhole) & (GFloat::ms_TriCount - 1);
+
+    return nWhole;
+}
+
 GFloat GFloat::Sin(const GFloat value) 
 {
+    int32_t exp = value.getexponent() - 127;
+
+    if (-64 >= exp || exp >= 64)
+    {
+        return Zero();
+    }
+
+    int64_t TRaw = value.getfraction() * (int64_t)GFixed30(0, 159154943, 1000000000).rawInt32;
+
+    int64_t NewRaw = exp >= 0 ? TRaw << exp : TRaw >> -exp;
+
+    GFixed30   F30Fraction = GFixed30((NewRaw) & 0x3FFFFFFF);
+
+    GFixed30 TValue(0);
+
+    if(F30Fraction.rawInt32 >= GFixed30(0,3,4).rawInt32)
+    {
+        TValue = F30Fraction - GFixed30(1, 0, 4);
+    }
+    else if( F30Fraction.rawInt32 >= GFixed30(0,1,4).rawInt32)
+    {
+        TValue = GFixed30(0,1,2) - F30Fraction;
+    }
+    else
+    {
+        TValue = F30Fraction;
+    }
+    
+    constexpr GFixed30 C_quaterPi(0, 785398164, 1000000000);
+
+
+    GFixed29 x1 = GFixed29( (TValue * C_quaterPi).rawInt32 << 2 );
+    GFixed29 x2 = x1 * x1;
+    GFixed29 TResult =
+        x1 * ( GFixed29(0, 999999, 1000000) +
+        x2 * (-GFixed29(0, 166656, 1000000) +
+        x2 * ( GFixed29(0,   8312, 1000000) -
+        x2 *   GFixed29(0,    185, 1000000))));
+
+    return TResult.ToGFloat();
+
+
+
+
     GFixed30 F30Delte(0);
 
     int32_t nWhole = Sin_Table(value, F30Delte );
@@ -243,6 +318,9 @@ GFloat GFloat::Sin(const GFloat value)
 
 GFloat GFloat::Cos(const GFloat value)
 { 
+    return Sin(value + Pi_Half());
+
+
     GFixed30 F30Delte(0);
 
     int32_t nWhole = Sin_Table(value, F30Delte);
@@ -266,7 +344,7 @@ void GFloat::SinCos(const GFloat value, GFloat& OutSin, GFloat& OutCos)
 }
 GFloat GFloat::ASin(const GFloat value)
 {
-    constexpr GFloat TOne =  GFloat::FromRaw32( One().rawint32 - 0x1000  );
+    constexpr GFloat TOne =  GFloat::FromRaw32( One().rawint32 - 0x100  );
     if( value > TOne) 
     {
         return Pi_Half();
@@ -277,25 +355,43 @@ GFloat GFloat::ASin(const GFloat value)
     }
     else
     {
-        GFixed30 FValue =  GFixed30::FromGFloat(value);
 
         GFixed29 x1 = GFixed29::FromGFloat(value);
         GFixed29 x2 = x1 * x1;
+        GFixed29 TResult = 
+            x1 * ( GFixed29(0,968210,1000000) + 
+            x2 * ( GFixed29(0,863219,1000000) + 
+            x2 * (-GFixed29(2,146930,1000000) + 
+            x2 *   GFixed29(1,835000,1000000))) );
 
-        return (
-            x1 * (GFixed29(1, 0, 2) +
-            x2 * (GFixed29(0, 1, 6) +
-            x2 * (GFixed29(0, 3, 40) +
-            x2 * (GFixed29(0, 5, 112) +
-            x2 * (GFixed29(0, 35, 1152) +
-            x2 * (GFixed29(0, 63, 2816)))))))).ToGFloat();
-
-        //return TResult.ToGFloat();
+        return TResult.ToGFloat();
     }
 }
 GFloat GFloat::ACos(const GFloat value)
 {
-    return Pi_Half() - ASin(value);
+    //return Pi_Half() - ASin(value);
+
+    constexpr GFloat TOne = GFloat::FromRaw32(One().rawint32 - 0x100);
+    if (value > TOne)
+    {
+        return Zero();
+    }
+    else if (value < -TOne)
+    {
+        return Pi();
+    }
+    else
+    {
+        GFixed29 x1 = GFixed29::FromGFloat(value);
+        GFixed29 x2 = x1 * x1;
+        GFixed29 TResult = GFixed29(1,5708,10000) +
+            x1 * (-GFixed29(0, 995799, 1000000) +
+            x2 * (-GFixed29(0, 297453, 1000000) +
+            x2 * ( GFixed29(0, 483716, 1000000) -
+            x2 *   GFixed29(0, 637026, 1000000))));
+
+        return TResult.ToGFloat();
+    }
 }
 GFloat GFloat::Tan(const GFloat value) 
 {
@@ -308,10 +404,15 @@ GFloat GFloat::Tan(const GFloat value)
 
 static inline GFloat s_ATan( const GFloat value )
 {
-    GFixed29 x1 = GFixed29::FromGFloat(value);
-    GFixed29 x2 = x1 * x1;
+    GFixed30 x1 = GFixed30::FromGFloat(value);
+    GFixed30 x2 = x1 * x1;
+    GFixed30 TResult = 
+        x1 * ( GFixed30(0,999788,1000000) + 
+        x2 * (-GFixed30(0,325808,1000000) + 
+        x2 * ( GFixed30(0,155579,1000000) -
+        x2 *  GFixed30(0,443266,10000000))) );
 
-    return(x1 * (GFixed29(1, 0, 2) - x2 * (GFixed29(0, 1, 3) - x2 * GFixed29(0, 1, 5)))).ToGFloat();
+    return TResult.ToGFloat();
 }
 
 
