@@ -300,24 +300,36 @@ GFloat GFloat::Tan(const GFloat value)
     SinCos(value, TSin, TCos);
     return TSin / TCos;
 }
+
+
+static inline GFloat s_ATan( const GFloat value )
+{
+    GFixed29 x1 = GFixed29::FromGFloat(value);
+    GFixed29 x2 = x1 * x1;
+
+    return(x1 * (GFixed29(1, 0, 2) - x2 * (GFixed29(0, 1, 3) - x2 * GFixed29(0, 1, 5)))).ToGFloat();
+}
+
+
 GFloat GFloat::ATan(const GFloat value)
 {
     if( -One() <= value && value <= One() )
     {
-        GFixed29 x1 =  GFixed29::FromGFloat(value);
-        GFixed29 x2 = x1 * x1;
-
-        return( x1 *(GFixed29(1,0,2) - x2 *( GFixed29(0,1,3) - x2 * GFixed29(0,1,5) ) )).ToGFloat();
-    }
-    else if(value > One() )
-    {
-        return Pi_Half() - ATan(One() / value);
+        return s_ATan( value);
     }
     else
     {
-        return  - ATan(One() / value) - Pi_Half();
-    }
+        GFloat InvValue = One() / value;
 
+        if (value > One())
+        {
+            return Pi_Half() - s_ATan(InvValue );
+        }
+        else
+        {
+            return  -s_ATan(InvValue ) - Pi_Half();
+        }
+    }
 }
 
 GFloat GFloat::ATan2(const GFloat y, const GFloat x)
@@ -344,30 +356,40 @@ GFloat GFloat::ATan2(const GFloat y, const GFloat x)
     } 
 }  
 
+
+static inline GFloat s_Exp( const GFloat value )
+{
+    GFloat fraction;
+    int32_t nWhole = value.GetWhole(fraction);
+
+    GFloat Result = GFloat::One();
+    for (int i = 0; i < (nWhole); ++i)
+    {
+        Result = Result * GFloat::e();
+    }
+
+    GFixed29 x1 = GFixed29::FromGFloat(fraction);
+
+    return Result * (
+        GFixed29(1, 0, 2) + x1 * (
+        GFixed29(1, 0, 2) + x1 * (
+        GFixed29(0, 1, 2) + x1 * (
+        GFixed29(0, 1, 6) + x1 * (
+        GFixed29(0, 1, 24) + x1 * 
+        GFixed29(0, 1, 120)))))).ToGFloat();
+}
+
+
 GFloat GFloat::Exp(const GFloat value)
 { 
     if(value >= Zero())
     {
-        GFloat fraction;
-        int32_t nWhole =  value.GetWhole(fraction);
-
-        GFloat Result = One();
-        for( int i = 0; i < (nWhole); ++i )
-        {
-            Result = Result * e();
-        }
-
-        //GFloat fraction = value;
-
-        //GFixed29 x1 =      GFixed29::FromGFloat(     fraction   ) ;
-        GFixed29 x1 = GFixed29::FromGFloat(fraction);
-
-        return Result * ( GFixed29(1,0,2) + x1 *( GFixed29(1,0,2) +  x1 *( GFixed29(0,1,2) + x1 * ( GFixed29(0,1,6) + x1 * ( GFixed29(0,1,24) + x1 * GFixed29(0,1,120)) ) ))).ToGFloat();
+        return s_Exp(value);
     }
     else
     {
         GFloat TF = -value;
-        return One() / Exp(TF);
+        return One() / s_Exp(TF);
     }
 }
 GFloat GFloat::Log(const GFloat value)
