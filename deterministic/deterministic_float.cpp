@@ -672,7 +672,8 @@ void TestGFloat::Run()
 
    FT.FunTest("Log_e",      0.f, 10000.f,       [&](int N)->void{GMYFun(logf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(log(FT.da[i]),   FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Log(FT.Ga[i]), FT.Gc[i])});
    FT.FunTest("Log_2",      0.f, 10000.f,       [&](int N)->void{GMYFun(log2f(FT.fa[i]), FT.fc[i])},    [&](int N)->void {GMYFun(log2(FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::Log2(FT.Ga[i]), FT.Gc[i])});
-    
+   FT.FunTest("Log_10",     0.f, 10000.f,       [&](int N)->void {GMYFun(log10f(FT.fa[i]), FT.fc[i])}, [&](int N)->void {GMYFun(log10(FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::Log10(FT.Ga[i]), FT.Gc[i])});
+
    FT.FunTest("Pow(2,x)",  -20.f, 20.f,         [&](int N)->void{GMYFun(powf(2.f, FT.fa[i]), FT.fc[i])},[&](int N)->void{GMYFun(pow(2., FT.da[i]), FT.dc[i])},      [&](int N)->void { GMYFun(GFloat::Pow(GFloat::Two(), FT.Ga[i]), FT.Gc[i])});
    FT.FunTest("Pow(x,2)",  0.55f, 20,           [&](int N)->void{GMYFun(powf(FT.fa[i], 2.f), FT.fc[i])},[&](int N)->void{GMYFun(pow(FT.da[i], 2.), FT.dc[i])},      [&](int N)->void { GMYFun(GFloat::Pow(FT.Ga[i], GFloat::Two()), FT.Gc[i])});
 

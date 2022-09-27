@@ -599,6 +599,22 @@ GFloat GFloat::Log2(const GFloat value)
     }
 }
 
+GFloat GFloat::Log10(const GFloat value)
+{
+    if (value.rawint32 <= 0)
+    {
+        return Zero();
+    }
+    else
+    {
+        GFixed26 Ln_10 = GFixed26(0, 30103, 100000);
+
+        int64_t TRaw = (s_Log2(value) * Ln_10.rawInt32) >> GFixed26::GetTypeNumber();
+
+        return GFloat::Normalize(TRaw, (uint8_t)(127 - 32));;
+    }
+}
+
 GFloat GFloat::Pow2(const GFloat value)
 {
     GFloat fraction;
