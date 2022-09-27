@@ -382,7 +382,7 @@ void GFloat::SinCos(const GFloat value, GFloat& OutSin, GFloat& OutCos)
 }
 GFloat GFloat::ASin(const GFloat value)
 {
-    constexpr GFloat TOne =  GFloat::FromRaw32( One().rawint32 - 0x1000 );
+    constexpr GFloat TOne =  GFloat::FromRaw32( One().rawint32 );
     if( value > TOne) 
     {
         return Pi_Half();
@@ -395,25 +395,54 @@ GFloat GFloat::ASin(const GFloat value)
     {
         GFixed30 x1 = GFixed30::FromGFloat(value);
 
-        GFixed30 x2 = x1 * x1;
+        GFixed30 GFStart(0,98,100);
 
-        auto TResult =
-            x1 * (GFixed30(1, 0, 2) + 
-            x2 * (GFixed30(0, 1, 6) + 
-            x2 * (GFixed30(0, 3, 40) + 
-            x2 * (GFixed30(0, 5, 112) +
-            x2 * (GFixed30(0, 35, 1152) +
-            x2 * (GFixed30(0, 63, 2816) +
-            x2 * (GFixed30(0, 231, 13312) +
-            x2 * (GFixed30(0, 143, 10240) +
-            x2 * (GFixed30(0, 6435, 557056) +
-            x2 * (GFixed30(0, 12155, 1245184) ))))))))));
+        if( -GFStart.rawInt32 < x1.rawInt32 &&  x1.rawInt32 < GFStart.rawInt32 )
+        {
+            GFixed30 x2 = x1 * x1;
 
-        return TResult.ToGFloat() ;
+            auto TResult =
+                x1 * (GFixed30(1, 0, 2) + 
+                x2 * (GFixed30(0, 1, 6) + 
+                x2 * (GFixed30(0, 3, 40) + 
+                x2 * (GFixed30(0, 5, 112) +
+                x2 * (GFixed30(0, 35, 1152) +
+                x2 * (GFixed30(0, 63, 2816) +
+                x2 * (GFixed30(0, 231, 13312) +
+                x2 * (GFixed30(0, 143, 10240) +
+                x2 * (GFixed30(0, 6435, 557056) +
+                x2 * (GFixed30(0, 12155, 1245184) ))))))))));
+
+            return TResult.ToGFloat() ;
+        }
+        else
+        {
+           GFixed30 FPi_Half(1,570796327,1000000000);
+           GFixed30 ASin_098(1, 37046148,100000000);
+
+           if(x1.rawInt32 > 0 )
+           {
+               GFixed30 FDelta = x1 - GFStart;
+
+               auto TResult = ASin_098 + (FPi_Half - ASin_098) * FDelta / (GFixed30(1, 0, 2) - GFStart);
+
+               return TResult.ToGFloat();
+           }
+           else
+           {
+               GFixed30 FDelta = -x1 - GFStart;
+
+               auto TResult = ASin_098 + (FPi_Half - ASin_098) * FDelta / (GFixed30(1, 0, 2) - GFStart);
+     
+               return (-TResult).ToGFloat();
+           }  
+        }
     }
 }
 GFloat GFloat::ACos(const GFloat value)
 {
+    return Pi_Half()- ASin(value);
+
     constexpr GFloat TOne = GFloat::FromRaw32(One().rawint32 - 0x1000);
     if (value > TOne)
     {
