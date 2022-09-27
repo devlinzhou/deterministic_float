@@ -543,39 +543,9 @@ GFloat GFloat::ATan2(const GFloat y, const GFloat x)
 }  
 
 
-static inline GFloat s_Exp( const GFloat value )
-{
-    GFloat fraction;
-    int32_t nWhole = value.GetWhole(fraction);
-
-    GFloat Result = GFloat::One();
-    for (int i = 0; i < (nWhole); ++i)
-    {
-        Result = Result * GFloat::e();
-    }
-
-    GFixed29 x1 = GFixed29::FromGFloat(fraction);
-
-    return Result * (
-        GFixed29(1, 0, 2) + x1 * (
-        GFixed29(1, 0, 2) + x1 * (
-        GFixed29(0, 1, 2) + x1 * (
-        GFixed29(0, 1, 6) + x1 * (
-        GFixed29(0, 1, 24) + x1 * 
-        GFixed29(0, 1, 120)))))).ToGFloat();
-}
-
 GFloat GFloat::Exp(const GFloat value)
 { 
-    if (value >= Zero())
-    {
-        return s_Exp(value);
-    }
-    else
-    {
-        GFloat TF = -value;
-        return One() / s_Exp(TF);
-    }
+    return Pow2(value * GFloat(1,44269504,100000000));
 }
 //MiniMaxApproximation[Log2[x], {x, {0.5, 0.999999}, 5, 0}]
 static inline int64_t s_Log2( const GFloat value)
@@ -629,12 +599,29 @@ GFloat GFloat::Log2(const GFloat value)
     }
 }
 
+GFloat GFloat::Pow2(const GFloat value)
+{
+    GFloat fraction;
+    int32_t nWhole = value.GetWhole(fraction);
+    GFixed30 x1 = GFixed30::FromGFloat(fraction);
+    GFixed30 FraExp = GFixed30(1,0,2) +
+        x1 * ( GFixed30(0, 693149, 1000000) +
+        x1 * ( GFixed30(0, 240218, 1000000) + 
+        x1 * ( GFixed30(0, 555287, 10000000) +
+        x1 * ( GFixed30(0, 957624, 100000000) +
+        x1 * ( GFixed30(0, 137819, 100000000) +
+        x1 * ( GFixed30(0, 124773, 10000000000) +
+        x1 * ( GFixed30(0,   2563, 1000000000))))))));
+
+    return GFloat::Normalize( FraExp.rawInt32,  127 -30 + nWhole); 
+}
+
 GFloat GFloat::Pow(const GFloat x, const GFloat y)
 {
     if (x.rawint32 <= 0)
         return Zero();
 
-    return Exp(y * Log(x));
+    return Pow2(y * Log2(x));
 }
 
 template<int64_t FractionNumType>

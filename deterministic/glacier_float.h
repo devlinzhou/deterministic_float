@@ -506,6 +506,7 @@ public:
     static GFloat Exp(const GFloat value);
     static GFloat Log(const GFloat value);
     static GFloat Log2(const GFloat value);
+    static GFloat Pow2(const GFloat value);
     static GFloat Pow(const GFloat base, const GFloat exponent);
     static GFloat InvSqrt(const GFloat value );
     static GFloat Sqrt(const GFloat value){return value * InvSqrt(value);}
