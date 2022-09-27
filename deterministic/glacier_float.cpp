@@ -318,7 +318,7 @@ GFloat GFloat::Sin(const GFloat value)
 
 GFloat GFloat::Cos(const GFloat value)
 { 
-    return Sin(value + Pi_Half());
+   // return Sin(value + Pi_Half());
 
 
     GFixed30 F30Delte(0);
