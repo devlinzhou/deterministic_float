@@ -16,7 +16,7 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     * AI 寻路（Recast Navigation）
     * AI 引擎
   * 整体上GFloat与IEEE754的硬件浮点数float，性能差距在200%以内。参考显卡衡量计算能力的乘加指令，主要比较乘法和加法函数的性能：
-    * windows(Intel i9-12900H)平台上GFloat比float慢200%
+    * Windows(Intel i9-12900H)平台上GFloat比float慢200%
     * 苹果(ARM64 CPU)平台上GFloat比float慢200%
  
 
@@ -61,9 +61,9 @@ Platform|Win64 5950X|Win64 12900H | iOS A15 | MacOS M1 Pro | Android |
 | |float vs GFloat| float vs GFloat| float vs GFloat|float vs GFloat |float vs GFloat
 |add|0.63 vs 2.63 ms| 0.44 vs 1.48ms| 1.36 vs 2.14 ms|0.34 vs 2.24 ms |
 |Mul|0.70 vs 1.14 ms| 0.52 vs 0.79 ms| 1.42 vs 1.38 ms |0.34 vs 0.93 ms|
-|Sin|10.20 vs 4.99 ms|8.6 vs 3.15 ms| 2.84 vs 6.65 ms|2.29 vs 3.68 ms |
-|Sqrt|1.08 vs 9.29  ms|0.7 vs 6.2 ms|1.14 vs 7.75 ms |0.64 vs 8.33 ms|
-|Exp| 2.06 vs 29.81ms| 2.15 vs 24.52ms|7.24 vs 19.70 ms|5.75 vs 21.46 ms|
+|Sin|10.20 vs 8.39 ms|8.6 vs 3.15 ms| 2.84 vs 6.65 ms|2.29 vs 5.28 ms |
+|Sqrt|1.08 vs 9.29  ms|0.7 vs 6.2 ms|1.14 vs 7.75 ms |0.64 vs 6.06 ms|
+|Exp| 2.06 vs 10.83ms| 2.15 vs 24.52ms|7.24 vs 19.70 ms|5.75 vs 6.52 ms|
 	
 ## How to start
  * Four OS platform projects for fast and easy to start test&benchmark
