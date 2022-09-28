@@ -542,7 +542,6 @@ GFloat GFloat::ATan2(const GFloat y, const GFloat x)
     } 
 }  
 
-
 GFloat GFloat::Exp(const GFloat value)
 { 
     return Pow2(value * GFloat(1,44269504,100000000));
@@ -566,52 +565,49 @@ static inline int64_t s_Log2( const GFloat value)
     return TRaw;
 }
 
-
 GFloat GFloat::Log(const GFloat value)
 { 
-  //  return Log2(value) * GFloat(0,69314718, 100000000); 
-
-    if (value.rawint32 <= 0)
+    if (value.rawint32 > 0)
     {
-        return Zero();
+        GFixed26 Ln_2 = GFixed26(0, 69314718, 100000000);
+
+        int64_t TRaw = (s_Log2(value) * Ln_2.rawInt32) >> GFixed26::GetTypeNumber();
+
+        return GFloat::Normalize(TRaw, (uint8_t)(127 - 32));;
     }
     else
     {
-        GFixed26 Ln_2 = GFixed26(0,69314718, 100000000);
-
-        int64_t TRaw = (s_Log2(value) * Ln_2.rawInt32)>>GFixed26::GetTypeNumber();
-
-        return GFloat::Normalize(TRaw, (uint8_t)(127 - 32));;
+         return Zero();
     }
 }
 
 GFloat GFloat::Log2(const GFloat value)
 {
-    if (value.rawint32 <= 0 )
-    {
-        return Zero();
-    }
-    else
+    if (value.rawint32 > 0 )
     {
         int64_t TRaw = s_Log2(value);
 
-        return GFloat::Normalize( TRaw, (uint8_t)(127 - 32) );;
+        return GFloat::Normalize(TRaw, (uint8_t)(127 - 32));
+    }
+    else
+    {
+        return Zero();
     }
 }
 
 GFloat GFloat::Log10(const GFloat value)
 {
-    if (value.rawint32 <= 0)
-    {
-        return Zero();
-    }
-    else
+    if (value.rawint32 > 0)
     {
         GFixed26 Ln_10 = GFixed26(0, 30103, 100000);
 
         int64_t TRaw = (s_Log2(value) * Ln_10.rawInt32) >> GFixed26::GetTypeNumber();
 
         return GFloat::Normalize(TRaw, (uint8_t)(127 - 32));;
+    }
+    else
+    {
+        return Zero();
     }
 }
 
@@ -718,25 +714,39 @@ GFloat GFloat::InvSqrt(const GFloat value )
 
     int32_t exp = value.getexponent() - 127 + 22;
     GFixed30  Start(0);
+    GFixed29 Start2(0);
     if(exp & 0x1)
     {
         Fixed30.rawInt32 >>= 1;
         exp += 1;
-        Start =  GFixed30(1, 171, 1000);
+       // Start =  GFixed30(1, 171, 1000);
+        GFixed29 X1 = GFixed29(Fixed30.rawInt32>>1);
+        Start2 = GFixed29(2,60531,100000) +
+            X1 *(-GFixed29(3, 63965,100000) +
+            X1 *( GFixed29(2, 99053,100000) +  
+            X1 *(-GFixed29(0,956673,1000000))));
     }
     else
     {
         
-        Start = GFixed30(0, 822, 1000); //GFixed30::FromGFloat(start);
+      //  Start = GFixed30(0, 822, 1000); //GFixed30::FromGFloat(start);
+
+        GFixed29 X1 = GFixed29(Fixed30.rawInt32>>1);
+        Start2 = GFixed29(1,84223,100000) +
+            X1 *(-GFixed29(1, 28681,100000) +
+            X1 *( GFixed29(0,528656,1000000) +  
+            X1 *(-GFixed29(0,84558,1000000))));
     }
+
 
     Fixed30.rawInt32 >>= 1;
 
+    Start = GFixed30( Start2.rawInt32 << 1);
+
     constexpr GFixed30 F1_5(1, 1, 2);
 
-    Start = Start * (F1_5 - (Fixed30 * Start) * Start);
-    Start = Start * (F1_5 - (Fixed30 * Start) * Start);
-    Start = Start * (F1_5 - (Fixed30 * Start) * Start);
+    Start = Start * (F1_5 - (Fixed30 * Start) * Start); // Newton's method
+
 
     GFloat TResult = GFloat::Normalize(Start.rawInt32, uint8_t(127 - GFixed30::GetTypeNumber() - (exp >> 1)));
 

@@ -419,35 +419,33 @@ public:
         if (exp >= 0)
         {
             OutFraction = Zero();
-            return getfraction() << exp;
+            return getfraction() << exp; // exp > 8 will overflow
         }
-        else if (exp > -23)// 22 or 23
+        else if (exp > -23)
         {
             int32_t fra = getfraction();
 
-            int32_t TRaw = fra >> -exp;
+            bool bNegative = false;
 
-            int32_t TWhole;
-            if( (TRaw << -exp ) == rawint32 )
+            if( fra < 0 )
             {
-                TWhole = TRaw;
-                OutFraction = Zero();
+                fra = -fra;
+                bNegative = true;
+            }
+
+            int32_t TRaw = fra >> -exp;
+            int32_t TRra = fra & ((1<<-exp)-1);
+
+            if( bNegative )
+            {
+                OutFraction = GFloat( -TRra << (23+exp), 127 - 23 );
+                return -TRaw;
             }
             else
             {
-                if( fra >=0 )
-                {
-                    TWhole = TRaw;
-                }
-                else
-                {
-                    TWhole = TRaw + 1;
-                }
-
-                OutFraction =  *this - GFloat(TWhole); // to do
+                OutFraction = GFloat(TRra << (23 + exp), 127 - 23);
+                return TRaw;
             }
-
-            return TWhole;
         }
         else
         {
