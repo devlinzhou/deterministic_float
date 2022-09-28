@@ -173,7 +173,7 @@ public:
 
     double toDouble() const
     {
-        int32_t    Texponent = getexponent() - 127;
+        int32_t Texponent = getexponent() - 127;
         double dT = pow(2, Texponent);
         double dResult = getfraction() * dT;
 
@@ -183,24 +183,7 @@ public:
     float toFloat() const
     {
        return (float)toDouble();
-
-//         int32_t Texponent = getexponent() - 127;
-//         if (-62 < Texponent && Texponent < 62)
-//         {
-//             double dResult = Texponent >= 0 ?
-//                 ((double)getfraction()) * double(((uint64_t)1) << Texponent) :
-//                 ((double)getfraction()) / double(((uint64_t)1) << -Texponent);
-//             return float(dResult);
-//         }
-//         else
-//         {
-//             double dT = pow(2, Texponent);
-//             double dResult = getfraction() * dT;
-//             return float(dResult);
-//         }
     }
-
-
 
     static inline GFloat Normalize(int64_t Trawvalue, uint8_t Texponent)
     {

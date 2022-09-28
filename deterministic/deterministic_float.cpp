@@ -499,7 +499,7 @@ public:
 
     inline void FunTest(
         std::string name,
-        float RMin, float RMax,
+        double RMin, double RMax,
         std::function<void(int N)> fun_f,
         std::function<void(int N)> fun_d,
         std::function<void(int N)> fun_G  )
@@ -507,23 +507,35 @@ public:
         std::minstd_rand gen;
         std::uniform_real_distribution<> dis(RMin, RMax);
 
-        for (int i = 0; i < N; i++) {
+        int32_t nScaleTime = 5;
+        int32_t Niner = N / nScaleTime;
 
-            fc[i] = 2.5f;
-            dc[i] = 2.5f;
-            Gc[i] = GFloat(2,1,2);
+        for( int nLog = 0; nLog < nScaleTime; nLog++ )
+        {
+            double dt = 1. / pow(10,nLog);
 
-            Ga[i] = GFloat::FromFloat((float)dis(gen));
-            Gb[i] = GFloat::FromFloat((float)dis(gen));
-            fa[i] = Ga[i].toFloat();
-            fb[i] = Gb[i].toFloat();
-            da[i] = Ga[i].toDouble();
-            db[i] = Gb[i].toDouble();
+            for (int j = 0; j < Niner; j++)
+            {
+                int i = nLog * Niner + j;
+                double fda = dis(gen) * dt;
+                double fdb = dis(gen) * dt;
+
+                Ga[i] = GFloat::FromFloat((float)fda);
+                Gb[i] = GFloat::FromFloat((float)fdb);
+                fa[i] = (float)fda;
+                fb[i] = (float)fdb;
+                da[i] = fda;
+                db[i] = fdb;
+
+                fc[i] = 2.5f;
+                dc[i] = 2.5f;
+                Gc[i] = GFloat(2, 1, 2);
+            }
         }
 
         Timer.Start();
         {
-             fun_f(N);
+            fun_f(N);
         }
         time1 = Timer.GetDeltaTimeMS();
 
