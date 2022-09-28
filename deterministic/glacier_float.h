@@ -506,7 +506,6 @@ public:
 private:
 
     static int32_t  ms_SinCosTable[ms_TriCount*2];
-    static GFloat   ms_TanTable[ms_TriCount];
 };
 
 #ifdef Determinate

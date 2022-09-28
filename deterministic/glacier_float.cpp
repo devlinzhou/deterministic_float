@@ -166,7 +166,7 @@ int32_t GFloat::ms_SinCosTable[GFloat::ms_TriCount * 2] = {
 -209476544, 1053110144, -183568768, 1057933824, -157550400, 1062120192, -131437136, 1065666816,
 -105244704, 1068571520, -78989392, 1070832384, -52685976, 1072448384, -26350832, 1073418368
 };
-GFloat GFloat::ms_TanTable[GFloat::ms_TriCount];
+
 
 void GFloat::Init()
 {
@@ -191,8 +191,6 @@ void GFloat::Init()
 
         //ms_SinCosTable[i*2] = SinValue.rawInt32;
         //ms_SinCosTable[i*2+1] = CosValue.rawInt32;
-
-        ms_TanTable[i] = FromFloat( fTan ) ;
     }
 }
 
