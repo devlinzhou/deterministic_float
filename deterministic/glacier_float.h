@@ -168,6 +168,7 @@ public:
         if( TFloat754.rawfloat.sign != 0)
             TRraction = -TRraction;
 
+        return Normalize(TRraction >> 1,uint8_t(TFloat754.rawfloat.exponent - 22));
         return GFloat::FromFractionAndExp(TRraction >> 1,uint8_t(TFloat754.rawfloat.exponent - 22));
     }
 
