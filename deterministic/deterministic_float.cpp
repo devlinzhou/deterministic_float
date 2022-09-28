@@ -607,10 +607,12 @@ void TestGFloat::Run()
     if (bErrortest)
     {
         float fstart = 20.f;
-        //FT.FunGraph("Sin", 1000, GFloatTest::EGType::EAll, -fstart, fstart, [&](double i)->double {return (double)sinf( (float)i); }, [&](double i)->double {return GFloat::Sin(GFloat::FromFloat((float)i)).toDouble(); });   
-       // FT.FunGraph("ASin", 1000, GFloatTest::EGType::EAll, -fstart, fstart, [&](double i)->double {return (double)asinf((float)i); }, [&](double i)->double {return GFloat::ASin(GFloat::FromFloat((float)i)).toDouble(); });
-        //FT.FunGraph("ACos", 1000, GFloatTest::EGType::EAll, -fstart, fstart, [&](double i)->double {return (double)acosf((float)i); }, [&](double i)->double {return GFloat::ACos(GFloat::FromFloat((float)i)).toDouble(); });
+        FT.FunGraph("Sin", 1000, GFloatTest::EGType::EAll, -fstart, fstart, [&](double i)->double {return (double)sinf( (float)i); }, [&](double i)->double {return GFloat::Sin(GFloat::FromFloat((float)i)).toDouble(); });   
+        FT.FunGraph("ASin", 1000, GFloatTest::EGType::EAll, -1, 1, [&](double i)->double {return (double)asinf((float)i); }, [&](double i)->double {return GFloat::ASin(GFloat::FromFloat((float)i)).toDouble(); });
+        FT.FunGraph("ACos", 1000, GFloatTest::EGType::EAll, -1, 1, [&](double i)->double {return (double)acosf((float)i); }, [&](double i)->double {return GFloat::ACos(GFloat::FromFloat((float)i)).toDouble(); });
         FT.FunGraph("Exp", 1000, GFloatTest::EGType::EAll, -fstart, fstart, [&](double i)->double {return (double)expf((float)i); }, [&](double i)->double {return GFloat::Exp(GFloat::FromFloat((float)i)).toDouble(); });
+        FT.FunGraph("Pow2", 1000, GFloatTest::EGType::EAll, -fstart, fstart, [&](double i)->double {return (double)powf(2.f,(float)i); }, [&](double i)->double {return GFloat::Pow2(GFloat::FromFloat((float)i)).toDouble(); });
+        FT.FunGraph("Log", 1000, GFloatTest::EGType::EAll, 0, 100000.f, [&](double i)->double {return (double)logf( (float)i); }, [&](double i)->double {return GFloat::Log(GFloat::FromFloat((float)i)).toDouble(); });  
         return;
     }
 
