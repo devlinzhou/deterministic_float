@@ -206,13 +206,6 @@ public:
     {
         uint32_t index = GBitScanReverse64(abs(Trawvalue ));
 
-#if 0
-
-        uint32_t uDelta = index - 22;
-        return GFloat::FromFractionAndExp((int32_t)( _rotr64(Trawvalue, uDelta)), uint8_t(Texponent + uDelta));
-
-
-#else
         if ( index <= 22 )
         {
             uint32_t uDelta = 22 - index;
@@ -223,16 +216,7 @@ public:
             uint32_t uDelta = index - 22;
             return GFloat::FromFractionAndExp((int32_t)(Trawvalue >> uDelta), uint8_t(Texponent + uDelta));
         }
-
-#endif
     }
-
-
-
-//     inline bool CanToInt64() const
-//     {
-//         return 
-//     }
 
     inline GFloat Add( const GFloat b ) const
     {
