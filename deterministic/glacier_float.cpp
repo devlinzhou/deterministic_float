@@ -542,10 +542,7 @@ GFloat GFloat::ATan2(const GFloat y, const GFloat x)
     } 
 }  
 
-GFloat GFloat::Exp(const GFloat value)
-{ 
-    return Pow2(value * GFloat(1,44269504,100000000));
-}
+
 //MiniMaxApproximation[Log2[x], {x, {0.5, 0.999999}, 5, 0}]
 static inline int64_t s_Log2( const GFloat value)
 {
@@ -628,13 +625,7 @@ GFloat GFloat::Pow2(const GFloat value)
     return GFloat::Normalize( FraExp.rawInt32,  127 -30 + nWhole); 
 }
 
-GFloat GFloat::Pow(const GFloat x, const GFloat y)
-{
-    if (x.rawint32 <= 0)
-        return Zero();
 
-    return Pow2(y * Log2(x));
-}
 
 template<int64_t FractionNumType>
 class GFixedType64

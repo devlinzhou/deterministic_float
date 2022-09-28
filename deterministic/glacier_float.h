@@ -57,6 +57,7 @@ public:
     static inline constexpr GFloat Pi_TwoInv()  { return GFloat(0x517cc1,   0x66); };
     static inline constexpr GFloat e()          { return GFloat(0x56fc2a,   0x6a); };
     static inline constexpr GFloat e_Inv()      { return GFloat(0x5e2d58,   0x67); };
+    static inline constexpr GFloat e_Div_2()    { return GFloat(0x5c551d,   0x69); };
 
     static inline uint32_t GBitScanReverse64( uint64_t num)
     {
@@ -382,21 +383,15 @@ public:
 
     inline int32_t GetWhole() const
     {
-        int32_t Frac = getfraction();
-        if ( Frac == 0)
-            return 0;
-
         int32_t exp = (getexponent() - 127);
-        if (exp > 8)
-        {
-            return Frac << 8; // overflow
-        }
+
         if (exp >= 0)
         {
-            return Frac << exp;
+            return getfraction() << exp;// exp > 8 will overflow
         }
         else if (exp > -23)
         {
+             int32_t Frac = getfraction();
             if( rawint32 >= 0)
             {
                 return Frac >> -exp;
@@ -415,7 +410,6 @@ public:
     inline int32_t GetWhole(GFloat& OutFraction) const
     {
         int32_t exp = (getexponent() - 127);
-        
         if (exp >= 0)
         {
             OutFraction = Zero();
@@ -424,27 +418,21 @@ public:
         else if (exp > -23)
         {
             int32_t fra = getfraction();
+            int32_t fraMask = (1 << -exp) - 1;
 
-            bool bNegative = false;
-
-            if( fra < 0 )
+            if( fra >= 0 )
             {
-                fra = -fra;
-                bNegative = true;
-            }
-
-            int32_t TRaw = fra >> -exp;
-            int32_t TRra = fra & ((1<<-exp)-1);
-
-            if( bNegative )
-            {
-                OutFraction = GFloat( -TRra << (23+exp), 127 - 23 );
-                return -TRaw;
+                int32_t TRaw = fra >> -exp;
+                int32_t TRra = fra & fraMask;
+                OutFraction = GFloat(TRra << (23 + exp), 127 - 23);
+                return TRaw;
             }
             else
             {
-                OutFraction = GFloat(TRra << (23 + exp), 127 - 23);
-                return TRaw;
+                int32_t TRaw = -fra >> -exp;
+                int32_t TRra = -fra & fraMask;
+                OutFraction = GFloat(-TRra << (23 + exp), 127 - 23);
+                return -TRaw;       
             }
         }
         else
@@ -501,12 +489,12 @@ public:
     static GFloat Tan(const GFloat value);
     static GFloat ATan(const GFloat value);
     static GFloat ATan2(const GFloat y, const GFloat x);
-    static GFloat Exp(const GFloat value);
+    static GFloat Exp(const GFloat value){return Pow2(value * e_Div_2());}
     static GFloat Log(const GFloat value);
     static GFloat Log2(const GFloat value);
     static GFloat Log10(const GFloat value);
     static GFloat Pow2(const GFloat value);
-    static GFloat Pow(const GFloat base, const GFloat exponent);
+    static GFloat Pow(const GFloat base, const GFloat exponent) { if (base.rawint32 <= 0) return Zero(); return Pow2(exponent * Log2(base)); }
     static GFloat InvSqrt(const GFloat value );
     static GFloat Sqrt(const GFloat value){return value * InvSqrt(value);}
 
