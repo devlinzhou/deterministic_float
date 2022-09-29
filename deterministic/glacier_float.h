@@ -23,26 +23,7 @@
 #define GFORCE_INLINE inline   
 #endif
 
-class FloatIEEE_754 
-{
-public:
-    FloatIEEE_754()
-    {
-        rawint32 = 0;
-    }
-    union
-    {
-        int32_t rawint32;
-        struct //MyFloat32
-        {
-            uint32_t    fraction: 23;
-            uint32_t    exponent: 8;
-            int32_t     sign    : 1;
-        } rawfloat;
-    };
-};
-
-class GFloat
+class GFloat // Get Glacier first char "G" for Name
 {
 public:
     static inline constexpr GFloat Zero()       { return GFloat(0,          0xE9); };
@@ -76,7 +57,6 @@ public:
                 return nIndex;
             }
         }
-
         return 0;
 #endif
     }
@@ -98,7 +78,6 @@ public:
     explicit inline GFloat( int32_t TValue)
     {
         *this= Normalize((int64_t)TValue, 127);
-        //*this = FromFractionAndExp(TValue, 127);
     }
 
     constexpr GFloat(int32_t Traw32, uint8_t exp ) :
@@ -160,16 +139,15 @@ public:
         if (f == 0.f || f == -0.f)
             return Zero();
 
-        FloatIEEE_754 TFloat754;
-        TFloat754.rawint32 = *(int32_t*)&f;
+        int32_t T754Rawint32    = *(int32_t*)&f;
+        int32_t TRraction       = (int32_t)(T754Rawint32 & 0x007FFFFF) + 0x00800000;
+        int32_t exponent        = ((T754Rawint32 & 0x7FFFFFFF) >> 23 );
 
-        int32_t TRraction = (int32_t)TFloat754.rawfloat.fraction + 0x00800000;
-        
-        if( TFloat754.rawfloat.sign != 0)
+        if (T754Rawint32 < 0)
             TRraction = -TRraction;
 
         //return Normalize(TRraction >> 1,uint8_t(TFloat754.rawfloat.exponent - 22));
-        return GFloat::FromFractionAndExp(TRraction >> 1,uint8_t(TFloat754.rawfloat.exponent - 22));
+        return GFloat::FromFractionAndExp(TRraction >> 1,uint8_t(exponent - 22));
     }
 
     double toDouble() const
@@ -460,7 +438,6 @@ public:
     static GFloat Pow(const GFloat base, const GFloat exponent) { if (base.rawint32 <= 0) return Zero(); return Pow2(exponent * Log2(base)); }
     static GFloat InvSqrt(const GFloat value );
     static GFloat Sqrt(const GFloat value){return value * InvSqrt(value);}
-
 
 public:
     static constexpr int32_t ms_TriTableBit = 8;
