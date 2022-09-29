@@ -615,14 +615,23 @@ void TestGFloat::Run()
 {
     GFloatTest FT(1000000);
 
-    float fa1 = -7231.94629f;
-    GFloat F1 = GFloat::FromFloat(-fa1);
-
-    GFloat FS = GFloat::Sin(F1);
-    float fS1 = sinf(fa1);
 
 
-   //* */float f2 = F2.toFloat();
+    GFloat FAA = GFloat(0xff800000,127 -21);
+    GFloat FAB = -GFloat(4,0,1);
+
+    int32_t TFra1 = FAA.getfraction();
+    int32_t TFra2 = FAB.getfraction();
+    
+    int32_t exp1 = FAA.getexponent();
+    int32_t exp2 = FAB.getexponent();
+
+
+    GFloat FAA_ = -FAA;
+    GFloat FAB_ = -FAB;
+    GFloat FAC_ = -FAB_;
+    GFloat FAD = GFloat(4,0,1);
+
 
     bool bErrortest =0;
     if (bErrortest)

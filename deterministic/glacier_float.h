@@ -168,7 +168,7 @@ public:
         if( TFloat754.rawfloat.sign != 0)
             TRraction = -TRraction;
 
-        return Normalize(TRraction >> 1,uint8_t(TFloat754.rawfloat.exponent - 22));
+        //return Normalize(TRraction >> 1,uint8_t(TFloat754.rawfloat.exponent - 22));
         return GFloat::FromFractionAndExp(TRraction >> 1,uint8_t(TFloat754.rawfloat.exponent - 22));
     }
 
@@ -282,11 +282,6 @@ public:
     inline constexpr GFloat operator -() const
     {
         int32_t nFraction = getfraction();
-
-        if( nFraction ==  0xff800000 )
-        {
-            nFraction = nFraction +1;
-        }
 
         return GFloat::FromFractionAndExp(-nFraction, (uint8_t) getexponent());
     }
