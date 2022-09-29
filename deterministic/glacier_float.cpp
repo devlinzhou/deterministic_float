@@ -84,7 +84,7 @@ public:
 
     inline constexpr GFloat ToGFloat() const
     {
-        return GFloat::Normalize((int64_t)rawInt32, uint8_t(127 - GFixedType32<FractionNumType>::GetTypeNumber()));
+        return GFloat::Normalize((int64_t)rawInt32, 127 - GFixedType32<FractionNumType>::GetTypeNumber());
     }
 
     int32_t rawInt32;
@@ -176,8 +176,7 @@ void GFloat::Init()
 
         float fSin = sinf(fvalue);  // to do use Gfloat compute Sin
         float fCos = cosf(fvalue);
-        float fTan = tanf(fvalue);
-    
+ 
         GFloat GSin = GFloat::FromFloat(fSin);
         GFloat GCos = GFloat::FromFloat(fCos);
 
@@ -380,7 +379,7 @@ void GFloat::SinCos(const GFloat value, GFloat& OutSin, GFloat& OutCos)
 }
 GFloat GFloat::ASin(const GFloat value)
 {
-    constexpr GFloat TOne =  GFloat::FromRaw32( One().rawint32 );
+    constexpr GFloat TOne = GFloat::FromRaw32( One().rawint32 );
     if( value > TOne) 
     {
         return Pi_Half();
@@ -502,7 +501,14 @@ GFloat GFloat::ATan2(const GFloat y, const GFloat x)
     }
     else
     {
-        return Zero();
+        if( y >= Zero() )
+        {
+            return Pi_Half();
+        }
+        else
+        {
+            return -Pi_Half();
+        }     
     } 
 }  
 
@@ -531,7 +537,7 @@ GFloat GFloat::Log(const GFloat value)
     {
         GFixed26 Ln_2 = GFixed26(0, 69314718, 100000000);
         int64_t TRaw = (s_Log2(value) * Ln_2.rawInt32) >> GFixed26::GetTypeNumber();
-        return GFloat::Normalize(TRaw, (uint8_t)(127 - 32));;
+        return GFloat::Normalize(TRaw, 127 - 32);
     }
     else
     {
@@ -544,7 +550,7 @@ GFloat GFloat::Log2(const GFloat value)
     if (value.rawint32 > 0 )
     {
         int64_t TRaw = s_Log2(value);
-        return GFloat::Normalize(TRaw, (uint8_t)(127 - 32));
+        return GFloat::Normalize(TRaw, 127 - 32);
     }
     else
     {
@@ -558,7 +564,7 @@ GFloat GFloat::Log10(const GFloat value)
     {
         GFixed26 Ln_10 = GFixed26(0, 30103, 100000);
         int64_t TRaw = (s_Log2(value) * Ln_10.rawInt32) >> GFixed26::GetTypeNumber();
-        return GFloat::Normalize(TRaw, (uint8_t)(127 - 32));
+        return GFloat::Normalize(TRaw, 127 - 32);
     }
     else
     {
@@ -646,7 +652,7 @@ public:
 
     inline constexpr GFloat ToGFloat() const
     {
-        return GFloat::Normalize((int64_t)rawInt64, uint8_t(127 - GFixedType64<FractionNumType>::GetTypeNumber()));
+        return GFloat::Normalize((int64_t)rawInt64, 127 - GFixedType64<FractionNumType>::GetTypeNumber());
     }
 
     int64_t rawInt64;
@@ -688,7 +694,7 @@ GFloat GFloat::InvSqrt(const GFloat value )
 
     Start = Start * (F1_5 - (Fixed30 * Start) * Start); // Newton's method
 
-    GFloat TResult = GFloat::Normalize(Start.rawInt32, uint8_t(127 - GFixed30::GetTypeNumber() - (exp >> 1)));
+    GFloat TResult = GFloat::Normalize(Start.rawInt32, 127 - GFixed30::GetTypeNumber() - (exp >> 1));
 
     return TResult;
 }

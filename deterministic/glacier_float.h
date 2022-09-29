@@ -15,6 +15,20 @@
 #include <stdint.h>
 #include <cmath>
 
+//#define GLACIER_OVERFLOW_TEST
+
+#define GLACIER_MULTIPLY_NORAMLIZE_FAST
+
+#ifndef GLACIER_MULTIPLY_NORAMLIZE_FAST
+//#define GLACIER_NORMALIZE_TEST
+#endif
+
+#if  defined( GLACIER_OVERFLOW_TEST) || defined( GLACIER_NORMALIZE_TEST)
+#include <iostream>
+#include <iomanip>
+#endif
+
+
 #ifdef _MSC_VER
 #include <intrin.h>
 #include <immintrin.h>
@@ -80,22 +94,41 @@ public:
         *this= Normalize((int64_t)TValue, 127);
     }
 
-    constexpr GFloat(int32_t Traw32, uint8_t exp ) :
-        rawint32((Traw32 << 8) | int32_t(exp))
+    constexpr GFloat(int32_t Traw32, int32_t exp ) :
+        rawint32((Traw32 << 8) | int32_t(exp & 0x000000FF))
     {
+
+#ifdef GLACIER_OVERFLOW_TEST
+
+        if( exp < 0 || exp > 0x000000FF )
+        {
+            std::cout << __func__ << "( Traw32 : " << Traw32 <<" , exp : " << exp 
+                <<" ) , exp[0,255] exp has overflow!" <<std::endl;
+        }
+#endif
+
+#ifdef GLACIER_NORMALIZE_TEST
+
+         if ((Traw32 > 0 && (Traw32 < 0x00400000 || Traw32 > 0x007FFFFF)) ||
+             (Traw32 < 0 && (Traw32 < (int32_t)0xFF800000 || Traw32 > (int32_t)0xFFC00000)))
+         {
+             std::cout << __func__ << "( Raw : " <<std::hex << std::showbase <<std::setw(10)<< Traw32 << ", exp : " << std::dec<<exp
+                 << " )  is Not Normalized!" << std::endl;
+         }
+#endif
     }
 
     explicit inline GFloat(int32_t Traw32, uint32_t a, uint32_t b)
     {
         int64_t TValue = (int64_t)b * (int64_t)Traw32 + (int64_t)a;
 
-        uint32_t index = GBitScanReverse64( (uint64_t)abs(TValue));
+        int32_t index = GBitScanReverse64( (uint64_t)abs(TValue));
 
-        uint8_t exp = uint8_t(62 - index);
+        int32_t exp = 62 - index;
 
         int64_t TRawn = (TValue << exp ) / b;
 
-        *this = Normalize(TRawn, uint8_t(127 - exp));
+        *this = Normalize(TRawn, 127 - exp);
     }
 
     /*inline Float32(float value )
@@ -129,7 +162,7 @@ public:
         return T;
     }
 
-    static inline constexpr GFloat FromFractionAndExp(int32_t Traw32, uint8_t exp)
+    static inline constexpr GFloat FromFractionAndExp(int32_t Traw32, int32_t exp)
     {
         return GFloat(Traw32, exp);
     }
@@ -146,8 +179,8 @@ public:
         if (T754Rawint32 < 0)
             TRraction = -TRraction;
 
-        //return Normalize(TRraction >> 1,uint8_t(TFloat754.rawfloat.exponent - 22));
-        return GFloat::FromFractionAndExp(TRraction >> 1,uint8_t(exponent - 22));
+        //return Normalize(TRraction >> 1,exponent - 22);
+        return GFloat::FromFractionAndExp(TRraction >> 1,exponent - 22);
     }
 
     double toDouble() const
@@ -164,19 +197,33 @@ public:
        return (float)toDouble();
     }
 
-    static inline GFloat Normalize(int64_t Trawvalue, uint8_t Texponent)
+    static inline GFloat Normalize(int64_t Trawvalue, int32_t Texponent)
     {
-        uint32_t index = GBitScanReverse64(abs(Trawvalue ));
+        int32_t index = GBitScanReverse64(abs(Trawvalue ));
 
         if ( index <= 22 )
         {
-            uint32_t uDelta = 22 - index;
-            return GFloat::FromFractionAndExp((int32_t)(Trawvalue << uDelta), uint8_t(Texponent - uDelta));
+            int32_t uDelta = 22 - index;
+            return GFloat::FromFractionAndExp((int32_t)(Trawvalue << uDelta), Texponent - uDelta);
         }
         else
         {
-            uint32_t uDelta = index - 22;
-            return GFloat::FromFractionAndExp((int32_t)(Trawvalue >> uDelta), uint8_t(Texponent + uDelta));
+            int32_t uDelta = index - 22;
+            return GFloat::FromFractionAndExp((int32_t)(Trawvalue >> uDelta), Texponent + uDelta);
+        }
+    }
+
+    inline bool IsNormalize() const
+    {
+        int32_t absRaw = abs( getfraction());
+
+        if ( absRaw !=0 && ( absRaw < 0x00400000  || absRaw > 0x007FFFFF))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 
@@ -206,7 +253,7 @@ public:
                 FractionValue = b_f + (a_f >> -deltaexp);
                 c_exponent = b_exp;
             }
-            return Normalize(FractionValue, (uint8_t)c_exponent);
+            return Normalize(FractionValue, c_exponent);
         }
         else if (deltaexp >= 23)
         {
@@ -233,7 +280,7 @@ public:
             int64_t a64 = ToInt64();
             int64_t b64 = b.ToInt64();
             int64_t Result = a64 + b64;
-            return Normalize(Result, (uint8_t)(127 - 32));
+            return Normalize(Result, 127 - 32);
         }
         else
         {
@@ -261,7 +308,7 @@ public:
     {
         int32_t nFraction = getfraction();
 
-        return GFloat::FromFractionAndExp(-nFraction, (uint8_t) getexponent());
+        return GFloat::FromFractionAndExp(-nFraction, getexponent());
     }
 
     inline const GFloat operator -(GFloat b) const
@@ -269,20 +316,27 @@ public:
         return *this + (-b);
     }
 
-    inline constexpr GFloat operator *(GFloat b) const
+
+#ifdef GLACIER_MULTIPLY_NORAMLIZE_FAST
+
+    inline const GFloat operator *(GFloat b) const
     {
-#if 0
-        int64_t Trawvalue = (int64_t)getfraction() * b.getfraction();
-        uint8_t Texponent = (uint8_t)(getexponent() + b.getexponent() - 127);
-        return  GFloat::Nomalize(Trawvalue, Texponent);
-#else 
         // I assume a and b is normalized, if a or b is zero,it will get a correct result
         int64_t Trawvalue = (int64_t)getfraction_NoShift() * b.getfraction_NoShift();
-        uint8_t Texponent = (uint8_t)(getexponent() + b.getexponent() - 104);
+        int32_t Texponent = getexponent() + b.getexponent() - 104;
 
-        return GFloat::FromFractionAndExp((int32_t)(Trawvalue >> 39), Texponent );
-#endif
+        return GFloat::FromFractionAndExp((int32_t)(Trawvalue >> 39), Texponent);
     }
+#else 
+
+    inline const GFloat operator *(GFloat b) const
+    {
+        int64_t Trawvalue = (int64_t)getfraction() * b.getfraction();
+        int32_t Texponent = getexponent() + b.getexponent() - 127;
+        return  GFloat::Normalize(Trawvalue, Texponent);
+    }
+#endif
+
 
     inline const GFloat operator /(GFloat b) const
     {
@@ -293,7 +347,7 @@ public:
         }
 
         int64_t Trawvalue = ((int64_t)getfraction() << 32) / nDivid;
-        uint8_t Texponent = (uint8_t)(getexponent() - b.getexponent() + 127 - 32);
+        int32_t Texponent = getexponent() - b.getexponent() + 127 - 32;
 
         return  GFloat::Normalize(Trawvalue, Texponent);
     }
@@ -325,14 +379,13 @@ public:
     inline int32_t GetWhole() const
     {
         int32_t exp = (getexponent() - 127);
-
         if (exp >= 0)
         {
             return getfraction() << exp;// exp > 8 will overflow
         }
         else if (exp > -23)
         {
-             int32_t Frac = getfraction();
+            int32_t Frac = getfraction();
             if( rawint32 >= 0)
             {
                 return Frac >> -exp;
@@ -365,14 +418,14 @@ public:
             {
                 int32_t TRaw = fra >> -exp;
                 int32_t TRra = fra & fraMask;
-                OutFraction = GFloat(TRra << (23 + exp), 127 - 23);
+                OutFraction = GFloat::Normalize(TRra << (23 + exp), 127 - 23);
                 return TRaw;
             }
             else
             {
                 int32_t TRaw = -fra >> -exp;
                 int32_t TRra = -fra & fraMask;
-                OutFraction = GFloat(-TRra << (23 + exp), 127 - 23);
+                OutFraction = GFloat::Normalize( -TRra << (23 + exp), 127 - 23);
                 return -TRaw;       
             }
         }
@@ -391,8 +444,7 @@ public:
             return value;
         else if (exp > -23)// 22 or 23
         {
-            GFloat TFloor = GFloat::FromFractionAndExp((value.getfraction() >> -exp) << -exp, (uint8_t)( exp + 127));
-
+            GFloat TFloor = GFloat::FromFractionAndExp((value.getfraction() >> -exp) << -exp, exp + 127);
             return TFloor == value ? TFloor : TFloor + One();
         }
         else
@@ -409,7 +461,7 @@ public:
             return value;
         else if( exp > -23 )
         {
-            return GFloat::FromFractionAndExp((value.getfraction() >> -exp) << -exp, (uint8_t)(exp + 127));
+            return GFloat::FromFractionAndExp((value.getfraction() >> -exp) << -exp, exp + 127);
         }
         else
         {
@@ -451,5 +503,4 @@ private:
 #ifdef Determinate
 typedef GFloat f32;
 #endif // Determinate
-
 
