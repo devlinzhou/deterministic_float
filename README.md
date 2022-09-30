@@ -5,9 +5,8 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     * Physics Engine (Bullet、PhysX)
     * AI Path Finding (Recast Navigation)
     * AI Engine
- * Compare the overall performance of hard float IEEE-754 and GFloat numbers, They differ by no more than 200%, Refer to the multiply-add instructions for measuring the computing power of the graphics card. compare multiply and add function:
-    * Windows platform(Intel i9-12900H) my GFloat's performance is nearly 200% slower than float
-    * Apple platform(ARM64 CPU) GFloat's performance is  200% slower than float
+ * Compare the overall performance of hard float IEEE-754 and GFloat numbers, They differ by no more than 500%, Refer to the multiply-add instructions for measuring the computing power of the graphics card. compare multiply and add function:
+
 
 
   * 跨平台的确定性浮点数，高性能的软件浮点数
@@ -15,9 +14,8 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     * 物理引擎（Bullet、PhysX）
     * AI 寻路（Recast Navigation）
     * AI 引擎
-  * 整体上GFloat与IEEE754的硬件浮点数float，性能差距在200%以内。参考显卡衡量计算能力的乘加指令，主要比较乘法和加法函数的性能：
-    * Windows(Intel i9-12900H)平台上GFloat比float慢200%
-    * 苹果(ARM64 CPU)平台上GFloat比float慢200%
+  * 整体上GFloat与IEEE754的硬件浮点数float，性能差距在500%以内。参考显卡衡量计算能力的乘加指令，主要比较乘法和加法函数的性能：
+ 
  
 
 ## Performance float（IEEE-754） vs GFloat
