@@ -136,33 +136,33 @@ public:
         FromFloat(value);
     }*/
 
-    inline constexpr int32_t getfraction() const
+    GFORCE_INLINE constexpr int32_t getfraction() const
     {
        return rawint32 >> 8 ;
     }
-    inline constexpr int32_t getfraction_NoShift() const
+    GFORCE_INLINE constexpr int32_t getfraction_NoShift() const
     {
         return int32_t(rawint32 & 0xFFFFFF00);
     }
 
-    inline constexpr int32_t getfraction(int32_t shift) const
+    GFORCE_INLINE constexpr int32_t getfraction(int32_t shift) const
     {
         return getfraction() >> ( shift);
     }
 
-    inline constexpr int32_t getexponent() const
+    GFORCE_INLINE constexpr int32_t getexponent() const
     {
         return (rawint32 & 0xFF);
     }
 
-    static inline constexpr GFloat FromRaw32(int32_t Traw32)
+    static GFORCE_INLINE constexpr GFloat FromRaw32(int32_t Traw32)
     {
         GFloat T;
         T.rawint32 = Traw32;
         return T;
     }
 
-    static inline constexpr GFloat FromFractionAndExp(int32_t Traw32, int32_t exp)
+    static GFORCE_INLINE constexpr GFloat FromFractionAndExp(int32_t Traw32, int32_t exp)
     {
         return GFloat(Traw32, exp);
     }
@@ -230,7 +230,6 @@ public:
         }
     }
 
-
     GFORCE_INLINE constexpr int64_t ToInt64() const
     {
         return ((int64_t)getfraction()) << (32 + getexponent() - 127); // -40 < exp < 40
@@ -292,7 +291,7 @@ public:
         return *this + (-b);
     }
 
-    inline const GFloat operator -=(GFloat b)
+    GFORCE_INLINE const GFloat operator -=(GFloat b)
     {
         *this = *this - b;
         return *this;
@@ -318,7 +317,7 @@ public:
         return  GFloat::Normalize(Trawvalue, Texponent);
     }
 #endif
-    inline const GFloat operator *=(GFloat b)
+    GFORCE_INLINE const GFloat operator *=(GFloat b)
     {
         *this = *this * b;
         return *this;
@@ -338,6 +337,12 @@ public:
         return  GFloat::Normalize(Trawvalue, Texponent);
     }
 
+    GFORCE_INLINE const GFloat operator /=(GFloat b)
+    {
+        *this = *this / b;
+        return *this;
+    }
+
     GFORCE_INLINE bool operator > (const GFloat b) const
     {
         int32_t a_fra = getfraction_NoShift();
@@ -352,12 +357,12 @@ public:
         if (a_e >= b_e)
         {
             int32_t nShift = a_e - b_e;
-            return (int64_t)a_fra > ((int64_t)b_fra >> (nShift > 60 ? 60 : nShift));
+            return (int64_t)a_fra > ((int64_t)b_fra >> (nShift > 31 ? 31 : nShift));
         }
         else
         {
             int32_t nShift = b_e - a_e;
-            return ((int64_t)a_fra >> (nShift > 60 ? 60 : nShift)) > (int64_t)b_fra;
+            return ((int64_t)a_fra >> (nShift > 31 ? 31 : nShift)) > (int64_t)b_fra;
         }
     }
 
