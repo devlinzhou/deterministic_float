@@ -238,29 +238,20 @@ public:
 
     GFORCE_INLINE GFloat operator +( const GFloat b) const
     {
-         int32_t a_e = getexponent();// -127;
-         int32_t b_e = b.getexponent();//-127;
+        int32_t a_e = getexponent();// -127;
+        int32_t b_e = b.getexponent();//-127;
 
-        if (( (-32 +127) < a_e && a_e < (8 +127 )) && ((-32 +127) < b_e && b_e < (8 +127 )))
+        if (a_e >= b_e)
         {
-            int64_t a64 = ToInt64();
-            int64_t b64 = b.ToInt64();
-            int64_t Result = a64 + b64;
-            return Normalize(Result, 127 - 32);
+            int32_t nShift = a_e - b_e > 23 ? 23 : a_e - b_e;
+            return Normalize((int64_t)getfraction_NoShift() + ((int64_t)b.getfraction_NoShift() >> nShift), a_e - 8);
         }
         else
         {
-            if (a_e >= b_e)
-            {
-                int32_t nShift = a_e - b_e > 23 ? 23 : a_e - b_e;
-                return Normalize((int64_t)getfraction_NoShift() + ((int64_t)b.getfraction_NoShift() >> nShift), a_e - 8);
-            }
-            else
-            {
-                int32_t nShift = b_e - a_e > 23 ? 23 : b_e - a_e;
-                return Normalize((int64_t)b.getfraction_NoShift() + ((int64_t)getfraction_NoShift() >> nShift), b_e - 8);
-            }         
-        }
+            int32_t nShift = b_e - a_e > 23 ? 23 : b_e - a_e;
+            return Normalize((int64_t)b.getfraction_NoShift() + ((int64_t)getfraction_NoShift() >> nShift), b_e - 8);
+        }         
+
     }
 
     GFORCE_INLINE const GFloat operator +=(const GFloat b)
