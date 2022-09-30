@@ -75,6 +75,27 @@ public:
 #endif
     }
 
+    static GFORCE_INLINE uint32_t GBitScanReverse32(uint32_t num)
+    {
+#ifdef _MSC_VER
+        unsigned long Index;
+        _BitScanReverse(&Index, num);
+        return Index;
+#elif __GNUC__
+        auto nCount = __builtin_clzll(num);
+        return  nCount == 32 ? 0 : 31 - nCount;
+#else
+        for (int32_t nIndex = 31; nIndex >= 0; nIndex--)
+        {
+            if (((uint64_t)1 << nIndex) & num)
+            {
+                return nIndex;
+            }
+        }
+        return 0;
+#endif
+    }
+
 public:
     int32_t rawint32;
 
@@ -91,7 +112,7 @@ public:
 
     explicit inline GFloat( int32_t TValue)
     {
-        *this= Normalize((int64_t)TValue, 127);
+        *this= Normalize32((int32_t)TValue, 127);
     }
 
     constexpr GFloat(int32_t Traw32, int32_t exp ) :
@@ -128,7 +149,7 @@ public:
 
         int64_t TRawn = (TValue << exp ) / b;
 
-        *this = Normalize(TRawn, 127 - exp);
+        *this = Normalize64(TRawn, 127 - exp);
     }
 
     /*inline Float32(float value )
@@ -197,7 +218,26 @@ public:
        return (float)toDouble();
     }
 
-    static GFORCE_INLINE GFloat Normalize(int64_t Trawvalue, int32_t Texponent)
+    static GFORCE_INLINE GFloat Normalize32(int32_t Trawvalue, int32_t Texponent)
+    {
+        if (Trawvalue == 0)
+            return GFloat(0, 0);
+
+        int32_t index = GBitScanReverse32(abs(Trawvalue));
+
+        if (index <= 22)
+        {
+            int32_t uDelta = 22 - index;
+            return GFloat::FromFractionAndExp(Trawvalue << uDelta, Texponent - uDelta);
+        }
+        else
+        {
+            int32_t uDelta = index - 22;
+            return GFloat::FromFractionAndExp(Trawvalue >> uDelta, Texponent + uDelta);
+        }
+    }
+
+    static GFORCE_INLINE GFloat Normalize64(int64_t Trawvalue, int32_t Texponent)
     {
         if( Trawvalue == 0 )
             return GFloat(0,0);
@@ -230,12 +270,6 @@ public:
         }
     }
 
-    GFORCE_INLINE constexpr int64_t ToInt64() const
-    {
-        return ((int64_t)getfraction()) << (32 + getexponent() - 127); // -40 < exp < 40
-    }
-
-
     GFORCE_INLINE GFloat operator +( const GFloat b) const
     {
         int32_t a_e = getexponent();// -127;
@@ -243,13 +277,13 @@ public:
 
         if (a_e >= b_e)
         {
-            int32_t nShift = a_e - b_e > 23 ? 23 : a_e - b_e;
-            return Normalize((int64_t)getfraction_NoShift() + ((int64_t)b.getfraction_NoShift() >> nShift), a_e - 8);
+            int32_t nShift = a_e - b_e > 23 ? 23 : 1+a_e - b_e;
+            return Normalize32((getfraction_NoShift()>>1) + ((int64_t)b.getfraction_NoShift() >> nShift), a_e - 7);
         }
         else
         {
-            int32_t nShift = b_e - a_e > 23 ? 23 : b_e - a_e;
-            return Normalize((int64_t)b.getfraction_NoShift() + ((int64_t)getfraction_NoShift() >> nShift), b_e - 8);
+            int32_t nShift = b_e - a_e > 23 ? 23 : 1+b_e - a_e;
+            return Normalize32((b.getfraction_NoShift()>>1) + ((int64_t)getfraction_NoShift() >> nShift), b_e - 7);
         }         
 
     }
@@ -325,7 +359,7 @@ public:
         int64_t Trawvalue = ((int64_t)getfraction() << 32) / nDivid;
         int32_t Texponent = getexponent() - b.getexponent() + 127 - 32;
 
-        return  GFloat::Normalize(Trawvalue, Texponent);
+        return  GFloat::Normalize64(Trawvalue, Texponent);
     }
 
     GFORCE_INLINE const GFloat operator /=(GFloat b)
@@ -414,14 +448,14 @@ public:
             {
                 int32_t TRaw = fra >> -exp;
                 int32_t TRra = fra & fraMask;
-                OutFraction = GFloat::Normalize(TRra << (23 + exp), 127 - 23);
+                OutFraction = GFloat::Normalize32(TRra << (23 + exp), 127 - 23);
                 return TRaw;
             }
             else
             {
                 int32_t TRaw = -fra >> -exp;
                 int32_t TRra = -fra & fraMask;
-                OutFraction = GFloat::Normalize( -TRra << (23 + exp), 127 - 23);
+                OutFraction = GFloat::Normalize32( -TRra << (23 + exp), 127 - 23);
                 return -TRaw;       
             }
         }
