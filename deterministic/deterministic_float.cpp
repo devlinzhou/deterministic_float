@@ -588,7 +588,7 @@ public:
         std::stringstream Tstring;
         std::cout.precision(3);
 
-        Tstring << "|" << std::setiosflags(std::ios::left)<< std::setw(10);
+        Tstring << "|" << std::setiosflags(std::ios::left)<< std::setw(12);
         Tstring << Name;
         Tstring << "|" << std::setiosflags(std::ios::right) << std::setw( 10) << std::setiosflags(std::ios::fixed) << std::setprecision(6) <<avgerror * 100.f << " %";
         Tstring << "|" << std::setiosflags(std::ios::right) << std::setw( 14) << Maxabs * 100.f << " %";

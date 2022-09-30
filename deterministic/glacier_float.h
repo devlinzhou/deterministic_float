@@ -353,7 +353,7 @@ public:
         int32_t nDivid = (int32_t)b.getfraction();
         if (nDivid == 0) // for stable
         {
-            return GFloat(0);
+            return GFloat::Zero();
         }
 
         int64_t Trawvalue = ((int64_t)getfraction() << 32) / nDivid;
