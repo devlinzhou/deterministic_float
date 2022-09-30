@@ -270,12 +270,12 @@ public:
         return *this;
     }
 
-    GFORCE_INLINE constexpr bool operator ==(const GFloat b)
+    GFORCE_INLINE constexpr bool operator ==(const GFloat b) const
     {
         return rawint32 == b.rawint32;
     }
 
-    GFORCE_INLINE constexpr bool operator !=( const GFloat b)
+    GFORCE_INLINE constexpr bool operator !=( const GFloat b) const
     {
         return rawint32 != b.rawint32;
     }
@@ -290,6 +290,12 @@ public:
     GFORCE_INLINE const GFloat operator -( const GFloat b) const
     {
         return *this + (-b);
+    }
+
+    inline const GFloat operator -=(GFloat b)
+    {
+        *this = *this - b;
+        return *this;
     }
 
 
@@ -312,7 +318,11 @@ public:
         return  GFloat::Normalize(Trawvalue, Texponent);
     }
 #endif
-
+    inline const GFloat operator *=(GFloat b)
+    {
+        *this = *this * b;
+        return *this;
+    }
 
     GFORCE_INLINE const GFloat operator /(const GFloat b) const
     {
