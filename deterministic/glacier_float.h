@@ -520,6 +520,7 @@ public:
     static GFloat Pow(const GFloat base, const GFloat exponent) { if (base.rawint32 <= 0) return Zero(); return Pow2(exponent * Log2(base)); }
     static GFloat InvSqrt(const GFloat value );
     static GFloat Sqrt(const GFloat value){return value * InvSqrt(value);}
+    static GFloat Fmod(const GFloat x, const GFloat y){ GFloat t = x / y; GFloat out = Zero(); t.GetWhole(out); return out * y;   }
 
 public:
     static constexpr int32_t ms_TriTableBit = 8;

@@ -669,10 +669,12 @@ void TestGFloat::Run()
    FT.FunTest("Pow2",      -30.f, 30.f,         [&](int N)->void{GMYFun(powf(2.f, FT.fa[i]), FT.fc[i])},[&](int N)->void {GMYFun(pow(2., FT.da[i]), FT.dc[i])},     [&](int N)->void { GMYFun(GFloat::Pow2(FT.Ga[i]), FT.Gc[i])});
    FT.FunTest("Log_e",      0.f, 10000.f,       [&](int N)->void{GMYFun(logf(FT.fa[i]), FT.fc[i])},     [&](int N)->void{GMYFun(log(FT.da[i]),   FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Log(FT.Ga[i]), FT.Gc[i])});
    FT.FunTest("Log_2",      0.f, 10000.f,       [&](int N)->void{GMYFun(log2f(FT.fa[i]), FT.fc[i])},    [&](int N)->void {GMYFun(log2(FT.da[i]), FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Log2(FT.Ga[i]), FT.Gc[i])});
-   FT.FunTest("Log_10",     0.f, 10000.f,       [&](int N)->void {GMYFun(log10f(FT.fa[i]), FT.fc[i])}, [&](int N)->void {GMYFun(log10(FT.da[i]), FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Log10(FT.Ga[i]), FT.Gc[i])});
+   FT.FunTest("Log_10",     0.f, 10000.f,       [&](int N)->void {GMYFun(log10f(FT.fa[i]), FT.fc[i])},  [&](int N)->void {GMYFun(log10(FT.da[i]), FT.dc[i])},        [&](int N)->void { GMYFun(GFloat::Log10(FT.Ga[i]), FT.Gc[i])});
 
    FT.FunTest("Pow(1.7,x)",  -30.f, 30.f,       [&](int N)->void{GMYFun(powf(1.7f, FT.fa[i]), FT.fc[i])},[&](int N)->void{GMYFun(pow(1.7, FT.da[i]), FT.dc[i])},    [&](int N)->void { GMYFun(GFloat::Pow(GFloat(1,7,10), FT.Ga[i]), FT.Gc[i])});
    FT.FunTest("Pow(x,1.7)",  0.55f, 20,         [&](int N)->void{GMYFun(powf(FT.fa[i], 1.7f), FT.fc[i])},[&](int N)->void{GMYFun(pow(FT.da[i], 1.7), FT.dc[i])},    [&](int N)->void { GMYFun(GFloat::Pow(FT.Ga[i], GFloat(1,7,10)), FT.Gc[i])});
+   FT.FunTest("Fmod(x,1.7)", -10000.f, 10000.f, [&](int N)->void {GMYFun(fmodf(FT.fa[i], 1.7f), FT.fc[i])}, [&](int N)->void {GMYFun(fmod(FT.da[i], 1.7), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::Fmod(FT.Ga[i], GFloat(1, 7, 10)), FT.Gc[i])});
+   FT.FunTest("Fmod(1.7,x)", -10000.f, 10000.f, [&](int N)->void {GMYFun(fmodf(1.7f,FT.fa[i]), FT.fc[i])},  [&](int N)->void {GMYFun(fmodf(1.7,FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::Fmod(GFloat(1, 7, 10), FT.Ga[i] ), FT.Gc[i])});
 
 }
 
