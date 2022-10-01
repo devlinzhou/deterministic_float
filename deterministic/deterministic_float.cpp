@@ -367,8 +367,8 @@ public:
         Tstring << " * Performance: float vs GFloat,  Call " << N << " times" << std::endl;
         Tstring << " * Error : the relative error between cmath (double) and GFloat Math " << std::endl << std::endl;
 
-        Tstring << "|Function| avg error|max error| float vs GFloat | float / GFloat | float fast| GFloat fast|"<< std::endl;
-        Tstring << "|--|--|--|--|--|--|--|" << std::endl;
+        Tstring << "|Function| avg error|max error| max abs error|float vs GFloat | float / GFloat |"<< std::endl;
+        Tstring << "|--|--|--|--|--|--|" << std::endl;
 
         std::cout << Tstring.str();
 
@@ -557,6 +557,7 @@ public:
         double f2 = 0;
 
         double Maxabs = 0;
+        double RMaxabs = 0;
         int maxi = 0;
 
         int nCount = 0;
@@ -579,6 +580,11 @@ public:
                 maxi = i;
             }
 
+            if( RMaxabs < abs(cf2 - cf1))
+            {
+                RMaxabs = abs(cf2 - cf1);
+            }
+
             f1 += abs(cf1);
             f2 += abs(cf2);
         }
@@ -588,13 +594,22 @@ public:
         std::stringstream Tstring;
         std::cout.precision(3);
 
-        Tstring << "|" << std::setiosflags(std::ios::left)<< std::setw(12);
-        Tstring << Name;
+        double timeratio = time1 / time2;
+
+
+        Tstring << "|" << std::setiosflags(std::ios::left)  << std::setw(12)<< Name;
         Tstring << "|" << std::setiosflags(std::ios::right) << std::setw( 10) << std::setiosflags(std::ios::fixed) << std::setprecision(6) <<avgerror * 100.f << " %";
-        Tstring << "|" << std::setiosflags(std::ios::right) << std::setw( 14) << Maxabs * 100.f << " %";
+        Tstring << "|" << std::setiosflags(std::ios::right) << std::setw(14) << Maxabs * 100.f << " %";
+        Tstring << "|" << std::setiosflags(std::ios::right) << std::setw(14)<< RMaxabs ;
         Tstring << "|" << std::setiosflags(std::ios::right) << std::setw( 5) <<std::setprecision(2) << time1;
-        Tstring <<" vs "<< std::setiosflags(std::ios::right) << std::setw( 5) << time2 << "  (ms)|" << time1 / time2 << "|";
-        Tstring << (time1 < time2 ? "$\\checkmark$" : "") << "|" <<( time1 > time2 ? "$\\checkmark$" : "" ) << "|" << std::endl;
+        Tstring <<" vs "<< std::setiosflags(std::ios::right) << std::setw( 5) << time2 << "  (ms)|"; 
+
+        if( timeratio > 1 )
+            Tstring << "**" << timeratio << "** |"<< std::endl;
+        else
+            Tstring <<  timeratio << " |"<< std::endl;
+        //Tstring << sratio > 1.f ? : << "|" << std::endl;
+       // Tstring << (time1 < time2 ? "$\\checkmark$" : "") << "|" <<( time1 > time2 ? "$\\checkmark$" : "" ) << "|" << std::endl;
         std::cout << Tstring.str();
         m_string << Tstring.str();
     }
@@ -628,14 +643,7 @@ void TestGFloat::Run()
         FT.FunGraph("Log", 1000, GFloatTest::EGType::EAll, 0, 100000.f, [&](double i)->double {return (double)logf( (float)i); }, [&](double i)->double {return GFloat::Log(GFloat::FromFloat((float)i)).toDouble(); });  
         return;
     }
-   // FT.FunTest("Pow(1.7,x)", -30.f, 30.f, [&](int N)->void {GMYFun(powf(1.7f, FT.fa[i]), FT.fc[i])}, [&](int N)->void {GMYFun(pow(1.7, FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::Pow(GFloat(1, 7, 10), FT.Ga[i]), FT.Gc[i])});
 
-  //  FT.FunTest("<()", -10000.f, 10000.f, [&](int N)->void {GMYFun(FT.fa[i] < FT.fb[i] ? FT.fa[i] : FT.fb[i], FT.fc[i])}, [&](int N)->void {GMYFun(FT.da[i] < FT.db[i] ? FT.da[i] : FT.db[i], FT.dc[i])}, [&](int N)->void { GMYFun(FT.Ga[i] < FT.Gb[i] ? FT.Ga[i] : FT.Gb[i], FT.Gc[i]) });
-
-   // FT.FunTest("Sin", -10000.f, 10000.f, [&](int N)->void {GMYFun(sinf(FT.fa[i]), FT.fc[i])}, [&](int N)->void {GMYFun(sin(FT.da[i]), FT.dc[i])}, [&](int N)->void { GMYFun(GFloat::Sin(FT.Ga[i]), FT.Gc[i])});
-   // return;
-    //FT.FunTest("Mul+Add",   -10000.f, 10000.f, [&](int N)->void {GMYFun(FT.fa[i]*FT.fb[i]+FT.fa[i],FT.fc[i])}, [&](int N)->void {GMYFun(FT.da[i] * FT.db[i] + FT.da[i], FT.dc[i])}, [&](int N)->void {GMYFun(FT.Ga[i] * FT.Gb[i] + FT.Ga[i], FT.Gc[i])});
-    //return;
     FT.FunTest("Add",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] + FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] + FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] + FT.Gb[i], FT.Gc[i])});
     FT.FunTest("Sub",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] - FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] - FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] - FT.Gb[i], FT.Gc[i] ) });
     FT.FunTest("Mul",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] * FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] * FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] * FT.Gb[i], FT.Gc[i] ) });
