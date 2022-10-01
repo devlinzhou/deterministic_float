@@ -368,7 +368,7 @@ public:
         Tstring << " * Error : the relative error between cmath (double) and GFloat Math " << std::endl << std::endl;
 
         Tstring << "|Function| avg error|max error| max abs error|float vs GFloat | float / GFloat |"<< std::endl;
-        Tstring << "|--|--|--|--|--|--|" << std::endl;
+        Tstring << "|:--|--:|--:|--:|--:|--:|" << std::endl;
 
         std::cout << Tstring.str();
 
