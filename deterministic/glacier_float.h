@@ -40,11 +40,12 @@
 class GFloat // Get Glacier first char "G" for Name
 {
 public:
-    static inline constexpr GFloat Zero()       { return GFloat(0,          0x00); };
-    static inline constexpr GFloat One()        { return GFloat(0x400000,   0x69); };
+    static inline constexpr GFloat Zero()       { return GFloat(0x000000,   0x00); };
     static inline constexpr GFloat Half()       { return GFloat(0x400000,   0x68); };
+    static inline constexpr GFloat One()        { return GFloat(0x400000,   0x69); };
     static inline constexpr GFloat Two()        { return GFloat(0x400000,   0x6A); };
-    static inline constexpr GFloat Pi()         { return GFloat(0x6487ef,   0x6a); };//Float(3,141592654, 1000000000); 
+    static inline constexpr GFloat Three()      { return GFloat(0x600000,   0x6A); };
+    static inline constexpr GFloat Pi()         { return GFloat(0x6487ef,   0x6a); };
     static inline constexpr GFloat Pi_Half()    { return GFloat(0x6487ef,   0x69); };
     static inline constexpr GFloat Pi_Quarter() { return GFloat(0x6487ef,   0x68); };
     static inline constexpr GFloat Pi_Two()     { return GFloat(0x6487ef,   0x6b); };

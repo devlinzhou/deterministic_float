@@ -629,6 +629,8 @@ public:
 
 void TestGFloat::Run()
 {
+    //std::cout << std::hex <<GFloat(3,0,2).rawint32 << std::endl;
+
     GFloatTest FT(1000000);
 
     bool bErrortest =0;
