@@ -699,6 +699,14 @@ GFloat GFloat::InvSqrt(const GFloat value )
     return TResult;
 }
 
+GFloat GFloat::Fmod(const GFloat x, const GFloat y)
+{ 
+    GFloat t = x / y;
+    GFloat out = Zero(); 
+    int32_t n = t.GetWhole(out);
+    return x - GFloat(n) * y;
+}
+
 
 
 
