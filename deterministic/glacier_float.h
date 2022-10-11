@@ -83,7 +83,7 @@ public:
         _BitScanReverse(&Index, num);
         return Index;
 #elif __GNUC__
-        auto nCount = __builtin_clzll(num);
+        auto nCount = __builtin_clz(num);
         return  nCount == 32 ? 0 : 31 - nCount;
 #else
         for (int32_t nIndex = 31; nIndex >= 0; nIndex--)
