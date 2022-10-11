@@ -367,8 +367,8 @@ public:
         Tstring << " * Performance: float vs GFloat,  Call " << N << " times" << std::endl;
         Tstring << " * Error : the relative error between cmath (double) and GFloat Math " << std::endl << std::endl;
 
-        Tstring << "|Function| avg error|max error| max abs error|float vs GFloat | float / GFloat |"<< std::endl;
-        Tstring << "|:--|--:|--:|--:|--:|--|" << std::endl;
+        Tstring << "| Function | input data |avg error | max error | max abs error | float vs GFloat | float / GFloat |"<< std::endl;
+        Tstring << "|:--|--:|--:|--:|--:|--:|--|" << std::endl;
 
         std::cout << Tstring.str();
 
@@ -548,10 +548,10 @@ public:
         }
         time2 = Timer.GetDeltaTimeMS();
 
-        Count(name );
+        Count(RMin, RMax,name );
     }
 
-    void Count(std::string Name )
+    void Count(double RMin, double RMax, std::string Name )
     {
         double f1 = 0;
         double f2 = 0;
@@ -597,7 +597,8 @@ public:
         double timeratio = time1 / time2;
 
 
-        Tstring << "|" << std::setiosflags(std::ios::left)  << std::setw(12)<< Name;
+        Tstring << "|" << std::setiosflags(std::ios::left) << std::setw(12) << Name;
+        Tstring << "|[" << std::setiosflags(std::ios::right) << std::setw(9) << std::setiosflags(std::ios::fixed)<<std::setprecision(1) << RMin << "," << std::setiosflags(std::ios::right) << std::setw(9) << RMax << "]";
         Tstring << "|" << std::setiosflags(std::ios::right) << std::setw( 10) << std::setiosflags(std::ios::fixed) << std::setprecision(6) <<avgerror * 100.f << " %";
         Tstring << "|" << std::setiosflags(std::ios::right) << std::setw(14) << Maxabs * 100.f << " %";
         Tstring << "|" << std::setiosflags(std::ios::right) << std::setw(14)<< RMaxabs ;
