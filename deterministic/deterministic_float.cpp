@@ -98,10 +98,12 @@ public:
         return __rdtsc();
 #elif __GNUC__    
 
-    #ifdef defined(__x86_64__)
+    #if defined(__x86_64__)
+
         unsigned int lo, hi;
         __asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
         return ((uint64_t)hi << 32) | lo;
+
     #elif defined(__aarch64__)
 
         uint64_t virtual_timer_value;
@@ -160,6 +162,12 @@ public:
 #endif
     }
 
+
+
+#if defined(__GNUC__) && defined(__x86_64__) && !defined(__aarch64__)
+#include <cpuid.h>
+#endif
+
     static int GetCpuFrequency_CpuInfo()
     {
         int cpuInfo[4] = { 0, 0, 0, 0 };
@@ -171,12 +179,12 @@ public:
         }
 #elif __GNUC__
 
-    #ifdef defined(__x86_64__) && !defined(__aarch64__)
+    #if defined(__x86_64__) && !defined(__aarch64__)
 
-        __get_cpuid(0, cpuInfo + 0, cpuInfo + 1, cpuInfo + 2, cpuInfo + 3);
+        __cpuid(0, cpuInfo[0], cpuInfo[1], cpuInfo[2], cpuInfo[3]);
 
         if (cpuInfo[0] >= 0x16) {
-            __get_cpuid(0x16, cpuInfo + 0, cpuInfo + 1, cpuInfo + 2, cpuInfo + 3);
+            __cpuid(0x16, cpuInfo[0], cpuInfo[1], cpuInfo[2], cpuInfo[3]);
             return cpuInfo[0];
         }
     #elif defined(__ARM_ARCH)
