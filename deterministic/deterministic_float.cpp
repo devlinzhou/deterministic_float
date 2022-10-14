@@ -375,8 +375,8 @@ public:
         Tstring << " * Performance: float vs GFloat,  Call " << N << " times" << std::endl;
         Tstring << " * Error : the relative error between cmath (double) and GFloat Math " << std::endl << std::endl;
 
-        Tstring << "| Function | input data |avg error | max error | max abs error | float vs GFloat | float / GFloat |"<< std::endl;
-        Tstring << "|:--|--:|--:|--:|--:|--:|--|" << std::endl;
+        Tstring << "| Function | input data range |avg relative error | max relative error | max abs error | float vs GFloat | float / GFloat |"<< std::endl;
+        Tstring << "|:--|:--:|:--:|:--:|:--:|:--:|:--:|" << std::endl;
 
         std::cout << Tstring.str();
 
