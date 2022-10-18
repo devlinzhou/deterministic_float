@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClInclude Include="..\deterministic_float.h" />
     <ClInclude Include="..\glacier_float.h" />
+    <ClInclude Include="..\glacier_platform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

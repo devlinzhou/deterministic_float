@@ -12,220 +12,24 @@
  */
 #include "deterministic_float.h"
 #include "glacier_float.h"
-#include <iostream>
-#include <chrono>
-#include <vector>
+#include "glacier_platform.h"
+
 #include <initializer_list>
 #include <random>
 #include <functional>
-#include <sstream>
-#include <fstream>
 #include <iomanip>
-#include <array>
 #include <thread>
-#include <cstdlib>
-
-#ifdef _MSC_VER
-#include <intrin.h>
-#endif
-
-#ifdef __APPLE__
-#include <TargetConditionals.h>
-#endif
-
-#define __PRINT_MARCO(x) #x
-#define PRINT_MARCO(x) #x"=" __PRINT_MARCO(x)
-
-#if defined(_MSC_VER) || (defined(__GNUC__))
-#define UseProfiler_RDTSCP 1
-#endif
-
-#pragma message(PRINT_MARCO(UseProfiler_RDTSCP))
-#pragma message(PRINT_MARCO(__ARM_ARCH))
-
-
-std::string getOSName()
-{
-#if defined(_WIN32) && !defined(_WIN64)
-    return "Windows 32-bit";
-#elif _WIN64
-    return "Windows 64-bit";
-#elif __APPLE__ || __MACH__
-    #if TARGET_OS_MAC
-        return "Mac OSX";
-    #elif TARGET_OS_IPHONE
-        return "iOS";
-    #elif TARGET_IPHONE_SIMULATOR
-        return "iOS Simulator";
-    #else
-        return "Unkown Apple device";
-    #endif
-#elif __ANDROID__
-    return "Android";
-#elif __linux__
-    return "Linux";
-#elif __FreeBSD__
-    return "FreeBSD";
-#elif __unix || __unix__
-    return "Unix";
-#else
-    return "Other";
-#endif
-}
-
-typedef std::chrono::high_resolution_clock Myclock;
-typedef std::chrono::nanoseconds Myres;
-
-class  MYTimer
-{
-public:
-    MYTimer()
-#if UseProfiler_RDTSCP
-        : start_(0), end_(0)
-#else
-        : t1(Myres::zero()), t2(Myres::zero())
-#endif
-    {
-        Start();
-    }
-
-    ~MYTimer()
-    {}
-
-    static inline uint64_t get_CPUCycles()
-    {
-#ifdef _MSC_VER
-        return __rdtsc();
-#elif __GNUC__    
-
-    #if defined(__x86_64__)
-
-        unsigned int lo, hi;
-        __asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
-        return ((uint64_t)hi << 32) | lo;
-
-    #elif defined(__aarch64__)
-
-        uint64_t virtual_timer_value;
-        asm volatile("mrs %0, cntvct_el0" : "=r"(virtual_timer_value));
-        return virtual_timer_value;
-
-    #else
-        return 0;
-    #endif
-
-#else
-        return 0;
-#endif
-    }
-
-    void Start()
-    {
-#if UseProfiler_RDTSCP
-        start_ = get_CPUCycles();
-#else
-        t1 = Myclock::now();
-#endif    
-    }
-
-    void End()
-    {
-#if UseProfiler_RDTSCP
-        end_ = get_CPUCycles();
-#else
-        t2 = Myclock::now();
-#endif
-    }
-
-
-    float GetDeltaTimeMS_NoEnd()
-    {
-#if UseProfiler_RDTSCP
-        return float( double(end_ - start_) * InvCPUGHZ);
-#else
-        return float(std::chrono::duration_cast<Myres>(t2 - t1).count() * 1e-6);
-#endif
-    }
-
-    float GetDeltaTimeMS()
-    {
-        End();
-        return GetDeltaTimeMS_NoEnd();
-    }
-
-    static double GetCpuFrequency_Compute()
-    {
-#if UseProfiler_RDTSCP
-        return 1 / InvCPUGHZ;
-#else
-        return 0;
-#endif
-    }
-
-
-
-#if defined(__GNUC__) && defined(__x86_64__) && !defined(__aarch64__)
-#include <cpuid.h>
-#endif
-
-    static int GetCpuFrequency_CpuInfo()
-    {
-        int cpuInfo[4] = { 0, 0, 0, 0 };
-#ifdef _MSC_VER
-        __cpuid(cpuInfo, 0);
-        if (cpuInfo[0] >= 0x16) {
-            __cpuid(cpuInfo, 0x16);
-            return cpuInfo[0];
-        }
-#elif __GNUC__
-
-    #if defined(__x86_64__) && !defined(__aarch64__)
-
-        __cpuid(0, cpuInfo[0], cpuInfo[1], cpuInfo[2], cpuInfo[3]);
-
-        if (cpuInfo[0] >= 0x16) {
-            __cpuid(0x16, cpuInfo[0], cpuInfo[1], cpuInfo[2], cpuInfo[3]);
-            return cpuInfo[0];
-        }
-    #elif defined(__ARM_ARCH)
-
-        uint64_t freq;
-        asm volatile("mrs %0, cntfrq_el0" : "=r" (freq));
-        return (int)(freq / 1000000);
-
-    #endif
-
-#else
-        
-#endif
-
-        return 0;
-    }
-
-private:
-
-#if UseProfiler_RDTSCP
-
-    static double InvCPUGHZ;
-    volatile uint64_t start_;
-    volatile uint64_t end_;
-#else
-    Myclock::time_point t1;
-    Myclock::time_point t2;
-#endif
-
-};
 
 #if UseProfiler_RDTSCP
 
 static double CountCpuGhz() {
 
     Myclock::time_point tStart = Myclock::now();;
-    uint64_t uStart = MYTimer::get_CPUCycles();
+    uint64_t uStart = GTimer::get_CPUCycles();
         
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-    uint64_t uEnd = MYTimer::get_CPUCycles();
+    uint64_t uEnd = GTimer::get_CPUCycles();
     Myclock::time_point tEnd = Myclock::now();
 
     double time = double(std::chrono::duration_cast<Myres>(tEnd - tStart).count() * 1e-9);
@@ -235,65 +39,9 @@ static double CountCpuGhz() {
 
 }
 
-double MYTimer::InvCPUGHZ = 0.000001f / CountCpuGhz();
+double GTimer::InvCPUGHZ = 0.000001f / CountCpuGhz();
 #endif
 
-std::string GetCpuName()
-{
-#if defined(_MSC_VER)
-    std::array<int, 4> cpui;
-    std::vector<std::array<int, 4>> extdata_;
-    __cpuid(cpui.data(), 0x80000000);
-    int nExIds_ = cpui[0];
-
-    char brand[0x40];
-    memset(brand, 0, sizeof(brand));
-
-    for (int i = 0x80000000; i <= nExIds_; ++i)
-    {
-        __cpuidex(cpui.data(), i, 0);
-        extdata_.push_back(cpui);
-    }
-
-    std::string brand_;
-
-    // Interpret CPU brand string if reported
-    if (nExIds_ >= 0x80000004)
-    {
-        memcpy(brand, extdata_[2].data(), sizeof(cpui));
-        memcpy(brand + 16, extdata_[3].data(), sizeof(cpui));
-        memcpy(brand + 32, extdata_[4].data(), sizeof(cpui));
-        brand_ = brand;
-    }
-
-    return brand_;
-#elif __APPLE__
-
-
-#if __ARM_ARCH
-    return "Apple Arm CPU";
-#elif __x86_64__
-    return "Apple Intel CPU";
-#else
-    return "Unkown Apple CPU";
-#endif
-
-
-#else
-    return "Unkown CPU";
-#endif
-}
-
-std::string GetCompileName()
-{
-#if defined(_MSC_VER)
-    return "Visual Studio :" + std::to_string(_MSC_VER);
-#elif __GNUC__
-    return __VERSION__;
-#else
-    return "Unkown Compile";
-#endif
-}
 
 class GFloatTest
 {
@@ -311,7 +59,7 @@ public:
     int N;
     double time1 = 0;
     double time2 = 0;
-    MYTimer Timer;
+    GTimer Timer;
     std::ofstream m_string;
 
     GFloatTest(int TN)
@@ -343,11 +91,12 @@ public:
         {
             FileName = "_None.md";
         }    
+
+        m_string =  std::ofstream (FileName);
 #elif __OSX__ 
         FileName = "../Test_BenchMark_OSX.md";
 #endif    
-        m_string =  std::ofstream (FileName);
-
+        
         std::stringstream Tstring;
 
         std::time_t TNow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -368,8 +117,8 @@ public:
             getOSName() << "|" <<
             GetCompileName()  << std::setprecision(3) << "|" <<
             GetCpuName() << "|" <<
-            MYTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz or " <<" " <<
-            MYTimer::GetCpuFrequency_CpuInfo() / 1000.f <<" GHz " << "|"<< std::endl;
+            GTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz or " <<" " <<
+            GTimer::GetCpuFrequency_CpuInfo() / 1000.f <<" GHz " << "|"<< std::endl;
         
         
         Tstring << " * Performance: float vs GFloat,  Call " << N << " times" << std::endl;
@@ -378,9 +127,10 @@ public:
         Tstring << "| Function | input data range |avg relative error | max relative error | max abs error | float vs GFloat | float / GFloat |"<< std::endl;
         Tstring << "|:--|:--:|:--:|:--:|:--:|:--:|:--:|" << std::endl;
 
-        std::cout << Tstring.str();
+        GPrintLog( Tstring );
 
-        m_string << Tstring.str();
+        if( m_string.is_open() )
+            m_string << Tstring.str();
     }
 
     int32_t FindBest(float RMin, float RMax)
@@ -617,10 +367,11 @@ public:
             Tstring << "**" << timeratio << "** |"<< std::endl;
         else
             Tstring <<  timeratio << " |"<< std::endl;
-        //Tstring << sratio > 1.f ? : << "|" << std::endl;
-       // Tstring << (time1 < time2 ? "$\\checkmark$" : "") << "|" <<( time1 > time2 ? "$\\checkmark$" : "" ) << "|" << std::endl;
-        std::cout << Tstring.str();
-        m_string << Tstring.str();
+
+        GPrintLog( Tstring );
+
+        if( m_string.is_open() )
+            m_string << Tstring.str();
     }
 };
 // why add 3, for Resist the c++ compiler optimizations

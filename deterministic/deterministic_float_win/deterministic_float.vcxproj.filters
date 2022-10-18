@@ -35,5 +35,8 @@
     <ClInclude Include="..\glacier_float.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\glacier_platform.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
