@@ -23,9 +23,9 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
  * Call every function 1000000 Times, get the float vs GFloat time
 
 Platform|Win64 5950X|Win64 12900H | iOS A15 | MacOS M1 Pro | Android HUAWEI P40 <br /> HiSilicon KIRIN 990|
-|:--|:--:|:--: |:--:|:--:|:--:|
+|:--|:--:|:--:|:--:|:--:|:--:|
 | |float vs GFloat| float vs GFloat| float vs GFloat|float vs GFloat |float vs GFloat
-|add|0.63 vs 2.63 ms| 0.44 vs 1.48ms| 0.43 vs 1.85 ms|0.34 vs 2.24 ms | 0.89 vs 8.76 ms
+|Add|0.63 vs 2.63 ms| 0.44 vs 1.48ms| 0.43 vs 1.85 ms|0.34 vs 2.24 ms | 0.89 vs 8.76 ms
 |Mul|0.70 vs 1.14 ms| 0.52 vs 0.79 ms| 0.42 vs 0.78 ms |0.34 vs 0.93 ms|0.62 vs 2.10 ms
 |Sin|10.20 vs 8.39 ms|8.6 vs 3.15 ms| 3.6 vs 4.9 ms|2.29 vs 5.28 ms | 11.58 vs 15.75 ms
 |Sqrt|1.08 vs 9.29  ms|0.7 vs 6.2 ms|0.83 vs 5.64 ms |0.64 vs 6.06 ms| 0.65 vs 15.77 ms
@@ -43,7 +43,7 @@ Platform|Win64 5950X|Win64 12900H | iOS A15 | MacOS M1 Pro | Android HUAWEI P40 
 
 ## Current Support Platform For Test&Benchmark 
 |Operation System|Win64|MacOS| iOS| Android|
-|--|--|--|--|--|
+|--|:--:|:--:|:--:|:--:|
 |Yes or No | $\checkmark$  |$\checkmark$|$\checkmark$| $\checkmark$ |
 
 
