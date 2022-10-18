@@ -141,16 +141,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="deterministic_float.cpp" />
-    <ClCompile Include="glacier_float.cpp" />
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="deterministic_float.h" />
-    <ClInclude Include="glacier_float.h" />
-  </ItemGroup>
-  <ItemGroup>
     <Natvis Include="deterministic_float.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\deterministic_float.cpp" />
+    <ClCompile Include="..\glacier_float.cpp" />
+    <ClCompile Include="..\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\deterministic_float.h" />
+    <ClInclude Include="..\glacier_float.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

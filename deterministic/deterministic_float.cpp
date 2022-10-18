@@ -44,7 +44,7 @@
 #pragma message(PRINT_MARCO(__ARM_ARCH))
 
 
-std::string getOsName()
+std::string getOSName()
 {
 #if defined(_WIN32) && !defined(_WIN64)
     return "Windows 32-bit";
@@ -60,14 +60,14 @@ std::string getOsName()
     #else
         return "Unkown Apple device";
     #endif
+#elif __ANDROID__
+    return "Android";
 #elif __linux__
     return "Linux";
 #elif __FreeBSD__
     return "FreeBSD";
 #elif __unix || __unix__
     return "Unix";
-#elif __ANDROID__
-    return "Android";
 #else
     return "Other";
 #endif
@@ -287,7 +287,7 @@ std::string GetCpuName()
 std::string GetCompileName()
 {
 #if defined(_MSC_VER)
-    return "Visual Studio " + std::to_string(_MSC_VER);
+    return "Visual Studio :" + std::to_string(_MSC_VER);
 #elif __GNUC__
     return __VERSION__;
 #else
@@ -330,7 +330,7 @@ public:
 
         std::string FileName;
 #ifdef _WIN64
-        FileName = "../Test_BenchMark_Win";
+        FileName = "../../Test_BenchMark_Win";
         if( GetCpuName().find( "12900H" ) != std::string::npos )
         {
             FileName += "_12900H.md";
@@ -365,7 +365,7 @@ public:
         Tstring << "|Operation System| C++ Compiler version |CPU  | Base Frequency  |" <<std::endl;
         Tstring << "|:--:|:--:|:--:|:--:|" << std::endl;
         Tstring << "|" << 
-            getOsName() << "|" <<
+            getOSName() << "|" <<
             GetCompileName()  << std::setprecision(3) << "|" <<
             GetCpuName() << "|" <<
             MYTimer::GetCpuFrequency_Compute() / 1000000.f << " GHz or " <<" " <<

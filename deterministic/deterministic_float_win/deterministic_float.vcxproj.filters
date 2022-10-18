@@ -15,25 +15,25 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="deterministic_float.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="glacier_float.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="glacier_float.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="deterministic_float.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <Natvis Include="deterministic_float.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\deterministic_float.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\glacier_float.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\deterministic_float.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glacier_float.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
