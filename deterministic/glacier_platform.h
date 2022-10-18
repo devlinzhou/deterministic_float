@@ -27,6 +27,10 @@
 
 #ifdef __APPLE__
 #include <TargetConditionals.h>
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#include <mach/machine.h>
+#include <sys/utsname.h>
 #endif
 
 #ifdef __ANDROID__
@@ -52,15 +56,11 @@ std::string getOSName()
 #elif _WIN64
     return "Windows 64-bit";
 #elif __APPLE__ || __MACH__
-#if TARGET_OS_MAC
-    return "Mac OSX";
-#elif TARGET_OS_IPHONE
-    return "iOS";
-#elif TARGET_IPHONE_SIMULATOR
-    return "iOS Simulator";
-#else
-    return "Unkown Apple device";
-#endif
+    utsname systeminfo;
+    uname(&systeminfo);
+
+    return systeminfo.sysname;
+
 #elif __ANDROID__
     return "Android";
 #elif __linux__
@@ -116,16 +116,67 @@ std::string GetCpuName()
 
     return brand_;
 #elif __APPLE__
+    
+    size_t size;
+    cpu_type_t type;
+    cpu_subtype_t subtype;
+    size = sizeof(type);
+    sysctlbyname("hw.cputype", &type, &size, NULL, 0);
 
+    size = sizeof(subtype);
+    sysctlbyname("hw.cpusubtype", &subtype, &size, NULL, 0);
+ 
+    std::string TS = "Apple ";
 
-#if __ARM_ARCH
-    return "Apple Arm CPU";
-#elif __x86_64__
-    return "Apple Intel CPU";
-#else
-    return "Unkown Apple CPU";
-#endif
+    utsname systeminfo;
+    uname(&systeminfo);
 
+    TS += systeminfo.machine;
+
+    TS += " Arch : ";
+
+    if (type == CPU_TYPE_X86_64) {
+        TS+="x86_64";
+      } else if (type == CPU_TYPE_X86) {
+          TS+="x86";
+      } else if (type == CPU_TYPE_ARM) {
+          TS+="ARM_";
+          switch(subtype)
+          {
+              case CPU_SUBTYPE_ARM_V6:
+                  TS+="V6";
+                  break;
+              case CPU_SUBTYPE_ARM_V7:
+                  TS+="V7";
+                  break;
+              case CPU_SUBTYPE_ARM_V8:
+                  TS+="V8";
+                  break;
+          }
+      }
+    else if (type == CPU_TYPE_ARM64) {
+    TS+="ARM64_";
+    switch(subtype)
+    {
+        case CPU_SUBTYPE_ARM64_V8:
+            TS+="V8";
+            break;
+        case CPU_SUBTYPE_ARM64E:
+            TS+="E";
+            break;
+    }
+}
+    
+    //char buffer[1024];
+    // size=sizeof(buffer);
+    //if (sysctlbyname("machdep.cpu.brand_string", &buffer, &size, NULL, 0) < 0) {
+      //  perror("sysctl");
+    //}
+    //std::cout << buffer << '\n';
+    //TS += " : " + std::string(buffer);
+    
+    
+    return TS.c_str();
 
 #else
     return "Unkown CPU";
