@@ -39,7 +39,7 @@ Platform|Win64 AMD<br />Ryzen-5950X|Win64 Intel<br />i9-12900H | iOS iPhone13Pro
 |Win|Visual Studio 2022| deterministic/deterministic_float.sln|
 |MacOS|XCode 13.4| deterministic/deterministic_float.xcodeproj |
 |iOS|XCode 13.4| deterministic/deterministic_float_ios.xcodeproj |
-|Android|Android studio 4.0|deterministic_float_android|
+|Android|Android studio 4.0|deterministic/deterministic_float_android|
 
 ## Current Support Platform For Test&Benchmark 
 |Operation System|Win64|MacOS| iOS| Android|
