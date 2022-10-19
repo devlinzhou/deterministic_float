@@ -22,8 +22,9 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
  * Several important functions compare, for more information to view TestAndBenchMark 
  * Call every function 1000000 Times, get the float vs GFloat time
 
-Platform|Win64 AMD<br />Ryzen-5950X|Win64 Intel<br />i9-12900H | iPhone13ProMax <br /> A15 | MacBook M1Pro <br /> M1 | Android HUAWEI P40<br /> HiSilicon-KIRIN-990|
+Platform|Win64 |Win64 | iOS | OSX | Android |
 |:--|:--:|:--:|:--:|:--:|:--:|
+|CPU|Ryzen-5950X|i9-12900H| Apple A15|Apple M1Pro|P40 HiSilicon-KIRIN-990|
 | |float vs GFloat| float vs GFloat| float vs GFloat|float vs GFloat |float vs GFloat
 |Add|0.63 vs 2.63 ms| 0.44 vs 1.48ms| 0.43 vs 1.85 ms|0.34 vs 2.24 ms | 0.89 vs 8.76 ms
 |Mul|0.70 vs 1.14 ms| 0.52 vs 0.79 ms| 0.42 vs 0.78 ms |0.34 vs 0.93 ms|0.62 vs 2.10 ms
