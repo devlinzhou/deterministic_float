@@ -34,6 +34,7 @@
 #endif
 
 #ifdef __ANDROID__
+#include <sys/system_properties.h>
 #include <android/log.h>
 #endif
 
@@ -177,8 +178,15 @@ std::string GetCpuName()
     
     
     return TS.c_str();
-
+#elif __ANDROID__
+    char buffer[1024];
+   // __system_property_read_callback
+    __system_property_get("os.Build.BRAND", buffer );
+    return std::string(buffer);
 #else
+
+
+
     return "Unkown CPU";
 #endif
 }
