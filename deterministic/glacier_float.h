@@ -17,7 +17,7 @@
 
 //#define GLACIER_OVERFLOW_TEST
 
-#define GLACIER_MULTIPLY_NORAMLIZE_FAST
+//#define GLACIER_MULTIPLY_NORAMLIZE_FAST
 
 #ifndef GLACIER_MULTIPLY_NORAMLIZE_FAST
 //#define GLACIER_NORMALIZE_TEST
@@ -354,9 +354,9 @@ public:
     {
         // I assume a and b is normalized, if a or b is zero,it will get a correct result
         int64_t Trawvalue = (int64_t)getfraction() * b.getfraction_NoShift();
-        int32_t Texponent = getexponent() + b.getexponent() - 104;
+        int32_t Texponent = getexponent() + b.getexponent() - 103;
 
-        return GFloat::FromFractionAndExp((int32_t)(Trawvalue >> 31), Texponent);
+        return GFloat::FromFractionAndExp((int32_t)(Trawvalue >> 32), Texponent);
     }
 #else 
 
