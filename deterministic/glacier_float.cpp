@@ -658,10 +658,12 @@ public:
     int64_t rawInt64;
 };*/
 
-GFloat GFloat::InvSqrt(const GFloat value )
+GFloat GFloat::InvSqrt(const GFloat fvalue )
 {
-    if (value.rawint32 <= 0)
+    if (fvalue.rawint32 <= 0)
         return Zero();
+
+    GFloat value = GFloat::Normalize32( fvalue.getfraction(), fvalue.getexponent());
 
     GFixed30 Fixed30(value.getfraction_NoShift() );
     int32_t exp = value.getexponent() - 127 + 22;
@@ -697,14 +699,6 @@ GFloat GFloat::InvSqrt(const GFloat value )
     GFloat TResult = GFloat::Normalize32(Start.rawInt32, 127 - GFixed30::GetTypeNumber() - (exp >> 1));
 
     return TResult;
-}
-
-GFloat GFloat::Fmod(const GFloat x, const GFloat y)
-{ 
-    GFloat t = x / y;
-    GFloat out = Zero(); 
-    int32_t n = t.GetWhole(out);
-    return x - GFloat(n) * y;
 }
 
 

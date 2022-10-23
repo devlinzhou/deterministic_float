@@ -389,7 +389,21 @@ public:
 
 void TestGFloat::Run()
 {
-    //std::cout << std::hex <<GFloat(3,0,2).rawint32 << std::endl;
+    std::cout << std::hex << GFloat(3,0,2).rawint32 << std::endl;
+    std::cout << std::hex << GFloat::Inv_10().rawint32 << std::endl;
+    std::cout << std::hex << GFloat::Inv_100().rawint32 << std::endl;
+    std::cout << std::hex << GFloat::Inv_1000().rawint32 << std::endl;
+    std::cout << std::hex << GFloat::Inv_10000().rawint32 << std::endl;
+    std::cout << std::hex << GFloat::Inv_100000().rawint32 << std::endl;
+    std::cout << std::hex << GFloat::Inv_1000000().rawint32 << std::endl;
+
+    std::cout << std::hex << GFloat::Inv_10().toFloat() << std::endl;
+    std::cout << std::hex << GFloat::Inv_100().toFloat() << std::endl;
+    std::cout << std::hex << GFloat::Inv_1000().toFloat() << std::endl;
+    std::cout << std::hex << GFloat::Inv_10000().toFloat() << std::endl;
+    std::cout << std::hex << GFloat::Inv_100000().toFloat() << std::endl;
+    std::cout << std::hex << GFloat::Inv_1000000().toFloat() << std::endl;
+
 
     GFloatTest FT(1000000);
 
