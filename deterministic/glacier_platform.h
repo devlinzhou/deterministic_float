@@ -48,7 +48,7 @@
 
 #pragma message(PRINT_MARCO(UseProfiler_RDTSCP))
 #pragma message(PRINT_MARCO(__ARM_ARCH))
-
+#pragma message(PRINT_MARCO(__ANDROID_API__))
 
 std::string getOSName()
 {
@@ -179,10 +179,31 @@ std::string GetCpuName()
     
     return TS.c_str();
 #elif __ANDROID__
+
+
+    /*std::vector<std::pair<std::string, std::string>> properties;
+    __system_property_foreach(
+            [](const prop_info* pi, void* cookie) {
+                __system_property_read_callback(
+                        pi,
+                        [](void* cookie, const char* name, const char* value, unsigned) {
+                            auto properties = reinterpret_cast<std::vector<std::pair<std::string, std::string>>*>(cookie);
+                            properties->emplace_back(name, value);
+                        },
+                        cookie);
+            },
+            &properties);*/
+
+    //std::sort(properties.begin(), properties.end());
+
+
     char buffer[1024];
-   // __system_property_read_callback
     __system_property_get("os.Build.BRAND", buffer );
     return std::string(buffer);
+
+
+
+
 #else
 
 
