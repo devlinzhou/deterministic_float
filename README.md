@@ -16,7 +16,7 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     * AI 引擎
   * 整体上GFloat与IEEE754的硬件浮点数float，性能差距在500%以内。参考显卡衡量计算能力的乘加指令，主要比较乘法和加法函数的性能：
  
- ### IEEE-754 float & My GFloat
+ ### IEEE-754 float & GFloat
 * IEEE-754 float
   <table  >
     <tr>
