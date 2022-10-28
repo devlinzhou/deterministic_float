@@ -16,7 +16,39 @@ you can make **deterministic plugin** by use GFloat to replace float-point. like
     * AI 引擎
   * 整体上GFloat与IEEE754的硬件浮点数float，性能差距在500%以内。参考显卡衡量计算能力的乘加指令，主要比较乘法和加法函数的性能：
  
- 
+ ### IEEE-754 float & My GFloat
+* IEEE-754 float
+  <table  >
+    <tr>
+        <th align="center" >sign</th>
+        <th align="center" colspan = "5" width="400">exponents（8 bits）</th>
+        <th align="center" colspan = "5" width="400">fractions（23 bits）</th>
+    </tr>
+    <tr>
+        <td >31</td>
+        <td >30</td><td>29</td><td>...</td><td>24</td><td>23</td>
+        <td >22</td><td>21</td><td>...</td><td>1</td><td>0</td>
+    </tr>
+    </table>
+
+    * $\mathbf{X}_{IEEE754} = (-1)^\mathbf{sign} \times (1.\mathbf{fraction}) \times 2 ^{\mathbf{exponent} - 127}$
+* GFloat
+  <table  >
+    <tr>
+        <th align="center" >sign</th>
+        <th align="center" colspan = "5" width="400">fractions（23 bits）</th>
+        <th align="center" colspan = "5" width="400">exponents（8 bits）</th>
+    </tr>
+    <tr>
+        <td >31</td>
+        <td >30</td><td>29</td><td>...</td><td>9</td><td>8</td>
+        <td >7</td><td>6</td><td>...</td><td>1</td><td>0</td>
+    </tr>
+    </table>
+    
+    * $\mathbf{X}_{GFloat} = (-1)^\mathbf{sign} \times (\mathbf{fraction}) \times 2 ^{\mathbf{exponent} - 127}$
+
+
 
 ## Performance float（IEEE-754） vs GFloat
  * Several important functions compare, for more information to view TestAndBenchMark 
