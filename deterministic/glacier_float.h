@@ -291,23 +291,24 @@ public:
     GFORCE_INLINE GFloat operator +( const GFloat b) const
     {
         int32_t a_Frac = getfraction_NoShift();
-        if( a_Frac==0) return Normalize32(b.getfraction(), b.getexponent());
-
         int32_t b_Frac = b.getfraction_NoShift();
-        if (b_Frac == 0) return Normalize32(getfraction(), getexponent());
+        int32_t a_e = getexponent();
+        int32_t b_e = b.getexponent();
 
-        int32_t a_e = getexponent();// -127;
-        int32_t b_e = b.getexponent();//-127;
+        if( a_Frac==0)
+            return Normalize32(b.getfraction(), b.getexponent());
+        if (b_Frac == 0)
+            return Normalize32(getfraction(), getexponent());
 
         if (a_e >= b_e)
         {
-            int32_t nShift = a_e - b_e > 23 ? 23 : 1+a_e - b_e;
-            return Normalize32((a_Frac>>1) + ((int64_t)b_Frac >> nShift), a_e - 7);
+            int32_t nShift = a_e - b_e > 23 ? 23 : a_e - b_e;
+            return Normalize64((int64_t)a_Frac + ((int64_t)b_Frac >> nShift), a_e - 8);
         }
         else
         {
-            int32_t nShift = b_e - a_e > 23 ? 23 : 1+b_e - a_e;
-            return Normalize32((b_Frac>>1) + ((int64_t)a_Frac >> nShift), b_e - 7);
+            int32_t nShift = b_e - a_e > 23 ? 23 : b_e - a_e;
+            return Normalize64((int64_t)b_Frac + ((int64_t)a_Frac >> nShift), b_e - 8);
         }         
 
     }

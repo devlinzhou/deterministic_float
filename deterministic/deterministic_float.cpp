@@ -406,6 +406,8 @@ void TestGFloat::Run()
         return;
     }
 
+    FT.FunTest("Mul+Add", -10000.f, 10000.f, [&](int N)->void {GMYFun(FT.fa[i] * FT.fb[i] + FT.fb[i], FT.fc[i])}, [&](int N)->void {GMYFun(FT.da[i] * FT.db[i] + FT.db[i], FT.dc[i])}, [&](int N)->void {GMYFun(FT.Ga[i] * FT.Gb[i] + FT.Gb[i], FT.Gc[i]) });
+
     FT.FunTest("Add",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] + FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] + FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] + FT.Gb[i], FT.Gc[i])});
     FT.FunTest("Sub",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] - FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] - FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] - FT.Gb[i], FT.Gc[i] ) });
     FT.FunTest("Mul",       -10000.f, 10000.f, [&](int N)->void{GMYFun(FT.fa[i] * FT.fb[i], FT.fc[i])}, [&](int N)->void{GMYFun(FT.da[i] * FT.db[i], FT.dc[i])},    [&](int N)->void {GMYFun(FT.Ga[i] * FT.Gb[i], FT.Gc[i] ) });
