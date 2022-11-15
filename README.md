@@ -77,7 +77,7 @@ Platform|Win64 |Win64 | iOS | OSX | Android |
 ## Current Support Platform For Test&Benchmark 
 |Operation System|Win64|MacOS| iOS| Android|
 |--|:--:|:--:|:--:|:--:|
-|Yes or No | $\checkmark$  |$\checkmark$|$\checkmark$| $\checkmark$ |
+| | $\checkmark$  |$\checkmark$|$\checkmark$| $\checkmark$ |
 
 
 
