@@ -15,8 +15,6 @@
 #include <stdint.h>
 #include <cmath>
 
-//#define GLACIER_OVERFLOW_TEST
-
 //#define GLACIER_MULTIPLY_NORAMLIZE_FAST
 
 #ifndef GLACIER_MULTIPLY_NORAMLIZE_FAST
@@ -32,9 +30,6 @@
 #ifdef _MSC_VER
 #include <intrin.h>
 #include <immintrin.h>
-#define GFORCE_INLINE _forceinline
-#else
-#define GFORCE_INLINE inline   
 #endif
 
 class GFloat // Get Glacier first char "G" for Name
@@ -66,7 +61,7 @@ public:
 
 
 
-    static GFORCE_INLINE uint32_t GBitScanReverse64( uint64_t num)
+    static inline uint32_t GBitScanReverse64( uint64_t num)
     {
 #ifdef _MSC_VER
         unsigned long Index;
@@ -87,7 +82,7 @@ public:
 #endif
     }
 
-    static GFORCE_INLINE uint32_t GBitScanReverse32(uint32_t num)
+    static inline uint32_t GBitScanReverse32(uint32_t num)
     {
 #ifdef _MSC_VER
         unsigned long Index;
@@ -130,8 +125,7 @@ public:
     constexpr GFloat(int32_t Traw32, int32_t exp ) :
         rawint32((Traw32 << 8) | int32_t(exp & 0x000000FF))
     {
-
-#ifdef GLACIER_OVERFLOW_TEST
+#if 0
 
         if( exp < 0 || exp > 0x000000FF )
         {
@@ -169,34 +163,40 @@ public:
 //         FromFloat(value);
 //     }
 
-    GFORCE_INLINE constexpr int32_t getfraction() const
+    inline constexpr int32_t getfraction() const
     {
        return rawint32 >> 8 ;
     }
-    GFORCE_INLINE constexpr int32_t getfraction_NoShift() const
+    inline constexpr int32_t getfraction_NoShift() const
     {
         return int32_t(rawint32 & 0xFFFFFF00);
     }
 
-    GFORCE_INLINE constexpr int32_t getfraction(int32_t shift) const
+    inline constexpr int32_t getfraction(int32_t shift) const
     {
         return getfraction() >> ( shift);
     }
 
-    GFORCE_INLINE constexpr int32_t getexponent() const
+    inline constexpr int32_t getexponent() const
     {
         return (rawint32 & 0xFF);
     }
 
-    static GFORCE_INLINE constexpr GFloat FromRaw32(int32_t Traw32)
+    static inline constexpr GFloat FromRaw32(int32_t Traw32)
     {
         GFloat T;
         T.rawint32 = Traw32;
         return T;
     }
 
-    static GFORCE_INLINE constexpr GFloat FromFractionAndExp(int32_t Traw32, int32_t exp)
+    static inline constexpr GFloat FromFractionAndExp(int32_t Traw32, int32_t exp)
     {
+        if (exp < 0)
+        {
+            return GFloat::Zero();
+        }
+        exp = exp > 255 ? 255 : exp;
+
         return GFloat(Traw32, exp);
     }
 
@@ -230,13 +230,7 @@ public:
        return (float)toDouble();
     }
 
-    inline operator float() const
-    {
-        return toFloat();
-    }
-
-
-    static GFORCE_INLINE GFloat Normalize32(int32_t Trawvalue, int32_t Texponent)
+    static inline GFloat Normalize32(int32_t Trawvalue, int32_t Texponent)
     {
         if (Trawvalue == 0)
             return GFloat(0, 0);
@@ -255,7 +249,7 @@ public:
         }
     }
 
-    static GFORCE_INLINE GFloat Normalize64(int64_t Trawvalue, int32_t Texponent)
+    static inline GFloat Normalize64(int64_t Trawvalue, int32_t Texponent)
     {
         if( Trawvalue == 0 )
             return GFloat(0,0);
@@ -274,7 +268,7 @@ public:
         }
     }
 
-    GFORCE_INLINE bool IsNormalize() const
+    inline bool IsNormalize() const
     {
         int32_t absRaw = abs( getfraction());
 
@@ -288,7 +282,7 @@ public:
         }
     }
 
-    GFORCE_INLINE GFloat operator +( const GFloat b) const
+    inline GFloat operator +( const GFloat b) const
     {
         int32_t a_Frac = getfraction_NoShift();
         int32_t b_Frac = b.getfraction_NoShift();
@@ -313,23 +307,23 @@ public:
 
     }
 
-    GFORCE_INLINE const GFloat operator +=(const GFloat b)
+    inline const GFloat operator +=(const GFloat b)
     {
         *this = *this + b;
         return *this;
     }
 
-    GFORCE_INLINE constexpr bool operator ==(const GFloat b) const
+    inline constexpr bool operator ==(const GFloat b) const
     {
         return rawint32 == b.rawint32;
     }
 
-    GFORCE_INLINE constexpr bool operator !=( const GFloat b) const
+    inline constexpr bool operator !=( const GFloat b) const
     {
         return rawint32 != b.rawint32;
     }
 
-    GFORCE_INLINE const GFloat operator -() const
+    inline const GFloat operator -() const
     {
         int32_t nFraction = getfraction();
 
@@ -337,12 +331,12 @@ public:
         return GFloat::Normalize32(-nFraction, getexponent());
     }
 
-    GFORCE_INLINE const GFloat operator -( const GFloat b) const
+    inline const GFloat operator -( const GFloat b) const
     {
         return *this + (-b);
     }
 
-    GFORCE_INLINE const GFloat operator -=(GFloat b)
+    inline const GFloat operator -=(GFloat b)
     {
         *this = *this - b;
         return *this;
@@ -351,7 +345,7 @@ public:
 
 #ifdef GLACIER_MULTIPLY_NORAMLIZE_FAST
 
-    GFORCE_INLINE const GFloat operator *(const GFloat b) const
+    inline const GFloat operator *(const GFloat b) const
     {
         // I assume a and b is normalized, if a or b is zero,it will get a correct result
         int64_t Trawvalue = (int64_t)getfraction() * b.getfraction_NoShift();
@@ -368,13 +362,13 @@ public:
         return  GFloat::Normalize64(Trawvalue, Texponent);
     }
 #endif
-    GFORCE_INLINE const GFloat operator *=(GFloat b)
+    inline const GFloat operator *=(GFloat b)
     {
         *this = *this * b;
         return *this;
     }
 
-    GFORCE_INLINE const GFloat operator /(const GFloat b) const
+    inline const GFloat operator /(const GFloat b) const
     {
         int32_t nDivid = (int32_t)b.getfraction();
         if (nDivid == 0) // for stable
@@ -388,19 +382,19 @@ public:
         return  GFloat::Normalize64(Trawvalue, Texponent);
     }
 
-    GFORCE_INLINE const GFloat operator /=(GFloat b)
+    inline const GFloat operator /=(GFloat b)
     {
         *this = *this / b;
         return *this;
     }
 
-    GFORCE_INLINE bool operator > (const GFloat b) const
+    inline bool operator > (const GFloat b) const
     {
         int32_t a_fra = getfraction_NoShift();
         int32_t b_fra = b.getfraction_NoShift();
 
-     //   if( a_fra == 0 || b_fra == 0)
-      //      return a_fra > b_fra;
+        if( a_fra == 0 || b_fra == 0)
+            return a_fra > b_fra;
 
         int32_t a_e = getexponent();// -127;
         int32_t b_e = b.getexponent();//-127;
@@ -417,22 +411,22 @@ public:
         }
     }
 
-    GFORCE_INLINE bool operator >= (const GFloat b) const
+    inline bool operator >= (const GFloat b) const
     {
         return (rawint32 == b.rawint32) || (*this > b);
     }
 
-    GFORCE_INLINE bool operator < (const GFloat b) const
+    inline bool operator < (const GFloat b) const
     {
         return !(*this >= b);
     }
 
-    GFORCE_INLINE bool operator <= (const GFloat b) const
+    inline bool operator <= (const GFloat b) const
     {
         return !(*this > b);
     }
 
-    GFORCE_INLINE int32_t GetWhole() const
+    inline int32_t GetWhole() const
     {
         int32_t exp = (getexponent() - 127);
         if (exp >= 0)
@@ -457,7 +451,7 @@ public:
         }
     }
 
-    GFORCE_INLINE int32_t GetWhole(GFloat& OutFraction) const
+    inline int32_t GetWhole(GFloat& OutFraction) const
     {
         int32_t exp = (getexponent() - 127);
         if (exp >= 0)
@@ -492,7 +486,7 @@ public:
         }    
     }
 
-    static GFORCE_INLINE GFloat Ceil( const GFloat value)
+    static inline GFloat Ceil( const GFloat value)
     {
         int32_t exp = (value.getexponent() - 127);
 
@@ -509,7 +503,7 @@ public:
         }
     
     }
-    static GFORCE_INLINE GFloat Floor(const GFloat value)
+    static inline GFloat Floor(const GFloat value)
     {
         int32_t exp = (value.getexponent() - 127);
 
@@ -525,7 +519,7 @@ public:
         }
     }
 
-    static GFORCE_INLINE int32_t FloorToInt( const GFloat value)
+    static inline int32_t FloorToInt( const GFloat value)
     {
         int32_t exp = (value.getexponent() - 127);
         int32_t fra = value.getfraction();
@@ -546,7 +540,7 @@ public:
         }
     }
 
-    static GFORCE_INLINE int32_t CeilToInt(const GFloat value)
+    static inline int32_t CeilToInt(const GFloat value)
     {
         int32_t exp = (value.getexponent() - 127);
         int32_t fra = value.getfraction();
@@ -576,7 +570,7 @@ public:
         }
     }
 
-    static GFORCE_INLINE GFloat Abs(const GFloat value)
+    static inline GFloat Abs(const GFloat value)
     {
         return value.rawint32 >= 0 ? value : -value;
     }
