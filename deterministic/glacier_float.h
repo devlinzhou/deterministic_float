@@ -149,7 +149,7 @@ public:
     {
         int64_t TValue = (int64_t)b * (int64_t)Traw32 + (int64_t)a;
 
-        int32_t index = GBitScanReverse64( (uint64_t)abs(TValue));
+        int32_t index = GBitScanReverse64( (uint64_t)std::abs(TValue));
 
         int32_t exp = 62 - index;
 
@@ -235,7 +235,7 @@ public:
         if (Trawvalue == 0)
             return GFloat(0, 0);
 
-        int32_t index = GBitScanReverse32(abs(Trawvalue));
+        int32_t index = GBitScanReverse32(std::abs(Trawvalue));
 
         if (index <= 22)
         {
@@ -254,7 +254,7 @@ public:
         if( Trawvalue == 0 )
             return GFloat(0,0);
 
-        int32_t index = GBitScanReverse64(abs(Trawvalue ));
+        int32_t index = GBitScanReverse64(std::abs(Trawvalue ));
 
         if ( index <= 22 )
         {
@@ -270,7 +270,7 @@ public:
 
     inline bool IsNormalize() const
     {
-        int32_t absRaw = abs( getfraction());
+        int32_t absRaw = std::abs(getfraction());
 
         if ( absRaw !=0 && ( absRaw < 0x00400000  || absRaw > 0x007FFFFF))
         {
