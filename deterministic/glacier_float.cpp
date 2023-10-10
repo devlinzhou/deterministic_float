@@ -379,7 +379,7 @@ void GFloat::SinCos(const GFloat value, GFloat& OutSin, GFloat& OutCos)
 }
 GFloat GFloat::ASin(const GFloat value)
 {
-    constexpr GFloat TOne = GFloat::FromRaw32( One().rawint32 );
+    GFloat TOne = GFloat::FromRaw32( One().rawint32 );
     if( value > TOne) 
     {
         return Pi_Half();

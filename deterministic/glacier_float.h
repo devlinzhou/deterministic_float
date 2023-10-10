@@ -15,7 +15,15 @@
 #include <stdint.h>
 #include <cmath>
 
-//#define GLACIER_MULTIPLY_NORAMLIZE_FAST
+
+/**
+ * Uncomment the below when you want use GFloat in an union. 
+ * Take in mind that the default value will not guaranteed to be Zero anymore!
+*/
+// #define GLACIER_UNION_COMPATIBLE //Fixes compilation error in an union
+
+// #define GLACIER_MULTIPLY_NORAMLIZE_FAST
+
 
 #ifndef GLACIER_MULTIPLY_NORAMLIZE_FAST
 //#define GLACIER_NORMALIZE_TEST
@@ -110,12 +118,16 @@ public:
 
     static void Init();
 
+#ifdef GLACIER_UNION_COMPATIBLE
+    inline GFloat()=default;
+#else
     constexpr GFloat(const GFloat&) = default;
 
     constexpr GFloat() : rawint32(0)
     {
 
     }
+#endif
 
     explicit inline GFloat( int32_t TValue)
     {
@@ -184,7 +196,7 @@ public:
 
     static inline constexpr GFloat FromRaw32(int32_t Traw32)
     {
-        GFloat T;
+        GFloat T {0};
         T.rawint32 = Traw32;
         return T;
     }
