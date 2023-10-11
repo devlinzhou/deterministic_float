@@ -15,7 +15,15 @@
 #include <stdint.h>
 #include <cmath>
 
-//#define GLACIER_MULTIPLY_NORAMLIZE_FAST
+
+/**
+ * Uncomment the below when you want use GFloat in an union. 
+ * Take in mind that the default value will not guaranteed to be Zero anymore!
+*/
+// #define GLACIER_UNION_COMPATIBLE //Fixes compilation error in an union
+
+// #define GLACIER_MULTIPLY_NORAMLIZE_FAST
+
 
 #ifndef GLACIER_MULTIPLY_NORAMLIZE_FAST
 //#define GLACIER_NORMALIZE_TEST
@@ -110,12 +118,16 @@ public:
 
     static void Init();
 
+#ifdef GLACIER_UNION_COMPATIBLE
+    inline GFloat()=default;
+#else
     constexpr GFloat(const GFloat&) = default;
 
     constexpr GFloat() : rawint32(0)
     {
 
     }
+#endif
 
     explicit inline GFloat( int32_t TValue)
     {
@@ -149,7 +161,7 @@ public:
     {
         int64_t TValue = (int64_t)b * (int64_t)Traw32 + (int64_t)a;
 
-        int32_t index = GBitScanReverse64( (uint64_t)abs(TValue));
+        int32_t index = GBitScanReverse64( (uint64_t)std::abs(TValue));
 
         int32_t exp = 62 - index;
 
@@ -184,9 +196,7 @@ public:
 
     static inline constexpr GFloat FromRaw32(int32_t Traw32)
     {
-        GFloat T;
-        T.rawint32 = Traw32;
-        return T;
+        return GFloat(Traw32>>8,Traw32);
     }
 
     static inline constexpr GFloat FromFractionAndExp(int32_t Traw32, int32_t exp)
@@ -235,7 +245,7 @@ public:
         if (Trawvalue == 0)
             return GFloat(0, 0);
 
-        int32_t index = GBitScanReverse32(abs(Trawvalue));
+        int32_t index = GBitScanReverse32(std::abs(Trawvalue));
 
         if (index <= 22)
         {
@@ -254,7 +264,7 @@ public:
         if( Trawvalue == 0 )
             return GFloat(0,0);
 
-        int32_t index = GBitScanReverse64(abs(Trawvalue ));
+        int32_t index = GBitScanReverse64(std::abs(Trawvalue ));
 
         if ( index <= 22 )
         {
@@ -270,7 +280,7 @@ public:
 
     inline bool IsNormalize() const
     {
-        int32_t absRaw = abs( getfraction());
+        int32_t absRaw = std::abs(getfraction());
 
         if ( absRaw !=0 && ( absRaw < 0x00400000  || absRaw > 0x007FFFFF))
         {
