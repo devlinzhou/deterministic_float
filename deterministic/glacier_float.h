@@ -196,9 +196,7 @@ public:
 
     static inline constexpr GFloat FromRaw32(int32_t Traw32)
     {
-        GFloat T {0};
-        T.rawint32 = Traw32;
-        return T;
+        return GFloat(Traw32>>8,Traw32);
     }
 
     static inline constexpr GFloat FromFractionAndExp(int32_t Traw32, int32_t exp)
